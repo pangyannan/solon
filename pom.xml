@@ -9,13 +9,13 @@
             <version>2.5.7</version>
     </parent>
 
-    <groupId>cloud.flystar</groupId>
-    <artifactId>solon-root</artifactId>
+    <groupId>cloud.flystar.solon</groupId>
+    <artifactId>root</artifactId>
     <packaging>pom</packaging>
     <name>solon-root</name>
     <version>1.0-SNAPSHOT</version>
     <modules>
-
+        <module>common</module>
     </modules>
 
     <properties>
@@ -26,6 +26,8 @@
         <mybatis-plus-boot-starter.version>3.4.3.4</mybatis-plus-boot-starter.version>
         <lombok.version>1.18.16</lombok.version>
         <guava.version>31.1-jre</guava.version>
+        <hutool.version>5.8.2</hutool.version>
+
     </properties>
 
     <dependencyManagement>
@@ -36,11 +38,16 @@
                 <version>${mybatis-plus-boot-starter.version}</version>
             </dependency>
 
-            <!-- https://mvnrepository.com/artifact/com.google.guava/guava -->
             <dependency>
                 <groupId>com.google.guava</groupId>
                 <artifactId>guava</artifactId>
                 <version>${guava.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>cn.hutool</groupId>
+                <artifactId>hutool-all</artifactId>
+                <version>${hutool.version}</version>
             </dependency>
 
             <dependency>
