@@ -17,6 +17,8 @@
     <modules>
         <module>commons</module>
         <module>framework</module>
+        <module>app-web</module>
+        <module>sc</module>
     </modules>
 
     <properties>
@@ -41,6 +43,16 @@
                 <version>${project.version}</version>
             </dependency>
 
+            <dependency>
+                <groupId>cloud.flystar.solon</groupId>
+                <artifactId>framework</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>cloud.flystar.solon</groupId>
+                <artifactId>user-service</artifactId>
+                <version>${project.version}</version>
+            </dependency>
 
             <dependency>
                 <groupId>com.baomidou</groupId>
@@ -78,8 +90,13 @@
                 <artifactId>lombok</artifactId>
                 <version>${lombok.version}</version>
             </dependency>
-
-
         </dependencies>
     </dependencyManagement>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+        </dependency>
+    </dependencies>
 </project>
