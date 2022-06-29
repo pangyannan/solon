@@ -40,5 +40,9 @@ public class UserInfo {
 
     private LocalDateTime createTime;
 
+    private String createBy;
+
     private LocalDateTime updateTime;
+
+    private String updateBy;
 }
