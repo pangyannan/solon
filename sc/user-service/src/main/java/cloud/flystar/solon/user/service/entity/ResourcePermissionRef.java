@@ -5,15 +5,14 @@ import lombok.Data;
 import java.time.LocalDateTime;
 
 /**
- * 部门岗位关联表
+ * 权限表
  */
 @Data
-public class DepartmentPostRef {
-    private Long id;
-    /** 部门ID */
-    private Long deptId;
-    /** 岗位ID */
-    private Long postId;
+public class ResourcePermissionRef {
+   private Long id;
+   private String permissionId;
+   private String resourceType;
+   private Long resourceId;
 
     private LocalDateTime createTime;
     private Long createUserId;

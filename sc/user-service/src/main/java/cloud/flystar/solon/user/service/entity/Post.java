@@ -25,7 +25,7 @@ public class Post {
     private String status;
 
     private LocalDateTime createTime;
-    private String createBy;
+    private Long createUserId;
     private LocalDateTime updateTime;
-    private String updateBy;
+    private Long updateUserId;
 }

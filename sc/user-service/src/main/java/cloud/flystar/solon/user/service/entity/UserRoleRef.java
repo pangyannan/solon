@@ -14,5 +14,7 @@ public class UserRoleRef {
     private Long userId;
     /** 角色ID */
     private Long roleId;
+
     private LocalDateTime createTime;
+    private Long createUserId;
 }

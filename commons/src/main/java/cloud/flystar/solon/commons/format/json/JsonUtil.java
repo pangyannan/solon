@@ -1,12 +1,20 @@
 package cloud.flystar.solon.commons.format.json;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.SneakyThrows;
+import org.apache.logging.log4j.util.Strings;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -63,8 +71,9 @@ public class JsonUtil {
      * 字符串转对象
      * 如果待转换对象为容器或者泛型的，使用TypeReference
      */
-    public static <T>  T convert(String json, Class<T> clazz){
-        return mapper.convertValue(json,clazz);
+    @SneakyThrows
+    public static <T>  T jsonToBean(String json, Class<T> clazz){
+        return mapper.readValue(json,clazz);
     }
     /**
      * 将json转化为对应的实体对象
@@ -75,15 +84,34 @@ public class JsonUtil {
      *  new TypeReference<List<RestJson<List<MopNode>>>>(){}
      *  另外 objectMapper.getTypeFactory().constructParametricType(List.class, clazz)方法夜比较有意思，可以通过class构造Type类型
      */
-    public static <T>  T convert(String json, TypeReference<T> type){
-        return mapper.convertValue(json,type);
+    @SneakyThrows
+    public static <T>  T jsonToBean(String json, TypeReference<T> type){
+        return mapper.readValue(json,type);
     }
 
     /**
      * 二进制转对象
      */
-    public static <T>  T convert(byte[] bytes, Class<T> clazz){
-        return convert(new String(bytes, StandardCharsets.UTF_8),clazz);
+    public static <T>  T byteToBean(byte[] bytes, Class<T> clazz){
+        return jsonToBean(new String(bytes, StandardCharsets.UTF_8),clazz);
     }
 
+
+    @SneakyThrows
+    public static <T> List<T> jsonToArray(String json, Class<T> clazz){
+        if (!StringUtils.hasText(json) || clazz == null){
+            return new ArrayList<>(0);
+        }
+        JavaType javaType = mapper.getTypeFactory().constructParametricType(ArrayList.class, clazz);
+        return mapper.readValue(json,javaType);
+    }
+
+    @SneakyThrows
+    public static <K,V> Map<K,V> jsonMap(String json, Class<K> kClazz, Class<V> vClazz){
+        if (!StringUtils.hasText(json) || kClazz == null || vClazz == null){
+            return new HashMap<>(0);
+        }
+        JavaType javaType = mapper.getTypeFactory().constructMapType(HashMap.class, kClazz, vClazz);
+        return mapper.readValue(json,javaType);
+    }
 }

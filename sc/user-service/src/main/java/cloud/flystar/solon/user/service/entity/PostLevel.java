@@ -24,11 +24,9 @@ public class PostLevel {
     /** 状态（0正常 1停用） */
     private String status;
 
+
     private LocalDateTime createTime;
-
-    private String createBy;
-
+    private Long createUserId;
     private LocalDateTime updateTime;
-
-    private String updateBy;
+    private Long updateUserId;
 }

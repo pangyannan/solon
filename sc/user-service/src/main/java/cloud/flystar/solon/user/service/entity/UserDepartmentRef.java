@@ -22,5 +22,10 @@ public class UserDepartmentRef {
      * LEADER: 负责人
      */
     private String refType;
+
+
     private LocalDateTime createTime;
+    private Long createUserId;
+    private LocalDateTime updateTime;
+    private Long updateUserId;
 }

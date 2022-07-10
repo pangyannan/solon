@@ -1,6 +1,7 @@
 package cloud.flystar.solon.app.web.controller;
 
 import cloud.flystar.solon.commons.dto.Result;
+import cloud.flystar.solon.commons.format.json.JsonUtil;
 import cloud.flystar.solon.user.api.UserService;
 import cloud.flystar.solon.user.api.dto.UserDto;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +20,9 @@ public class UserController {
     @GetMapping("/get")
     public Result<UserDto> user(@RequestParam(name = "id") Long id){
         UserDto userDto = userService.getUserDtoById(id);
-        return Result.successBuild(userDto);
+        userDto.setId(null);
+        String json = JsonUtil.json(userDto);
+        UserDto convert = JsonUtil.jsonToBean(json, UserDto.class);
+        return Result.successBuild(convert);
     }
 }
