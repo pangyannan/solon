@@ -1,7 +1,21 @@
-spring:
-  application:
-    name: link
-  profiles:
-    active: dev
 server:
   port: 8080
+spring:
+  application:
+    name: solon
+  profiles:
+    active: test
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/link?useUnicode=true&useSSL=false&allowPublicKeyRetrieval=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai
+    username: root
+    password: 123456
+mybatis-plus:
+  global-config:
+    banner: false
+    db-config:
+      id-type: assign_id
+  configuration:
+    cache-enabled: false
+    local-cache-scope: statement
+  mapper-locations: ['classpath*:/mapper/**/*.xml']

@@ -7,7 +7,7 @@
 	debug:当此属性设置为true时，将打印出logback内部日志信息，实时查看logback运行状态。默认值为false。 -->
 <configuration scan="true" scanPeriod="60 seconds" debug="false">
 	<!--读取spring环境变量-->
-	<springProperty scope="context" name="APP_NAME" source="spring.application.name" defaultValue="app" />
+	<springProperty scope="context" name="APP_NAME" source="spring.application.name" defaultValue="solon" />
 	<!--读取spring环境变量，定义日志的跟路径-->
 	<springProperty scope="context" name="LOG_PATH" source="logging.logback.path" defaultValue="logs" />
 	<!--读取spring环境变量，定义日志的保存天数-->
@@ -35,7 +35,7 @@
 			<onMismatch>DENY</onMismatch>
 		</filter>
 		<!--当前日志存放路径-->
-		<File>${LOG_PATH}/${APP_NAME}/info.log</File>
+		<file>${LOG_PATH}/${APP_NAME}/info.log</file>
 		<!--按照日期大大小归档日志-->
 		<rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
 			<!-- 历史日志文件的存放路径和名称 gz表示自动压缩-->
@@ -50,7 +50,7 @@
 		</encoder>
 	</appender>
 	<!-- 异步输出,在高并发下性能明显提升 -->
-	<appender name="ASYNC_INFO" class="ch.qos.logback.classic.AsyncAppender">
+	<appender name="ASYNC_INFO_FILE" class="ch.qos.logback.classic.AsyncAppender">
 		<!-- 不丢失日志.默认的,如果队列的80%已满,则会丢弃TRACT、DEBUG、INFO级别的日志 -->
 		<discardingThreshold>0</discardingThreshold>
 		<!-- 更改默认的队列的深度,该值会影响性能.默认值为256 -->
@@ -60,6 +60,7 @@
 	</appender>
 
 
+
 	<!-- WARN及以上级别日志 appender -->
 	<appender name="WARN_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
 		<!-- 过滤器，只记录INFO级别的日志 -->
@@ -67,7 +68,7 @@
 			<level>WARN</level>
 		</filter>
 		<!--当前日志存放路径-->
-		<File>${LOG_PATH}/${APP_NAME}/warn.log</File>
+		<file>${LOG_PATH}/${APP_NAME}/warn.log</file>
 		<!--按照日期大大小归档日志-->
 		<rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
 			<!-- 历史日志文件的存放路径和名称 gz表示自动压缩-->
@@ -82,7 +83,7 @@
 		</encoder>
 	</appender>
 	<!-- 异步输出,在高并发下性能明显提升 -->
-	<appender name="ASYNC_WARN" class="ch.qos.logback.classic.AsyncAppender">
+	<appender name="ASYNC_WARN_FILE" class="ch.qos.logback.classic.AsyncAppender">
 		<!-- 不丢失日志.默认的,如果队列的80%已满,则会丢弃TRACT、DEBUG、INFO级别的日志 -->
 		<discardingThreshold>0</discardingThreshold>
 		<!-- 更改默认的队列的深度,该值会影响性能.默认值为256 -->
@@ -90,6 +91,63 @@
 		<!-- 添加附加的appender,最多只能添加一个 -->
 		<appender-ref ref="WARN_FILE"/>
 	</appender>
+
+
+
+	<!-- 一个日志文件记录 appender -->
+	<appender name="ALL_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<!-- 过滤器，只记录INFO级别的日志 -->
+		<filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+			<level>ALL</level>
+		</filter>
+		<!--当前日志存放路径-->
+		<file>${LOG_PATH}/${APP_NAME}/all.log</file>
+		<!--按照日期大大小归档日志-->
+		<rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+			<!-- 历史日志文件的存放路径和名称 gz表示自动压缩-->
+			<fileNamePattern>${LOG_PATH}/${APP_NAME}/all.%d{yyyy-MM-dd}.%i.log.gz</fileNamePattern>
+			<!-- 日志最大保存天数 -->
+			<maxHistory>${MAX_HISTORY}</maxHistory>
+			<!--日志大小-->
+			<maxFileSize>${MAX_FILE_SIZE}</maxFileSize>
+		</rollingPolicy>
+		<encoder>
+			<pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] [%X{traceId}] %-5level %logger - %msg%n</pattern>
+		</encoder>
+	</appender>
+	<!-- 异步输出,在高并发下性能明显提升 -->
+	<appender name="ASYNC_ALL_FILE" class="ch.qos.logback.classic.AsyncAppender">
+		<!-- 不丢失日志.默认的,如果队列的80%已满,则会丢弃TRACT、DEBUG、INFO级别的日志 -->
+		<discardingThreshold>0</discardingThreshold>
+		<!-- 更改默认的队列的深度,该值会影响性能.默认值为256 -->
+		<queueSize>1024</queueSize>
+		<!-- 添加附加的appender,最多只能添加一个 -->
+		<appender-ref ref="ALL_FILE"/>
+	</appender>
+
+
+	<!-- 一个日志文件记录 appender -->
+	<appender name="AUDIT_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<!-- 过滤器，只记录INFO级别的日志 -->
+		<filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+			<level>INFO</level>
+		</filter>
+		<!--当前日志存放路径-->
+		<file>${LOG_PATH}/${APP_NAME}/audit.log</file>
+		<!--按照日期大大小归档日志-->
+		<rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+			<!-- 历史日志文件的存放路径和名称 gz表示自动压缩-->
+			<fileNamePattern>${LOG_PATH}/${APP_NAME}/audit.%d{yyyy-MM-dd}.%i.log.gz</fileNamePattern>
+			<!-- 日志最大保存天数 -->
+			<maxHistory>${MAX_HISTORY}</maxHistory>
+			<!--日志大小-->
+			<maxFileSize>${MAX_FILE_SIZE}</maxFileSize>
+		</rollingPolicy>
+		<encoder>
+			<pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] [%X{traceId}] %-5level %logger - %msg%n</pattern>
+		</encoder>
+	</appender>
+
 
 	<!--开发环境配置-->
 	<springProfile name="dev">
@@ -99,7 +157,7 @@
 			<appender-ref ref="STDOUT" />
 		</root>
 		<logger name="org.springframework" level="INFO" />
-		<logger name="_org.springframework.web.servlet.HandlerMapping.Mappings" level="INFO" /> <!--主要是打印了路径映射关系-->
+		<logger name="_org.springframework.web.servlet.HandlerMapping.Mappings" level="INFO" /> <!--主要是打印了路径映射关系,不需要-->
 	</springProfile>
 
 
@@ -111,16 +169,27 @@
 			<appender-ref ref="INFO_FILE" />
 			<appender-ref ref="WARN_FILE" />
 		</root>
+		<!--将审计日志单独打印到审计日志中 additivity="true"表示继续传递到父日志中-->
+		<logger name="AuditLogStore" additivity="ture" level="INFO">
+			<appender-ref ref="AUDIT_FILE"/>
+		</logger>
 	</springProfile>
 
 	<!--生产环境配置-->
 	<springProfile name="prod">
 		<root level="INFO">
+			<!-- 文件输出,默认采用同步模式打印日志
+				如果高性能模式，可以配置 ASYNC_INFO_FILE + ASYNC_WARN_FILE
+				如果是要记录在一个文件中，不区分文件，则可以使用 ALL_FILE 或 ASYNC_ALL_FILE
+			-->
 			<!-- 文件输出 -->
-			<!-- 文件输出 -->
-			<appender-ref ref="INFO_FILE" />
-			<appender-ref ref="WARN_FILE" />
+			<appender-ref ref="ASYNC_INFO_FILE" />
+			<appender-ref ref="ASYNC_WARN_FILE" />
 		</root>
+		<!--将审计日志单独打印到审计日志中 additivity="true"表示继续传递到父日志中-->
+		<logger name="AuditLogStore" additivity="ture" level="INFO">
+			<appender-ref ref="AUDIT_FILE"/>
+		</logger>
 	</springProfile>
 
 </configuration>

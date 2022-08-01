@@ -5,6 +5,7 @@ import cloud.flystar.solon.commons.log.trace.TraceUtil;
 import lombok.Data;
 
 import java.io.Serializable;
+import java.time.LocalDateTime;
 import java.util.Date;
 
 /**
@@ -35,7 +36,7 @@ public class Result<T> implements Serializable {
     /**
      * 消息时间
      */
-    private Date dateTime;
+    private LocalDateTime time;
     /**
      * 返回数据
      */
@@ -50,7 +51,7 @@ public class Result<T> implements Serializable {
         this.message = message;
         this.traceId = traceId;
         this.data = data;
-        this.dateTime = new Date();
+        this.time = LocalDateTime.now();
     }
 
     public static <T> Result<T> successBuild(){

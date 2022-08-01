@@ -3,7 +3,7 @@ package cloud.flystar.solon.framework.config;
 
 import cloud.flystar.solon.commons.log.aspect.LogAspect;
 import cloud.flystar.solon.commons.log.audit.AuditLogAspect;
-import cloud.flystar.solon.commons.log.audit.AuditLogStoreImpl;
+import cloud.flystar.solon.commons.log.audit.DefaultAuditLogStoreImpl;
 import cloud.flystar.solon.commons.log.level.LogLevelService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -31,7 +31,7 @@ public class LogConfig  {
      */
     @Bean
     public AuditLogAspect auditLogAspect(){
-        return new AuditLogAspect(new AuditLogStoreImpl());
+        return new AuditLogAspect(new DefaultAuditLogStoreImpl());
     }
 
     /**

@@ -18,9 +18,6 @@ public class Post {
     /** 岗位名称 */
     private String postName;
 
-    /** 岗位职级 */
-    private Long postLevelId;
-
     /** 状态（0正常 1停用） */
     private String status;
 

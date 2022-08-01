@@ -1,6 +1,7 @@
 package cloud.flystar.solon.user.service.entity;
 
 
+import com.baomidou.mybatisplus.annotation.TableId;
 import lombok.Data;
 
 import java.time.LocalDateTime;
@@ -11,6 +12,7 @@ import java.time.LocalDateTime;
 @Data
 public class Department {
     /** 部门ID */
+    @TableId()
     private Long deptId;
 
     /** 部门名称 */
