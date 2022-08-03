@@ -1,5 +1,7 @@
-package cloud.flystar.solon.framework.service;
+package cloud.flystar.solon.framework.service.impl;
 
+
+import cloud.flystar.solon.framework.service.CurrentNodeService;
 
 public class SingleModelCurrentNodeServiceImpl implements CurrentNodeService {
     @Override

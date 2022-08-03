@@ -8,7 +8,7 @@ import java.time.LocalDateTime;
  * 页面元素资源
  */
 @Data
-public class Resource {
+public class ResourceInfo {
     private Long resourceId;
 
     /**

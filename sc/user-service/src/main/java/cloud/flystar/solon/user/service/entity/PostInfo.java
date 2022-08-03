@@ -8,7 +8,7 @@ import java.time.LocalDateTime;
  * 岗位
  */
 @Data
-public class Post {
+public class PostInfo {
     /** 岗位ID*/
     private Long postId;
 

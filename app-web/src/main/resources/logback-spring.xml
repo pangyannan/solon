@@ -166,8 +166,7 @@
 		<root level="DEBUG">
 			<appender-ref ref="STDOUT" />
 			<!-- 文件输出 -->
-			<appender-ref ref="INFO_FILE" />
-			<appender-ref ref="WARN_FILE" />
+			<appender-ref ref="ALL_FILE" />
 		</root>
 		<!--将审计日志单独打印到审计日志中 additivity="true"表示继续传递到父日志中-->
 		<logger name="AuditLogStore" additivity="ture" level="INFO">
@@ -183,8 +182,9 @@
 				如果是要记录在一个文件中，不区分文件，则可以使用 ALL_FILE 或 ASYNC_ALL_FILE
 			-->
 			<!-- 文件输出 -->
-			<appender-ref ref="ASYNC_INFO_FILE" />
-			<appender-ref ref="ASYNC_WARN_FILE" />
+<!--			<appender-ref ref="ASYNC_INFO_FILE" />-->
+<!--			<appender-ref ref="ASYNC_WARN_FILE" />-->
+			<appender-ref ref="ASYNC_ALL_FILE" />
 		</root>
 		<!--将审计日志单独打印到审计日志中 additivity="true"表示继续传递到父日志中-->
 		<logger name="AuditLogStore" additivity="ture" level="INFO">
