@@ -3,13 +3,18 @@ package cloud.flystar.solon.framework.config;
 import cloud.flystar.solon.framework.service.CurrentNodeService;
 import cloud.flystar.solon.framework.service.impl.SingleModelCurrentNodeServiceImpl;
 import com.baomidou.mybatisplus.autoconfigure.ConfigurationCustomizer;
+import com.baomidou.mybatisplus.core.handlers.MetaObjectHandler;
 import com.baomidou.mybatisplus.core.incrementer.DefaultIdentifierGenerator;
 import com.baomidou.mybatisplus.core.incrementer.IdentifierGenerator;
 import com.baomidou.mybatisplus.extension.plugins.MybatisPlusInterceptor;
 import com.baomidou.mybatisplus.extension.plugins.inner.PaginationInnerInterceptor;
+import org.apache.ibatis.reflection.MetaObject;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+
+import java.time.LocalDateTime;
+import java.util.Date;
 
 @Configuration
 @MapperScan("cloud.flystar.solon.**.mapper")
@@ -32,10 +37,33 @@ public class MybatisConfig {
 
     //雪花算法生成器
     @Bean
-    public IdentifierGenerator idGenerator(CurrentNodeService currentNodeService) {
-        if(currentNodeService.workerId() >= 0 && currentNodeService.dataCenterId() >= 0){
+    public IdentifierGenerator idGenerator() {
+        CurrentNodeService currentNodeService = currentNodeService();
+        if(currentNodeService instanceof SingleModelCurrentNodeServiceImpl){
+            return new DefaultIdentifierGenerator();
+        }else if(currentNodeService.workerId() >= 0 && currentNodeService.dataCenterId() >= 0){
             return new DefaultIdentifierGenerator(currentNodeService.workerId(),currentNodeService.dataCenterId());
+        }else{
+            return new DefaultIdentifierGenerator();
         }
-        return new DefaultIdentifierGenerator();
     }
+
+
+    //创建时间修改时间填充器
+    @Bean
+    public MetaObjectHandler myMetaObjectHandler() {
+        return new MetaObjectHandler(){
+            @Override
+            public void insertFill(MetaObject metaObject) {
+                this.strictInsertFill(metaObject, "createTime", () -> LocalDateTime.now(), LocalDateTime.class);
+                this.strictInsertFill(metaObject, "updateTime", () -> LocalDateTime.now(), LocalDateTime.class);
+            }
+
+            @Override
+            public void updateFill(MetaObject metaObject) {
+                this.strictInsertFill(metaObject, "updateTime", () -> LocalDateTime.now(), LocalDateTime.class);
+            }
+        };
+    }
+
 }

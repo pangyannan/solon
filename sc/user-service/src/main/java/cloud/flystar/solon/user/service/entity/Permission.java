@@ -8,7 +8,7 @@ import java.time.LocalDateTime;
  * 权限表
  */
 @Data
-public class ResourcePermission {
+public class Permission {
    private Long permissionId;
    private String permissionCode;
    private String permissionName;

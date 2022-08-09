@@ -1,8 +1,8 @@
 package cloud.flystar.solon.user.service;
 
+import cloud.flystar.solon.framework.service.IBaseService;
 import cloud.flystar.solon.user.service.entity.UserInfo;
-import com.baomidou.mybatisplus.extension.service.IService;
 
 
-public interface UserInfoService extends IService<UserInfo> {
+public interface UserInfoService extends IBaseService<UserInfo> {
 }

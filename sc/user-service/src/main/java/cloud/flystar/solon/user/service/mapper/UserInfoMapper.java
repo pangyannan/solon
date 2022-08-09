@@ -1,6 +1,6 @@
 package cloud.flystar.solon.user.service.mapper;
 
-import cn.hutool.system.UserInfo;
+import cloud.flystar.solon.user.service.entity.UserInfo;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 
 
