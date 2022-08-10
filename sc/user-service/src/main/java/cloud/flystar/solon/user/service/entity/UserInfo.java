@@ -29,8 +29,6 @@ public class UserInfo {
     /** 手机号码 */
     private String phone;
 
-    /** 用户性别 */
-    private String sex;
 
     /** 帐号状态（0正常 1停用） */
     private Integer status;

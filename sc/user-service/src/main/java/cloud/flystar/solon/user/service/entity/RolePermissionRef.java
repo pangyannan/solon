@@ -5,14 +5,13 @@ import lombok.Data;
 import java.time.LocalDateTime;
 
 /**
- * 权限表
+ * 角色权限关联表
  */
 @Data
-public class PermissionResourceRef {
+public class RolePermissionRef {
     private Long id;
+    private Long roleId;
     private Long permissionId;
-    private Long resourceId;
-    private String resourceType;
 
     private LocalDateTime createTime;
     private Long createUserId;

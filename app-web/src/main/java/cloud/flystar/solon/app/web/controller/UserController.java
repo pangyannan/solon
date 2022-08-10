@@ -20,7 +20,7 @@ public class UserController {
     @GetMapping("/get")
     public Result<UserDto> user(@RequestParam(name = "id") Long id){
         UserDto userDto = userApi.getById(id);
-        userDto.setId(null);
+        userDto.setUserId(null);
         String json = JsonUtil.json(userDto);
         UserDto convert = JsonUtil.jsonToBean(json, UserDto.class);
         return Result.successBuild(convert);

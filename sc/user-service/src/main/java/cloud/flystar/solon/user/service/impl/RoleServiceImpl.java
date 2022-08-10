@@ -1,13 +1,53 @@
 package cloud.flystar.solon.user.service.impl;
 
+import cloud.flystar.solon.commons.constant.YesOrNoEnum;
 import cloud.flystar.solon.framework.service.impl.BaseServiceImpl;
+import cloud.flystar.solon.user.api.dto.RoleDto;
 import cloud.flystar.solon.user.service.RoleService;
+import cloud.flystar.solon.user.service.convert.RoleDtoConvert;
 import cloud.flystar.solon.user.service.entity.Role;
+import cloud.flystar.solon.user.service.entity.UserRoleRef;
 import cloud.flystar.solon.user.service.mapper.RoleMapper;
+import cloud.flystar.solon.user.service.mapper.UserRoleRefMapper;
+import cn.hutool.core.collection.CollectionUtil;
+import com.baomidou.mybatisplus.extension.toolkit.ChainWrappers;
+import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.validation.annotation.Validated;
+
+import javax.annotation.Resource;
+import javax.validation.constraints.NotNull;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
+@Validated
 public class RoleServiceImpl extends BaseServiceImpl<RoleMapper, Role> implements RoleService {
+    @Resource
+    UserRoleRefMapper userRoleRefMapper;
+    @Resource
+    RoleDtoConvert roleDtoConvert;
+
+    @Override
+    public List<Role> listUserEnableRole(@NotNull Long userId) {
+        List<UserRoleRef> userRoleRefs = ChainWrappers.lambdaQueryChain(userRoleRefMapper).eq(UserRoleRef::getUserId, userId).list();
+        if(CollectionUtil.isEmpty(userRoleRefs)){
+            return Lists.newArrayList();
+        }
+        Set<Long> roleIds = userRoleRefs.stream().map(UserRoleRef::getRoleId).collect(Collectors.toSet());
+        return this.lambdaQuery()
+                .in(Role::getRoleId, roleIds)
+                .eq(Role::getRoleStatus,YesOrNoEnum.YES.getKey())
+                .eq(Role::getDeleteFlag, YesOrNoEnum.NO.getKey())
+                .list();
+    }
+
+    @Override
+    public List<RoleDto> listUserEnableRoleDto(@NotNull Long userId) {
+        List<Role> roleList = this.listUserEnableRole(userId);
+        return roleDtoConvert.doForward(roleList);
+    }
 }

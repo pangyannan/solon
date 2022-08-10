@@ -1,24 +1,23 @@
-package cloud.flystar.solon.user.service.entity;
+package cloud.flystar.solon.user.api.dto;
 
-import cloud.flystar.solon.commons.constant.UserResourceTypeEnum;
 import lombok.Data;
 
 import java.time.LocalDateTime;
 
 /**
- * 页面元素资源
+ * 系统资源
  */
 @Data
-public class ResourceInfo {
+public class ResourceInfoDto {
     private Long resourceId;
 
     /**
-     * @see UserResourceTypeEnum
-     * application 用户应用
+     * app 应用
      * menu 菜单
      * element 页面元素
      * api 接口资源
      */
+
     private String resourceType;
 
     /**
@@ -44,15 +43,6 @@ public class ResourceInfo {
      * 资源名称
      */
     private String resourceName;
-
-    /**
-     * 说明
-     */
-    private String remarks;
-    /**
-     * 状态 0禁用 1启用
-     */
-    private Integer status;
 
 
     private LocalDateTime createTime;

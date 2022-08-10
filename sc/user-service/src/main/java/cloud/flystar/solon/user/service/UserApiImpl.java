@@ -1,6 +1,9 @@
 package cloud.flystar.solon.user.service;
 
 import cloud.flystar.solon.user.api.UserApi;
+import cloud.flystar.solon.user.api.dto.PermissionDto;
+import cloud.flystar.solon.user.api.dto.ResourceInfoDto;
+import cloud.flystar.solon.user.api.dto.RoleDto;
 import cloud.flystar.solon.user.api.dto.UserDto;
 import cloud.flystar.solon.user.service.convert.UserDtoConvert;
 import cloud.flystar.solon.user.service.entity.UserInfo;
@@ -25,7 +28,14 @@ public class UserApiImpl implements UserApi {
     @Resource
     private UserInfoService userInfoService;
     @Resource
-    UserDtoConvert userDtoConvert;
+    private UserDtoConvert userDtoConvert;
+    @Resource
+    private RoleService roleService;
+    @Resource
+    private PermissionService permissionService;
+    @Resource
+    private ResourceInfoService resourceInfoService;
+
     @Override
     public UserDto getById(@NotNull Long userId) {
         UserInfo userInfo = userInfoService.getById(userId);
@@ -47,5 +57,20 @@ public class UserApiImpl implements UserApi {
         List<UserInfo> list = userInfoService.lambdaQuery().eq(UserInfo::getUserName, userName).list();
         Assert.isTrue(CollectionUtil.size(list) <= 1,"userName={} find multiple UserInfo",userName);
         return userDtoConvert.doForward(list.get(0));
+    }
+
+    @Override
+    public List<RoleDto> listUserEnableRole(@NotNull Long userId) {
+        return roleService.listUserEnableRoleDto(userId);
+    }
+
+    @Override
+    public List<PermissionDto> listUserPermission(@NotNull Long userId) {
+        return permissionService.listUserPermissionDto(userId);
+    }
+
+    @Override
+    public List<ResourceInfoDto> listUserResource(@NotNull Long userId, String resourceType) {
+        return resourceInfoService.listUserResourceDto(userId,resourceType);
     }
 }
