@@ -149,6 +149,11 @@
 	</appender>
 
 
+	<logger name="org.springframework" level="INFO" />
+	<logger name="_org.springframework.web.servlet.HandlerMapping.Mappings" level="INFO" /> <!--主要是打印了路径映射关系,不需要-->
+	<logger name="io.lettuce.core.protocol" level="INFO" />
+	<logger name="io.lettuce.core.RedisChannelHandler" level="INFO" />
+
 	<!--开发环境配置-->
 	<springProfile name="dev">
 		<!-- root节点：启动配置以及定义日志的输出级别
@@ -156,8 +161,6 @@
 		<root level="DEBUG">
 			<appender-ref ref="STDOUT" />
 		</root>
-		<logger name="org.springframework" level="INFO" />
-		<logger name="_org.springframework.web.servlet.HandlerMapping.Mappings" level="INFO" /> <!--主要是打印了路径映射关系,不需要-->
 	</springProfile>
 
 

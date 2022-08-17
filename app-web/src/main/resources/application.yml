@@ -1,5 +1,6 @@
 server:
   port: 8080
+
 spring:
   application:
     name: solon
@@ -10,6 +11,26 @@ spring:
     url: jdbc:mysql://localhost:3306/link?useUnicode=true&useSSL=false&allowPublicKeyRetrieval=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai
     username: root
     password: 123456
+  # redis配置
+  redis:
+    database: 0
+    host: localhost
+    port: 6379
+    #password:
+    timeout: 10s
+    lettuce:
+      pool:
+        # 连接池最大连接数，建议 cpu*4
+        max-active: 16
+        # 连接池最大阻塞等待时间（使用负值表示没有限制）
+        max-wait: 5s
+        # 连接池中的最大空闲连接 建议 cpu*2
+        max-idle: 8
+        # 连接池中的最小空闲连接
+        min-idle: 0
+        # 空闲连接线程释放周期
+        time-between-eviction-runs: 10s
+
 mybatis-plus:
   global-config:
     banner: false
@@ -19,3 +40,21 @@ mybatis-plus:
     cache-enabled: false
     local-cache-scope: statement
   mapper-locations: ['classpath*:/mapper/**/*.xml']
+
+
+# Sa-Token配置
+sa-token:
+  # token 名称 (同时也是cookie名称)
+  token-name: authToken
+  # token 有效期，单位s 默认30天, -1代表永不过期
+  timeout: 2592000
+  # token 临时有效期 (指定时间内无操作就视为token过期) 单位: 秒
+  activity-timeout: -1
+  # 是否允许同一账号并发登录 (为true时允许一起登录, 为false时新登录挤掉旧登录)
+  is-concurrent: false
+  # 在多人登录同一账号时，是否共用一个token (为true时所有登录共用一个token, 为false时每次登录新建一个token)
+  is-share: false
+  # token风格
+  token-style: simple-uuid
+  # 是否输出操作日志
+  is-log: false

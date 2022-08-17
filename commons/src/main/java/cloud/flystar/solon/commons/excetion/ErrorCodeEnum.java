@@ -13,7 +13,7 @@ public enum ErrorCodeEnum {
     /**
      * 成功
      */
-    SUCCESS("00000", "操作成功"),
+    SUCCESS("00000", "成功"),
     /**
      * 一级宏观错误码
      */
