@@ -13,6 +13,11 @@ public class ResourceInfo {
     private Long resourceId;
 
     /**
+     * 系统编码
+     */
+    private String projectCode;
+
+    /**
      * @see UserResourceTypeEnum
      * application 用户应用
      * menu 菜单

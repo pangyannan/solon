@@ -3,6 +3,7 @@ package cloud.flystar.solon.commons.dto;
 import cloud.flystar.solon.commons.excetion.ErrorCodeEnum;
 import cloud.flystar.solon.commons.log.trace.TraceUtil;
 import lombok.Data;
+import lombok.experimental.Accessors;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
@@ -11,6 +12,7 @@ import java.time.LocalDateTime;
  * 统一返回包装
  */
 @Data
+@Accessors(chain = true)
 public class Result<T> implements Serializable {
     private static final long serialVersionUID = 1L;
 
@@ -24,9 +26,15 @@ public class Result<T> implements Serializable {
      */
     private String code;
     /**
-     * 消息提醒
+     * 消息内容
      */
     private String message;
+
+    /**
+     * 详细消息内容
+     */
+    private String detailMessage;
+
     /**
      * 追踪号
      */

@@ -1,6 +1,5 @@
 server:
-  port: 8080
-
+  port: 80
 spring:
   application:
     name: solon
@@ -8,7 +7,7 @@ spring:
     active: test
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/link?useUnicode=true&useSSL=false&allowPublicKeyRetrieval=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai
+    url: jdbc:mysql://localhost:3306/solon?useUnicode=true&useSSL=false&allowPublicKeyRetrieval=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai
     username: root
     password: 123456
   # redis配置
@@ -58,3 +57,9 @@ sa-token:
   token-style: simple-uuid
   # 是否输出操作日志
   is-log: false
+  #同一账号最大登录数量
+  max-login-count: 1
+
+secure:
+  privateKey: MIICeAIBADANBgkqhkiG9w0BAQEFAASCAmIwggJeAgEAAoGBAKKCLiKP4A5VC4dCFp304lkWeOTJgrtCtWWFHawHDvgnTTS6Ub6+i6GgBIklw7kI/VjrY590VakMD66Mmw+cxjFoVXGWN8/yiMi+CDh0rcl1Mdnz3K7fWcsw+WFJJtsoaSAGkdAICu3n+7N1rdQ/hPKpw4+FR4DUMyks5JnInLlXAgMBAAECgYA/u1ooh9BRDp1U0GBaVj2mvp9u6nBwzDqjs87tNl9yhsdKlH+WlNfh7QWaW8skeBgTlU0erdsiTu6ff9kYCF3ZReSRE4NkD+imdGtZvI8e2D2103ACuSLHQdhlRPyFvf2vk1UxUb2ACcxxsMa4wpAq2kbyDvduQ2ZkPq/mGJrqIQJBAOAzWNyOUhV5a18JF0SqnfKQPNRy5JQUL6BAiEbp+r/3FM1wNOTIbuHi8IhXUpEuevugdDZ6MQsMDXhIPUJA/f8CQQC5jtBQHjDglDEd4MTgUkLDlkIiPlyUZ863HNF3CNYvAAXBOKrn1A71FGdmSrfaMZmpDzPe7s5QNUZ7+ZoiYvSpAkEAuAHsgLheLjnFIe64JidSEu7Gvia967rVi9TrBCitIDiN3j6latAGEWbMu1nP7lATp8l9F+kZr1NpCrtfa60jyQJBAIWmm9xZIpNfqdD/aE66cWQ3AgNwL3alHns9wpGeR8cqmPqHOnIoh212+NLw1mPOfgMK9C2KjAexl8cMDTzfUaECQQC+qcU/KoonfHoqdqwAJqAAyh0EXl4L+AF/AHNsAu/PksAugvzuNztw3QDQ/Vru59G0T6ZkwYlZe6z8YOxgGk13
+  publicKey: MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCigi4ij+AOVQuHQhad9OJZFnjkyYK7QrVlhR2sBw74J000ulG+vouhoASJJcO5CP1Y62OfdFWpDA+ujJsPnMYxaFVxljfP8ojIvgg4dK3JdTHZ89yu31nLMPlhSSbbKGkgBpHQCArt5/uzda3UP4TyqcOPhUeA1DMpLOSZyJy5VwIDAQAB

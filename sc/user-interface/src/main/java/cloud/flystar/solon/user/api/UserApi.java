@@ -1,9 +1,6 @@
 package cloud.flystar.solon.user.api;
 
-import cloud.flystar.solon.user.api.dto.PermissionDto;
-import cloud.flystar.solon.user.api.dto.ResourceInfoDto;
-import cloud.flystar.solon.user.api.dto.RoleDto;
-import cloud.flystar.solon.user.api.dto.UserDto;
+import cloud.flystar.solon.user.api.dto.*;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
@@ -55,7 +52,8 @@ public interface UserApi {
      * 根据userId查询用户资源
      * @param userId
      * @param resourceType
+     * @param projectCode
      * @return
      */
-    List<ResourceInfoDto> listUserResource(@NotNull Long userId,String resourceType);
+    List<ResourceInfoDto> listUserResource(@NotNull Long userId,String resourceType,String projectCode);
 }

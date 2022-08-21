@@ -4,12 +4,14 @@ import cloud.flystar.solon.commons.dto.Result;
 import cloud.flystar.solon.commons.excetion.ErrorCodeEnum;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.MethodParameter;
+import org.springframework.http.HttpStatus;
 import org.springframework.validation.BindException;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.ResponseStatus;
 
 import java.lang.reflect.Method;
 import java.util.stream.Collectors;
@@ -22,6 +24,7 @@ import java.util.stream.Collectors;
 @ControllerAdvice
 public class ExceptionAdviceConfig {
 
+    @ResponseStatus(value= HttpStatus.BAD_REQUEST)
     @ExceptionHandler(value = BindException.class)
     public Result<String> exceptionHandler(BindException e){
         BindingResult bindingResult = e.getBindingResult();
@@ -44,7 +47,15 @@ public class ExceptionAdviceConfig {
 
             }
         }
-        log.warn("参数校验失败class={},method={},message={}", className, methodName, message);
+        log.warn("class={},method={},message={}", className, methodName, message,e);
         return  Result.failedBuild(ErrorCodeEnum.USER_ERROR_A0400.getCode(),message);
+    }
+
+
+    @ResponseStatus(value= HttpStatus.INTERNAL_SERVER_ERROR)
+    @ExceptionHandler(value = Exception.class)
+    public Result globeException(Exception e){
+        log.error("全局异常拦截",e);
+        return  Result.failedBuild(ErrorCodeEnum.SYSTEM_ERROR_B0001).setDetailMessage(e.getMessage());
     }
 }

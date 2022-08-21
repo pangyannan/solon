@@ -70,7 +70,7 @@ public class UserApiImpl implements UserApi {
     }
 
     @Override
-    public List<ResourceInfoDto> listUserResource(@NotNull Long userId, String resourceType) {
-        return resourceInfoService.listUserResourceDto(userId,resourceType);
+    public List<ResourceInfoDto> listUserResource(@NotNull Long userId, String resourceType, String projectCode) {
+        return resourceInfoService.listUserResourceDto(userId,resourceType,projectCode);
     }
 }

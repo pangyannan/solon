@@ -177,7 +177,7 @@ public enum ErrorCodeEnum {
      * 系统异常
      * 一级宏观错误码
      */
-    SYSTEM_ERROR_B0001("B0001", "系统执行出错"),
+    SYSTEM_ERROR_B0001("B0001", "系统异常"),
     /**
      * 二级宏观错误码
      */

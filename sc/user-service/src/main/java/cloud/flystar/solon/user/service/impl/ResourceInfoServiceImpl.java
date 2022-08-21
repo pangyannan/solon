@@ -8,10 +8,10 @@ import cloud.flystar.solon.user.service.convert.ResourceInfoDtoConvert;
 import cloud.flystar.solon.user.service.entity.Permission;
 import cloud.flystar.solon.user.service.entity.PermissionResourceRef;
 import cloud.flystar.solon.user.service.entity.ResourceInfo;
-import cloud.flystar.solon.user.service.entity.RolePermissionRef;
 import cloud.flystar.solon.user.service.mapper.PermissionResourceRefMapper;
 import cloud.flystar.solon.user.service.mapper.ResourceInfoMapper;
 import cn.hutool.core.collection.CollectionUtil;
+import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.extension.toolkit.ChainWrappers;
 import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
@@ -37,7 +37,7 @@ public class ResourceInfoServiceImpl extends BaseServiceImpl<ResourceInfoMapper,
     ResourceInfoDtoConvert resourceInfoDtoConvert;
 
     @Override
-    public List<ResourceInfo> listUserResource(@NotNull Long userId, @NotBlank String resourceType) {
+    public List<ResourceInfo> listUserResource(@NotNull Long userId, @NotBlank String resourceType, String projectCode) {
         List<Permission> permissions = permissionService.listUserPermission(userId);
         if(CollectionUtil.isEmpty(permissions)){
             return Lists.newArrayList();
@@ -53,12 +53,13 @@ public class ResourceInfoServiceImpl extends BaseServiceImpl<ResourceInfoMapper,
         Set<Long> resourceIds = permissionResourceRefs.stream().map(PermissionResourceRef::getResourceId).collect(Collectors.toSet());
         return this.lambdaQuery().in(ResourceInfo::getResourceId,resourceIds)
                 .eq(ResourceInfo::getResourceType,resourceType)
+                .eq(StrUtil.isNotBlank(projectCode),ResourceInfo::getProjectCode,permissionIds)
                 .list();
     }
 
     @Override
-    public List<ResourceInfoDto> listUserResourceDto(@NotNull Long userId, @NotBlank String resourceType) {
-        List<ResourceInfo> resourceInfos = this.listUserResource(userId, resourceType);
+    public List<ResourceInfoDto> listUserResourceDto(@NotNull Long userId, @NotBlank String resourceType, String projectCode) {
+        List<ResourceInfo> resourceInfos = this.listUserResource(userId, resourceType,projectCode);
         return resourceInfoDtoConvert.doForward(resourceInfos);
     }
 }

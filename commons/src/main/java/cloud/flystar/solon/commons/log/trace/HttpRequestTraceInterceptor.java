@@ -38,7 +38,7 @@ public class HttpRequestTraceInterceptor implements HandlerInterceptor {
             spanId = Integer.valueOf(spanIdStr) + 1;
         }
 
-        addHeader(request,response,traceId,spanId);
+//        addHeader(request,response,traceId,spanId);
 
         TraceContext.putTraceId(traceId);
         TraceContext.putMdcTraceId(traceId);

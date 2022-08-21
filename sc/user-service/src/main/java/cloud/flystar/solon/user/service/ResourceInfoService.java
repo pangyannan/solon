@@ -9,7 +9,7 @@ import javax.validation.constraints.NotNull;
 import java.util.List;
 
 public interface ResourceInfoService extends IBaseService<ResourceInfo> {
-    List<ResourceInfo> listUserResource(@NotNull Long userId, @NotBlank String resourceType);
-    List<ResourceInfoDto> listUserResourceDto(@NotNull Long userId, @NotBlank String resourceType);
+    List<ResourceInfo> listUserResource(@NotNull Long userId, @NotBlank String resourceType,String projectCode);
+    List<ResourceInfoDto> listUserResourceDto(@NotNull Long userId, @NotBlank String resourceType,String projectCode);
 
 }
