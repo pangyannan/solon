@@ -13,4 +13,6 @@ import org.springframework.context.annotation.Configuration;
 public class SecureConfig {
     private String privateKey;
     private String publicKey;
+
+    private String adminPassword;
 }

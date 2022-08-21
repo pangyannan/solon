@@ -6,6 +6,7 @@ import cloud.flystar.solon.commons.format.json.JsonUtil;
 import cloud.flystar.solon.user.api.UserApi;
 import cloud.flystar.solon.user.api.dto.UserDto;
 import cn.dev33.satoken.annotation.SaCheckPermission;
+import cn.dev33.satoken.annotation.SaCheckRole;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;

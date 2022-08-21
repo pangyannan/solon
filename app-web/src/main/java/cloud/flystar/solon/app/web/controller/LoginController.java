@@ -1,5 +1,6 @@
 package cloud.flystar.solon.app.web.controller;
 
+import cloud.flystar.solon.app.web.constant.GlobeConstant;
 import cloud.flystar.solon.commons.constant.YesOrNoEnum;
 import cloud.flystar.solon.commons.crypto.PasswordEncoder;
 import cloud.flystar.solon.commons.crypto.PasswordEncoderFactories;
@@ -44,16 +45,29 @@ public class LoginController {
     @Audit(label = "默认用户名秘密登陆" ,paramLog = false)
     @PostMapping("/doLogin")
     public Result<String> doLogin(@RequestBody @Valid UserLoginDto userLoginDto) {
-        UserAccountDto userAccountDto = userAccountApi.getBaseAccountByUserName(userLoginDto.getUserName());
-        if(userAccountDto == null){
-            return Result.failedBuild(ErrorCodeEnum.USER_ERROR_A0210);
-        }
+        String loginId;
+        UserAccountDto userAccountDto;
+        if(StrUtil.equals(GlobeConstant.ADMIN_USERNAME,userLoginDto.getUserName())){
+            userAccountDto = new UserAccountDto();
+            userAccountDto.setUserName(userLoginDto.getUserName())
+                    .setPassword(secureConfig.getAdminPassword())
+                    .setEnable(Boolean.TRUE)
+                    .setDeleteFlag(Boolean.FALSE);
+            loginId = GlobeConstant.ADMIN_USERNAME;
+        }else {
+            userAccountDto = userAccountApi.getBaseAccountByUserName(userLoginDto.getUserName());
 
-        if(Boolean.FALSE.equals(Optional.ofNullable(userAccountDto.getEnable()).orElse(Boolean.FALSE))){
-            return Result.failedBuild(ErrorCodeEnum.USER_ERROR_A0202);
-        }
-        if(Boolean.TRUE.equals(Optional.ofNullable(userAccountDto.getDeleteFlag()).orElse(Boolean.FALSE))){
-            return Result.failedBuild(ErrorCodeEnum.USER_ERROR_A0203);
+            if (userAccountDto == null) {
+                return Result.failedBuild(ErrorCodeEnum.USER_ERROR_A0210);
+            }
+
+            if (Boolean.FALSE.equals(Optional.ofNullable(userAccountDto.getEnable()).orElse(Boolean.FALSE))) {
+                return Result.failedBuild(ErrorCodeEnum.USER_ERROR_A0202);
+            }
+            if (Boolean.TRUE.equals(Optional.ofNullable(userAccountDto.getDeleteFlag()).orElse(Boolean.FALSE))) {
+                return Result.failedBuild(ErrorCodeEnum.USER_ERROR_A0203);
+            }
+            loginId = userAccountDto.getUserId().toString();
         }
 
         //密码解密
@@ -67,8 +81,10 @@ public class LoginController {
             return Result.failedBuild(ErrorCodeEnum.USER_ERROR_A0210);
         }
 
-        StpUtil.logout(userAccountDto.getUserId(),"WEB");
-        StpUtil.login(userAccountDto.getUserId(),"WEB");
+        StpUtil.logout(loginId,"WEB");
+        StpUtil.login(loginId,"WEB");
+
+
         String tokenValue = StpUtil.getTokenValue();
         return Result.successBuild(tokenValue);
     }
@@ -83,10 +99,12 @@ public class LoginController {
 
     public static void main(String[] args) throws Exception {
         PasswordEncoder delegatingPasswordEncoder = PasswordEncoderFactories.createDelegatingPasswordEncoder();
-        String password = "123";
+        String password = "123456";
         String encode = delegatingPasswordEncoder.encode(password);
+        log.info("密码加密："+encode);
+
         boolean matches = delegatingPasswordEncoder.matches(password,encode);
-        log.info("匹配结果"+matches);
+        log.info("匹配结果："+matches);
 
         System.out.println(SaSecureUtil.rsaGenerateKeyPair());
     }

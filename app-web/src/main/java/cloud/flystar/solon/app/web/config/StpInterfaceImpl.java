@@ -6,6 +6,7 @@ import cloud.flystar.solon.user.api.dto.ResourceInfoDto;
 import cloud.flystar.solon.user.api.dto.ResourceTypeEnum;
 import cloud.flystar.solon.user.api.dto.RoleDto;
 import cn.dev33.satoken.stp.StpInterface;
+import cn.hutool.core.util.StrUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -23,13 +24,20 @@ public class StpInterfaceImpl implements StpInterface {
         if(loginId == null){
             return new ArrayList<>();
         }
+        if(StrUtil.equals(GlobeConstant.ADMIN_USERNAME,loginId.toString())){
+            return GlobeConstant.ADMIN_SA_PERMISSION;
+        }
         List<ResourceInfoDto> resourceInfoDtoList = userApi.listUserResource((Long) loginId, ResourceTypeEnum.API.getKey(), GlobeConstant.PROJECT_CODE);
         return resourceInfoDtoList.stream().map(ResourceInfoDto::getResourceCode).distinct().collect(Collectors.toList());
     }
 
     @Override
     public List<String> getRoleList(Object loginId, String loginType) {
+        if(loginId == null){
+            return new ArrayList<>();
+        }
         List<RoleDto> roleDtoList = userApi.listUserEnableRole((Long) loginId);
-        return roleDtoList.stream().map(t->t.getRoleId().toString()).distinct().collect(Collectors.toList());
+        List<String> roleIds = roleDtoList.stream().map(t -> t.getRoleId().toString()).distinct().collect(Collectors.toList());
+        return roleIds;
     }
 }
