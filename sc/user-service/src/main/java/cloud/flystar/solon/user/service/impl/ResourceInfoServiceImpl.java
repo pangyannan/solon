@@ -51,7 +51,8 @@ public class ResourceInfoServiceImpl extends BaseServiceImpl<ResourceInfoMapper,
             return Lists.newArrayList();
         }
         Set<Long> resourceIds = permissionResourceRefs.stream().map(PermissionResourceRef::getResourceId).collect(Collectors.toSet());
-        return this.lambdaQuery().in(ResourceInfo::getResourceId,resourceIds)
+        return this.lambdaQuery()
+                .in(ResourceInfo::getResourceId,resourceIds)
                 .eq(ResourceInfo::getResourceType,resourceType)
                 .eq(StrUtil.isNotBlank(projectCode),ResourceInfo::getProjectCode,permissionIds)
                 .list();

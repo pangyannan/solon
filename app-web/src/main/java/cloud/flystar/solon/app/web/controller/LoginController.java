@@ -12,17 +12,17 @@ import cloud.flystar.solon.user.api.UserAccountApi;
 import cloud.flystar.solon.user.api.dto.UserAccountDto;
 import cloud.flystar.solon.user.api.dto.UserLoginDto;
 import cn.dev33.satoken.secure.SaSecureUtil;
+import cn.dev33.satoken.session.SaSession;
+import cn.dev33.satoken.session.SaSessionCustomUtil;
 import cn.dev33.satoken.stp.SaTokenInfo;
 import cn.dev33.satoken.stp.StpUtil;
 import cn.hutool.core.util.StrUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.validation.Valid;
-import java.util.HashMap;
 import java.util.Optional;
 
 /**
@@ -44,7 +44,7 @@ public class LoginController {
     //默认登陆
     @Audit(label = "默认用户名秘密登陆" ,paramLog = false)
     @PostMapping("/doLogin")
-    public Result<String> doLogin(@RequestBody @Valid UserLoginDto userLoginDto) {
+    public Result<SaTokenInfo> doLogin(@RequestBody @Valid UserLoginDto userLoginDto) {
         String loginId;
         UserAccountDto userAccountDto;
         if(StrUtil.equals(GlobeConstant.ADMIN_USERNAME,userLoginDto.getUserName())){
@@ -78,15 +78,19 @@ public class LoginController {
         }
         boolean passwordMatches = passwordEncoder.matches(realPassword, userAccountDto.getPassword());
         if(!passwordMatches){
+            SaSession session = SaSessionCustomUtil.getSessionById(userAccountDto.getUserName() + ":" + GlobeConstant.USER_PASSWORD_CHECK_FAILED_CACHE);
+            Integer count = session.get(GlobeConstant.USER_PASSWORD_CHECK_FAILED_CACHE, 0);
+            session.set(GlobeConstant.USER_PASSWORD_CHECK_FAILED_CACHE, count + 1);
+
             return Result.failedBuild(ErrorCodeEnum.USER_ERROR_A0210);
         }
 
-        StpUtil.logout(loginId,"WEB");
-        StpUtil.login(loginId,"WEB");
+        StpUtil.logout(loginId,GlobeConstant.PROJECT_CODE);
+        StpUtil.login(loginId,GlobeConstant.PROJECT_CODE);
 
 
-        String tokenValue = StpUtil.getTokenValue();
-        return Result.successBuild(tokenValue);
+        SaTokenInfo tokenInfo = StpUtil.getTokenInfo();
+        return Result.successBuild(tokenInfo);
     }
 
     //默认登陆
@@ -99,7 +103,7 @@ public class LoginController {
 
     public static void main(String[] args) throws Exception {
         PasswordEncoder delegatingPasswordEncoder = PasswordEncoderFactories.createDelegatingPasswordEncoder();
-        String password = "123456";
+        String password = "1234567";
         String encode = delegatingPasswordEncoder.encode(password);
         log.info("密码加密："+encode);
 
