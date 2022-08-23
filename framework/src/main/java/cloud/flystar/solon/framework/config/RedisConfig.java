@@ -1,10 +1,15 @@
 package cloud.flystar.solon.framework.config;
 
+import cloud.flystar.solon.commons.format.json.ObjectMapperFactory;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.Jackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 
@@ -18,13 +23,20 @@ public class RedisConfig {
      * @return
      */
     @Bean
-    public RedisTemplate<String, Object> redisTemplate(RedisConnectionFactory redisConnectionFactory, ObjectMapper objectMapper) {
+    public RedisTemplate<String, Object> redisTemplate(RedisConnectionFactory redisConnectionFactory) {
         RedisTemplate<String, Object> redisTemplate = new RedisTemplate<>();
         redisTemplate.setConnectionFactory(redisConnectionFactory);
 
-        Jackson2JsonRedisSerializer jackson2JsonRedisSerializer = new Jackson2JsonRedisSerializer(Object.class);
-        jackson2JsonRedisSerializer.setObjectMapper(objectMapper);
+        ObjectMapper objectMapper = ObjectMapperFactory.bulidDefaultObjectMapper();
+        GenericJackson2JsonRedisSerializer.registerNullValueSerializer(objectMapper,null);
+        objectMapper.enableDefaultTyping(ObjectMapper.DefaultTyping.NON_FINAL, JsonTypeInfo.As.PROPERTY);
 
+
+//        Jackson2JsonRedisSerializer jackson2JsonRedisSerializer = new Jackson2JsonRedisSerializer(Object.class);
+//        jackson2JsonRedisSerializer.setObjectMapper(objectMapper)
+//
+        //GenericJackson2JsonRedisSerializer序列化自带class解决
+         GenericJackson2JsonRedisSerializer jackson2JsonRedisSerializer = new GenericJackson2JsonRedisSerializer(objectMapper);
         // 设置值（value）的序列化采用Jackson2JsonRedisSerializer。
         redisTemplate.setValueSerializer(jackson2JsonRedisSerializer);
         // 设置键（key）的序列化采用StringRedisSerializer。

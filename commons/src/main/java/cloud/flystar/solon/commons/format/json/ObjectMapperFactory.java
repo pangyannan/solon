@@ -33,7 +33,11 @@ import java.util.Date;
  */
 public class ObjectMapperFactory {
 
-    public ObjectMapper defaultObjectMapper(){
+    /**
+     * 创建默认的 ObjectMapper
+     * @return
+     */
+    public static ObjectMapper bulidDefaultObjectMapper(){
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.setSerializationInclusion(JsonInclude.Include.ALWAYS); //默认，全部序列化
         objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES,false);//若POJO中不含有JSON中的属性，不会抛出异常。

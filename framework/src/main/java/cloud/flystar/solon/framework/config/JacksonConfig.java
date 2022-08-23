@@ -23,8 +23,7 @@ public class JacksonConfig {
     @Bean
     @Primary
     public ObjectMapper objectMapper(){
-        ObjectMapperFactory objectMapperFactory = new ObjectMapperFactory();
-        return objectMapperFactory.defaultObjectMapper();
+        return ObjectMapperFactory.bulidDefaultObjectMapper();
     }
 
 
