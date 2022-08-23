@@ -19,11 +19,13 @@ import cn.dev33.satoken.stp.StpUtil;
 import cn.hutool.core.util.StrUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.validation.Valid;
 import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 
 /**
  * 登陆
@@ -41,10 +43,23 @@ public class LoginController {
     @Autowired
     private SecureConfig secureConfig;
 
+    @Autowired
+    private RedisTemplate redisTemplate;
+
     //默认登陆
     @Audit(label = "默认用户名秘密登陆" ,paramLog = false)
     @PostMapping("/doLogin")
     public Result<SaTokenInfo> doLogin(@RequestBody @Valid UserLoginDto userLoginDto) {
+        String errorNumCacheKey = GlobeConstant.REDIS_USER_PASSWORD_MATCHES_FAILED_PREFIX + userLoginDto.getUserName();
+        if(redisTemplate.hasKey(errorNumCacheKey)) {
+            // 登录时候先判断是否有登录错误的计数
+            Integer errorNum = (Integer) redisTemplate.opsForValue().get(errorNumCacheKey);
+            if(errorNum >= 10){
+                 return Result.failedBuild(ErrorCodeEnum.USER_ERROR_A0211);
+            }
+        }
+
+
         String loginId;
         UserAccountDto userAccountDto;
         if(StrUtil.equals(GlobeConstant.ADMIN_USERNAME,userLoginDto.getUserName())){
@@ -78,10 +93,7 @@ public class LoginController {
         }
         boolean passwordMatches = passwordEncoder.matches(realPassword, userAccountDto.getPassword());
         if(!passwordMatches){
-            SaSession session = SaSessionCustomUtil.getSessionById(userAccountDto.getUserName() + ":" + GlobeConstant.USER_PASSWORD_CHECK_FAILED_CACHE);
-            Integer count = session.get(GlobeConstant.USER_PASSWORD_CHECK_FAILED_CACHE, 0);
-            session.set(GlobeConstant.USER_PASSWORD_CHECK_FAILED_CACHE, count + 1);
-
+            loginErrorRecord(userAccountDto);
             return Result.failedBuild(ErrorCodeEnum.USER_ERROR_A0210);
         }
 
@@ -112,4 +124,16 @@ public class LoginController {
 
         System.out.println(SaSecureUtil.rsaGenerateKeyPair());
     }
+
+
+    private void loginErrorRecord(UserAccountDto userAccountDto) {
+        String errorNumCacheKey = GlobeConstant.REDIS_USER_PASSWORD_MATCHES_FAILED_PREFIX + userAccountDto.getUserName();
+        if (redisTemplate.hasKey(errorNumCacheKey)) {
+            Integer errorNum = (Integer) redisTemplate.opsForValue().get(errorNumCacheKey);
+            redisTemplate.opsForValue().set(errorNumCacheKey, errorNum + 1, 60 * 10, TimeUnit.SECONDS);
+        } else {
+            redisTemplate.opsForValue().set(errorNumCacheKey, 1, 60 * 10, TimeUnit.SECONDS);
+        }
+    }
+
 }

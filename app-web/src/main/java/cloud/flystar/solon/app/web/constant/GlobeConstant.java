@@ -17,6 +17,6 @@ public class GlobeConstant {
    /**
     * 用户密码错误缓存
     */
-   public static final String USER_PASSWORD_CHECK_FAILED_CACHE = "passwordCheckFailed";
+   public static final String REDIS_USER_PASSWORD_MATCHES_FAILED_PREFIX = "user:password_matches_failed:";
 
 }
