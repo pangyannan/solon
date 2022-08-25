@@ -1,7 +1,6 @@
 package cloud.flystar.solon.app.web.controller;
 
 import cloud.flystar.solon.app.web.constant.GlobeConstant;
-import cloud.flystar.solon.commons.constant.YesOrNoEnum;
 import cloud.flystar.solon.commons.crypto.PasswordEncoder;
 import cloud.flystar.solon.commons.crypto.PasswordEncoderFactories;
 import cloud.flystar.solon.commons.dto.Result;
@@ -12,8 +11,6 @@ import cloud.flystar.solon.user.api.UserAccountApi;
 import cloud.flystar.solon.user.api.dto.UserAccountDto;
 import cloud.flystar.solon.user.api.dto.UserLoginDto;
 import cn.dev33.satoken.secure.SaSecureUtil;
-import cn.dev33.satoken.session.SaSession;
-import cn.dev33.satoken.session.SaSessionCustomUtil;
 import cn.dev33.satoken.stp.SaTokenInfo;
 import cn.dev33.satoken.stp.StpUtil;
 import cn.hutool.core.util.StrUtil;
@@ -50,15 +47,9 @@ public class LoginController {
     @Audit(label = "默认用户名秘密登陆" ,paramLog = false)
     @PostMapping("/doLogin")
     public Result<SaTokenInfo> doLogin(@RequestBody @Valid UserLoginDto userLoginDto) {
-        String errorNumCacheKey = GlobeConstant.REDIS_USER_PASSWORD_MATCHES_FAILED_PREFIX + userLoginDto.getUserName();
-        if(redisTemplate.hasKey(errorNumCacheKey)) {
-            // 登录时候先判断是否有登录错误的计数
-            Integer errorNum = (Integer) redisTemplate.opsForValue().get(errorNumCacheKey);
-            if(errorNum >= 10){
-                 return Result.failedBuild(ErrorCodeEnum.USER_ERROR_A0211);
-            }
+        if(StpUtil.isDisable(userLoginDto.getUserName())){
+            return Result.failedBuild(ErrorCodeEnum.USER_ERROR_A0211);
         }
-
 
         String loginId;
         UserAccountDto userAccountDto;
@@ -76,10 +67,10 @@ public class LoginController {
                 return Result.failedBuild(ErrorCodeEnum.USER_ERROR_A0210);
             }
 
-            if (Boolean.FALSE.equals(Optional.ofNullable(userAccountDto.getEnable()).orElse(Boolean.FALSE))) {
+            if (Boolean.FALSE == Optional.ofNullable(userAccountDto.getEnable()).orElse(Boolean.FALSE)) {
                 return Result.failedBuild(ErrorCodeEnum.USER_ERROR_A0202);
             }
-            if (Boolean.TRUE.equals(Optional.ofNullable(userAccountDto.getDeleteFlag()).orElse(Boolean.FALSE))) {
+            if (Boolean.TRUE == Optional.ofNullable(userAccountDto.getDeleteFlag()).orElse(Boolean.FALSE)) {
                 return Result.failedBuild(ErrorCodeEnum.USER_ERROR_A0203);
             }
             loginId = userAccountDto.getUserId().toString();
@@ -130,7 +121,11 @@ public class LoginController {
         String errorNumCacheKey = GlobeConstant.REDIS_USER_PASSWORD_MATCHES_FAILED_PREFIX + userAccountDto.getUserName();
         if (redisTemplate.hasKey(errorNumCacheKey)) {
             Integer errorNum = (Integer) redisTemplate.opsForValue().get(errorNumCacheKey);
-            redisTemplate.opsForValue().set(errorNumCacheKey, errorNum + 1, 60 * 10, TimeUnit.SECONDS);
+            if(errorNum < 10){
+                redisTemplate.opsForValue().set(errorNumCacheKey, errorNum + 1, 60 * 10, TimeUnit.SECONDS);
+            }else{
+                StpUtil.disable(userAccountDto.getUserName(),60 * 10);
+            }
         } else {
             redisTemplate.opsForValue().set(errorNumCacheKey, 1, 60 * 10, TimeUnit.SECONDS);
         }

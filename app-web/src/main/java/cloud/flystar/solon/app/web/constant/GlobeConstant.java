@@ -18,5 +18,4 @@ public class GlobeConstant {
     * 用户密码错误缓存
     */
    public static final String REDIS_USER_PASSWORD_MATCHES_FAILED_PREFIX = "user:password_matches_failed:";
-
 }

@@ -32,6 +32,8 @@
         <hutool.version>5.8.2</hutool.version>
         <transmittable-thread-local.version>2.12.1</transmittable-thread-local.version>
         <ip2region.version>1.7.2</ip2region.version>
+        <kaptcha.version>2.3.2</kaptcha.version>
+
 
     </properties>
 
@@ -76,13 +78,23 @@
                 <artifactId>sa-token-spring-boot-starter</artifactId>
                 <version>1.30.0</version>
             </dependency>
-
             <dependency>
                 <groupId>cn.dev33</groupId>
                 <artifactId>sa-token-dao-redis-jackson</artifactId>
                 <version>1.30.0</version>
             </dependency>
-
+            <!-- 验证码 -->
+            <dependency>
+                <groupId>com.github.penggle</groupId>
+                <artifactId>kaptcha</artifactId>
+                <version>${kaptcha.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <artifactId>javax.servlet-api</artifactId>
+                        <groupId>javax.servlet</groupId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
 
 
             <dependency>

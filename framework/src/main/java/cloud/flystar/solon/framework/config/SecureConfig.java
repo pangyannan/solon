@@ -15,4 +15,6 @@ public class SecureConfig {
     private String publicKey;
 
     private String adminPassword;
+
+    private String captchaAes;
 }

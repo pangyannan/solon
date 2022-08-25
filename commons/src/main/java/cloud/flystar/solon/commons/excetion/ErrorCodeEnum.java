@@ -62,6 +62,7 @@ public enum ErrorCodeEnum {
     USER_ERROR_A0241("A0241", "用户验证码尝试次数超限"),
     USER_ERROR_A0242("A0242", "用户密码已过期"),
     USER_ERROR_A0243("A0243", "用户账户已过期"),
+    USER_ERROR_A0244("A0244", "用户验证码已过期"),
 
     /**
      * 二级宏观错误码
