@@ -1,5 +1,7 @@
 package cloud.flystar.solon.commons.log.audit;
 
+import cloud.flystar.solon.commons.bean.dto.Result;
+import cloud.flystar.solon.commons.log.trace.TraceUtil;
 import cloud.flystar.solon.commons.util.IpUtil;
 import cloud.flystar.solon.commons.util.RequestUtil;
 import cn.hutool.core.util.ObjectUtil;
@@ -57,6 +59,7 @@ public class AuditLogAspect {
         }
 
         AuditLog auditLog = new AuditLog();
+        auditLog.setTraceId(TraceUtil.getTraceId());
         auditLog.setTime(LocalDateTime.now());
 
         String[] label = audit.label();
@@ -96,6 +99,20 @@ public class AuditLogAspect {
                 auditLog.setResult(result);
             }
             auditLog.setSuccess(Boolean.TRUE);
+
+
+
+            if(result !=null && result instanceof Result){
+                Result resultObject = (Result) result;
+                String traceId = resultObject.getTraceId();
+                if(StrUtil.isBlank(traceId)){
+                    traceId = TraceUtil.getTraceId();
+                    resultObject.setTraceId(traceId);
+                }
+
+                auditLog.setSuccess(resultObject.getSuccess());
+            }
+
         } catch (Throwable throwable) {
             auditLog.setSuccess(Boolean.FALSE);
             auditLog.setErrorMsg(throwable.getLocalizedMessage());

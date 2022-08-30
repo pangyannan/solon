@@ -67,7 +67,7 @@ public class LoginController {
     }
 
     //默认登陆
-    @Audit(label = "默认用户名秘密登陆" ,paramLog = false)
+    @Audit(label = "默认用户名秘密登陆" ,paramLog = true)
     @PostMapping("/doLogin")
     public Result<UserLoginSuccessToken> doLogin(@RequestBody @Valid UserLoginDto userLoginDto) {
         userLoginDto.setLoginDevice(GlobeConstant.PROJECT_CODE_WEB);

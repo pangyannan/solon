@@ -14,63 +14,69 @@ import java.time.LocalDateTime;
 public class AuditLog {
 
     /**
-     * 请求时间
+     * 追踪ID
      */
     @JsonProperty(index = 0)
+    private String traceId;
+
+    /**
+     * 请求时间
+     */
+    @JsonProperty(index = 1)
     private LocalDateTime time;
 
     /**
      * 标签
      * 新增、修改、删除、导出、导入、登陆、登出...
      */
-    @JsonProperty(index = 1)
+    @JsonProperty(index = 2)
     private String label;
 
     /**
      * 模块名称
      */
-    @JsonProperty(index = 2)
+    @JsonProperty(index = 3)
     private String module;
 
     /**
      * 方法名称
      */
-    @JsonProperty(index = 3)
+    @JsonProperty(index = 4)
     private String method;
     /**
      * 请求路径
      */
-    @JsonProperty(index = 4)
+    @JsonProperty(index = 5)
     private String path;
 
     /**
      * 请求参数
      */
-    @JsonProperty(index = 5)
+    @JsonProperty(index = 6)
     private Object param;
 
     /**
      * 返回值
      */
-    @JsonProperty(index = 6)
+    @JsonProperty(index = 7)
     private Object result;
 
     /**
      * 接口响应时间,单位毫秒
      */
-    @JsonProperty(index = 7)
+    @JsonProperty(index = 8)
     private Long costTime;
 
     /**
      * 是否成功
      */
-    @JsonProperty(index = 8)
+    @JsonProperty(index = 9)
     private Boolean success;
 
     /**
      * 错误信息
      */
-    @JsonProperty(index = 9)
+    @JsonProperty(index = 10)
     private String errorMsg;
 
     /**
