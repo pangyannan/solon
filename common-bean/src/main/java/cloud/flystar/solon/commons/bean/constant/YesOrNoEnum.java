@@ -1,4 +1,4 @@
-package cloud.flystar.solon.commons.constant;
+package cloud.flystar.solon.commons.bean.constant;
 
 import lombok.Getter;
 

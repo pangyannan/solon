@@ -19,6 +19,7 @@
         <module>framework</module>
         <module>app-web</module>
         <module>sc</module>
+        <module>common-bean</module>
     </modules>
 
     <properties>
@@ -39,6 +40,13 @@
 
     <dependencyManagement>
         <dependencies>
+
+            <dependency>
+                <groupId>cloud.flystar.solon</groupId>
+                <artifactId>common-bean</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
             <dependency>
                 <groupId>cloud.flystar.solon</groupId>
                 <artifactId>commons</artifactId>

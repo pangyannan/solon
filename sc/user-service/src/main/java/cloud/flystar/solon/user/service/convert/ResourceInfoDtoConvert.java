@@ -1,9 +1,7 @@
 package cloud.flystar.solon.user.service.convert;
 
-import cloud.flystar.solon.commons.dto.DTOConvert;
-import cloud.flystar.solon.user.api.dto.PermissionDto;
+import cloud.flystar.solon.commons.bean.dto.DTOConvert;
 import cloud.flystar.solon.user.api.dto.ResourceInfoDto;
-import cloud.flystar.solon.user.service.entity.Permission;
 import cloud.flystar.solon.user.service.entity.ResourceInfo;
 import org.springframework.stereotype.Service;
 
@@ -11,6 +9,9 @@ import org.springframework.stereotype.Service;
 public class ResourceInfoDtoConvert extends DTOConvert<ResourceInfo, ResourceInfoDto> {
     @Override
     public ResourceInfoDto doForward(ResourceInfo resourceInfo) {
+        if(resourceInfo == null){
+            return  null;
+        }
         ResourceInfoDto dto = new ResourceInfoDto();
         dto.setResourceId(resourceInfo.getResourceId());
         dto.setResourceType(resourceInfo.getResourceType());

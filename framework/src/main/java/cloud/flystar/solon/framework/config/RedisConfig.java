@@ -1,16 +1,13 @@
 package cloud.flystar.solon.framework.config;
 
 import cloud.flystar.solon.commons.format.json.ObjectMapperFactory;
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
-import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer;
-import org.springframework.data.redis.serializer.Jackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 
 /**
@@ -20,6 +17,8 @@ import org.springframework.data.redis.serializer.StringRedisSerializer;
 public class RedisConfig {
     /**
      * 配置自定义redisTemplate
+     * 在代码使用过程中，可以直接使用类似：
+     * UserDto admin = (UserDto) redisTemplate.opsForValue().get("admin");
      * @return
      */
     @Bean

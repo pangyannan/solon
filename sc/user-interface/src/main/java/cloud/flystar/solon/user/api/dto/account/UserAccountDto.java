@@ -1,4 +1,4 @@
-package cloud.flystar.solon.user.api.dto;
+package cloud.flystar.solon.user.api.dto.account;
 
 import lombok.Data;
 import lombok.experimental.Accessors;

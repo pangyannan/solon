@@ -1,6 +1,6 @@
 package cloud.flystar.solon.framework.config;
 
-import cloud.flystar.solon.commons.dto.Result;
+import cloud.flystar.solon.commons.bean.dto.Result;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.web.servlet.error.AbstractErrorController;
 import org.springframework.boot.web.servlet.error.ErrorAttributes;

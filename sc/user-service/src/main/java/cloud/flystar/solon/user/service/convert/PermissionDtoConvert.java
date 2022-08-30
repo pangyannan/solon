@@ -1,16 +1,17 @@
 package cloud.flystar.solon.user.service.convert;
 
-import cloud.flystar.solon.commons.dto.DTOConvert;
+import cloud.flystar.solon.commons.bean.dto.DTOConvert;
 import cloud.flystar.solon.user.api.dto.PermissionDto;
-import cloud.flystar.solon.user.api.dto.RoleDto;
 import cloud.flystar.solon.user.service.entity.Permission;
-import cloud.flystar.solon.user.service.entity.Role;
 import org.springframework.stereotype.Service;
 
 @Service
 public class PermissionDtoConvert extends DTOConvert<Permission, PermissionDto> {
     @Override
     public PermissionDto doForward(Permission permission) {
+        if(permission == null){
+            return  null;
+        }
         PermissionDto dto = new PermissionDto();
         dto.setPermissionId(permission.getPermissionId());
         dto.setPermissionCode(permission.getPermissionCode());

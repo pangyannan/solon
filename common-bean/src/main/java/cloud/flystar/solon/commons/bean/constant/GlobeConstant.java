@@ -1,13 +1,16 @@
-package cloud.flystar.solon.app.web.constant;
+package cloud.flystar.solon.commons.bean.constant;
 
 import java.util.Arrays;
 import java.util.List;
 
 /**
- * web端全局常量
+ * 全局常量
  */
 public class GlobeConstant {
-   public static final String PROJECT_CODE = "solon_web";
+   public static final String PROJECT_CODE_WEB = "web";
+
+
+
    public static final String RESOURCE_PREFIX = "api:web:";
 
 

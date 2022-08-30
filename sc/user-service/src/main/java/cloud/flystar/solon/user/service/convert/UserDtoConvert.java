@@ -1,6 +1,6 @@
 package cloud.flystar.solon.user.service.convert;
 
-import cloud.flystar.solon.commons.dto.DTOConvert;
+import cloud.flystar.solon.commons.bean.dto.DTOConvert;
 import cloud.flystar.solon.user.api.dto.UserDto;
 import cloud.flystar.solon.user.service.entity.UserInfo;
 import org.springframework.stereotype.Service;
@@ -9,6 +9,9 @@ import org.springframework.stereotype.Service;
 public class UserDtoConvert  extends DTOConvert<UserInfo, UserDto> {
     @Override
     public UserDto doForward(UserInfo userInfo) {
+        if(userInfo == null){
+            return null;
+        }
         UserDto dto = new UserDto();
         dto.setUserId(userInfo.getUserId())
             .setUserName(userInfo.getUserName())

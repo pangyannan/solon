@@ -1,4 +1,4 @@
-package cloud.flystar.solon.commons.excetion;
+package cloud.flystar.solon.commons.bean.excetion;
 
 /**
  * 错误码

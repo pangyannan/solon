@@ -1,6 +1,6 @@
 package cloud.flystar.solon.app.web.config;
 
-import cloud.flystar.solon.app.web.constant.GlobeConstant;
+import cloud.flystar.solon.commons.bean.constant.GlobeConstant;
 import cloud.flystar.solon.user.api.UserApi;
 import cloud.flystar.solon.user.api.dto.ResourceInfoDto;
 import cloud.flystar.solon.user.api.dto.ResourceTypeEnum;
@@ -27,7 +27,7 @@ public class StpInterfaceImpl implements StpInterface {
         if(StrUtil.equals(GlobeConstant.ADMIN_USERNAME,loginId.toString())){
             return GlobeConstant.ADMIN_SA_PERMISSION;
         }
-        List<ResourceInfoDto> resourceInfoDtoList = userApi.listUserResource((Long) loginId, ResourceTypeEnum.API.getKey(), GlobeConstant.PROJECT_CODE);
+        List<ResourceInfoDto> resourceInfoDtoList = userApi.listUserResource((Long) loginId, ResourceTypeEnum.API.getKey(), GlobeConstant.PROJECT_CODE_WEB);
         return resourceInfoDtoList.stream().map(ResourceInfoDto::getResourceCode).distinct().collect(Collectors.toList());
     }
 

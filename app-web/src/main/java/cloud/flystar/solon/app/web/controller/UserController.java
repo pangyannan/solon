@@ -1,12 +1,10 @@
 package cloud.flystar.solon.app.web.controller;
 
-import cloud.flystar.solon.app.web.constant.GlobeConstant;
-import cloud.flystar.solon.commons.dto.Result;
-import cloud.flystar.solon.commons.format.json.JsonUtil;
+import cloud.flystar.solon.commons.bean.constant.GlobeConstant;
+import cloud.flystar.solon.commons.bean.dto.Result;
 import cloud.flystar.solon.user.api.UserApi;
 import cloud.flystar.solon.user.api.dto.UserDto;
 import cn.dev33.satoken.annotation.SaCheckPermission;
-import cn.dev33.satoken.annotation.SaCheckRole;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -31,13 +29,8 @@ public class UserController {
     @SaCheckPermission(GlobeConstant.RESOURCE_PREFIX + RESOURCE_PREFIX + "get")
     @GetMapping("/get")
     public Result<UserDto> user(@RequestParam(name = "id") Long id){
-        userApi.getById(id);
-        UserDto userDto = new UserDto();
-        userDto.setUserId(id);
-        userDto.setUserName("admin");
-        String json = JsonUtil.json(userDto);
-        UserDto convert = JsonUtil.jsonToBean(json, UserDto.class);
-        return Result.successBuild(convert);
+        UserDto userDto = userApi.getById(id);
+        return Result.successBuild(userDto);
     }
 
 

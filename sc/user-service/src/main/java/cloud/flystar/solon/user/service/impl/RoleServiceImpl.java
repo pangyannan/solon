@@ -1,6 +1,6 @@
 package cloud.flystar.solon.user.service.impl;
 
-import cloud.flystar.solon.commons.constant.YesOrNoEnum;
+import cloud.flystar.solon.commons.bean.constant.YesOrNoEnum;
 import cloud.flystar.solon.framework.service.impl.BaseServiceImpl;
 import cloud.flystar.solon.user.api.dto.RoleDto;
 import cloud.flystar.solon.user.service.RoleService;

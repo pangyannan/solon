@@ -1,9 +1,9 @@
-package cloud.flystar.solon.commons.dto;
+package cloud.flystar.solon.commons.bean.dto;
 
-import cn.hutool.core.collection.CollectionUtil;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 public abstract class DTOConvert<A,B>  {
@@ -28,10 +28,10 @@ public abstract class DTOConvert<A,B>  {
      * @return
      */
     public List<B> doForward(List<A> aList){
-        if(CollectionUtil.isEmpty(aList)){
+        if(aList == null || aList.isEmpty()){
             return new ArrayList<>();
         }
-        return aList.stream().map(this::doForward).collect(Collectors.toList());
+        return aList.stream().filter(Objects::nonNull).map(this::doForward).filter(Objects::nonNull).collect(Collectors.toList());
     }
 
 
@@ -41,9 +41,9 @@ public abstract class DTOConvert<A,B>  {
      * @return
      */
     public  List<A> doBackward(List<B> bList){
-        if(CollectionUtil.isEmpty(bList)){
+        if(bList == null || bList.isEmpty()){
             return new ArrayList<>();
         }
-        return bList.stream().map(this::doBackward).collect(Collectors.toList());
+        return bList.stream().filter(Objects::nonNull).map(this::doBackward).filter(Objects::nonNull).collect(Collectors.toList());
     }
 }

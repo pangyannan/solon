@@ -1,16 +1,17 @@
 package cloud.flystar.solon.user.service.convert;
 
-import cloud.flystar.solon.commons.dto.DTOConvert;
+import cloud.flystar.solon.commons.bean.dto.DTOConvert;
 import cloud.flystar.solon.user.api.dto.RoleDto;
-import cloud.flystar.solon.user.api.dto.UserDto;
 import cloud.flystar.solon.user.service.entity.Role;
-import cloud.flystar.solon.user.service.entity.UserInfo;
 import org.springframework.stereotype.Service;
 
 @Service
 public class RoleDtoConvert extends DTOConvert<Role, RoleDto> {
     @Override
     public RoleDto doForward(Role role) {
+        if(role == null){
+            return  null;
+        }
         RoleDto dto = new RoleDto();
         dto.setRoleId(role.getRoleId());
         dto.setRoleName(role.getRoleName());
