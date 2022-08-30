@@ -15,18 +15,14 @@ import cloud.flystar.solon.user.service.entity.UserInfo;
 import cn.dev33.satoken.secure.SaSecureUtil;
 import cn.dev33.satoken.stp.SaTokenInfo;
 import cn.dev33.satoken.stp.StpUtil;
-import cn.hutool.core.codec.Base64;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.StrUtil;
-import cn.hutool.crypto.symmetric.SymmetricAlgorithm;
-import cn.hutool.crypto.symmetric.SymmetricCrypto;
 import cn.hutool.jwt.JWT;
 import cn.hutool.jwt.JWTValidator;
 import com.google.code.kaptcha.Producer;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
-import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import javax.validation.constraints.NotBlank;
 import java.awt.image.BufferedImage;
@@ -39,8 +35,6 @@ import java.util.concurrent.TimeUnit;
 
 @Service
 public class UserAccountApiImpl implements UserAccountApi {
-    private SymmetricCrypto symmetricCrypto;
-
     @Resource
     private UserInfoService userInfoService;
     @Resource
@@ -58,19 +52,6 @@ public class UserAccountApiImpl implements UserAccountApi {
     @Resource(name = "mathProducer")
     private Producer mathProducer;
 
-    /**
-     *  初始化AES算法
-     *  byte[] key = SecureUtil.generateKey(SymmetricAlgorithm.AES.getValue()).getEncoded();
-     *  String encode = Base64.encode(key);
-     *  secureConfig.getCaptchaAes() 中的密钥可以这么生成
-     */
-    @PostConstruct
-    public void init(){
-        String captchaAes = secureConfig.getCaptchaAes();
-        byte[] key = Base64.decode(captchaAes);
-        symmetricCrypto  = new SymmetricCrypto(SymmetricAlgorithm.AES, key);
-
-    }
 
     @Override
     public CaptchaImageResourceDto buildCaptchaImageResourceDto(String type) {
@@ -93,7 +74,6 @@ public class UserAccountApiImpl implements UserAccountApi {
         }
 
         //验证码结果加密
-//        String expectCodeEncrypt = symmetricCrypto.encryptBase64(expectCode);
         String expectCodeEncrypt = SaSecureUtil.rsaEncryptByPrivate(secureConfig.getPrivateKey(),expectCode);
 
         //验证码放入JWT中
@@ -104,7 +84,7 @@ public class UserAccountApiImpl implements UserAccountApi {
                 .addPayloads(map)
                 //默认验证码1分钟过期
                 .setExpiresAt(DateUtil.offsetMinute(DateUtil.date(),1))
-                .setKey(secureConfig.getCaptchaAes().getBytes(StandardCharsets.UTF_8))
+                .setKey(secureConfig.getJwtKey().getBytes(StandardCharsets.UTF_8))
                 .sign();
 
         CaptchaImageResourceDto dto = new CaptchaImageResourceDto();
@@ -229,7 +209,7 @@ public class UserAccountApiImpl implements UserAccountApi {
 
         //JWT验证与解析
         JWT jwt = new JWT();
-        jwt.setKey(secureConfig.getCaptchaAes().getBytes(StandardCharsets.UTF_8));
+        jwt.setKey(secureConfig.getJwtKey().getBytes(StandardCharsets.UTF_8));
         jwt.parse(userLoginDto.getCaptchaToken());
 
         try {
@@ -243,7 +223,6 @@ public class UserAccountApiImpl implements UserAccountApi {
         }
         //解密结果
         String codeEncrypt = (String)jwt.getPayload("expectCodeEncrypt");
-//        String decryptStr = symmetricCrypto.decryptStr(codeEncrypt);
         String decryptStr = SaSecureUtil.rsaDecryptByPublic(secureConfig.getPublicKey(),codeEncrypt);
 
 

@@ -2,6 +2,7 @@ package cloud.flystar.solon.framework.config;
 
 import cloud.flystar.solon.commons.bean.dto.Result;
 import cloud.flystar.solon.commons.log.trace.TraceUtil;
+import cn.hutool.core.util.StrUtil;
 import org.springframework.core.MethodParameter;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageConverter;
@@ -26,7 +27,7 @@ public class ResultAdvice implements ResponseBodyAdvice<Object> {
         if(body !=null && body instanceof Result){
             Result result = (Result) body;
             String traceId = result.getTraceId();
-            if(traceId == null){
+            if(StrUtil.isBlank(traceId)){
                 traceId = TraceUtil.getTraceId();
                 result.setTraceId(traceId);
             }

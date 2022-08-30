@@ -11,10 +11,22 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 @ConfigurationProperties(prefix = "secure")
 public class SecureConfig {
+    /**
+     * 安全加密私钥
+     */
     private String privateKey;
+    /**
+     * 安全加密公钥
+     */
     private String publicKey;
 
+    /**
+     * 超级管理员admin密码
+     */
     private String adminPassword;
 
-    private String captchaAes;
+    /**
+     * JWT密钥
+     */
+    private String jwtKey;
 }

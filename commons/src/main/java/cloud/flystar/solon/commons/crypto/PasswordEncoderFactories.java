@@ -32,4 +32,14 @@ public final class PasswordEncoderFactories {
         return new DelegatingPasswordEncoder(encodingId, encoders);
     }
 
+
+    public static void main(String[] args) {
+        PasswordEncoder passwordEncoder = createDelegatingPasswordEncoder();
+        String password = "123456";
+        String encode = passwordEncoder.encode(password);
+        System.out.println("加密:"+encode);
+
+        boolean matches = passwordEncoder.matches(password, encode);
+        System.out.println("匹配结果:"+matches);
+    }
 }
