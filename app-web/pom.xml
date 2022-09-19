@@ -22,6 +22,14 @@
             <artifactId>user-service</artifactId>
         </dependency>
 
+
+        <dependency>
+            <groupId>cloud.flystar.solon</groupId>
+            <artifactId>quartz-service</artifactId>
+        </dependency>
+
+
+
     </dependencies>
 
 

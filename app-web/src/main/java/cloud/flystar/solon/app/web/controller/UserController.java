@@ -2,11 +2,13 @@ package cloud.flystar.solon.app.web.controller;
 
 import cloud.flystar.solon.commons.bean.constant.GlobeConstant;
 import cloud.flystar.solon.commons.bean.dto.Result;
+import cloud.flystar.solon.commons.format.json.JsonUtil;
 import cloud.flystar.solon.user.api.UserApi;
 import cloud.flystar.solon.user.api.dto.UserDto;
 import cn.dev33.satoken.annotation.SaCheckPermission;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -26,6 +28,10 @@ public class UserController {
     @Autowired
     private RedisTemplate redisTemplate;
 
+
+    @Autowired
+    private StringRedisTemplate stringRedisTemplate;
+
     @SaCheckPermission(GlobeConstant.RESOURCE_PREFIX + RESOURCE_PREFIX + "get")
     @GetMapping("/get")
     public Result<UserDto> user(@RequestParam(name = "id") Long id){
@@ -39,10 +45,16 @@ public class UserController {
         UserDto userDto = new UserDto();
         userDto.setUserId(id);
         userDto.setUserName("admin");
-        redisTemplate.opsForValue().set("admin",userDto);
+        stringRedisTemplate.opsForValue().set("admin",JsonUtil.json(userDto));
 
 
-        UserDto admin = (UserDto) redisTemplate.opsForValue().get("admin");
+
+
+//        UserDto admin = (UserDto) redisTemplate.opsForValue().get("admin");
+
+        String adminJson = stringRedisTemplate.opsForValue().get("admin");
+        UserDto userDto1 = JsonUtil.jsonToBean(adminJson, UserDto.class);
+
 
         List<UserDto> list = Arrays.asList(userDto,userDto,userDto,userDto);
         redisTemplate.opsForValue().set("adminList",list);

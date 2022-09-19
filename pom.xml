@@ -20,6 +20,7 @@
         <module>app-web</module>
         <module>sc</module>
         <module>common-bean</module>
+        <module>quartz-service</module>
     </modules>
 
     <properties>
@@ -63,6 +64,12 @@
                 <artifactId>user-service</artifactId>
                 <version>${project.version}</version>
             </dependency>
+            <dependency>
+                <groupId>cloud.flystar.solon</groupId>
+                <artifactId>quartz-service</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
 
 
 

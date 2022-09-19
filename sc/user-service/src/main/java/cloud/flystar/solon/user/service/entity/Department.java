@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 @Data
 public class Department {
     /** 部门ID */
-    @TableId()
+    @TableId
     private Long deptId;
 
     /** 部门名称 */

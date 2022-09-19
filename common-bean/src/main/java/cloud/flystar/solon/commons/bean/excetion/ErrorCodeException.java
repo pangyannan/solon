@@ -6,11 +6,11 @@ import lombok.Getter;
  * 包含异常枚举的异常类
  */
 @Getter
-public class ErrorCodeException extends Exception{
+public class ErrorCodeException extends RuntimeException {
     private ErrorCodeEnum errorCodeEnum;
 
     private ErrorCodeException(ErrorCodeEnum errorCodeEnum) {
-        super();
+        super(errorCodeEnum.getMessage());
         this.errorCodeEnum = errorCodeEnum;
     }
 
