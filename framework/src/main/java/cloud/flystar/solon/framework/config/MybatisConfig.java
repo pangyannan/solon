@@ -1,8 +1,8 @@
 package cloud.flystar.solon.framework.config;
 
 import cloud.flystar.solon.framework.service.CurrentNodeService;
+import cloud.flystar.solon.framework.service.FrameworkContextService;
 import cloud.flystar.solon.framework.service.impl.SingleModelCurrentNodeServiceImpl;
-import com.baomidou.mybatisplus.autoconfigure.ConfigurationCustomizer;
 import com.baomidou.mybatisplus.core.handlers.MetaObjectHandler;
 import com.baomidou.mybatisplus.core.incrementer.DefaultIdentifierGenerator;
 import com.baomidou.mybatisplus.core.incrementer.IdentifierGenerator;
@@ -14,7 +14,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import java.time.LocalDateTime;
-import java.util.Date;
 
 @Configuration
 @MapperScan("cloud.flystar.solon.**.mapper")
@@ -51,17 +50,20 @@ public class MybatisConfig {
 
     //创建时间修改时间填充器
     @Bean
-    public MetaObjectHandler myMetaObjectHandler() {
+    public MetaObjectHandler myMetaObjectHandler(FrameworkContextService frameworkContextService) {
         return new MetaObjectHandler(){
             @Override
             public void insertFill(MetaObject metaObject) {
                 this.strictInsertFill(metaObject, "createTime", () -> LocalDateTime.now(), LocalDateTime.class);
                 this.strictInsertFill(metaObject, "updateTime", () -> LocalDateTime.now(), LocalDateTime.class);
+                this.strictInsertFill(metaObject, "createUserId", () -> frameworkContextService.currentUserId(), Long.class);
+                this.strictInsertFill(metaObject, "updateUserId", () -> frameworkContextService.currentUserId(), Long.class);
             }
 
             @Override
             public void updateFill(MetaObject metaObject) {
                 this.strictInsertFill(metaObject, "updateTime", () -> LocalDateTime.now(), LocalDateTime.class);
+                this.strictInsertFill(metaObject, "updateUserId", () -> frameworkContextService.currentUserId(), Long.class);
             }
         };
     }

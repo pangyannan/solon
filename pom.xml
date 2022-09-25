@@ -18,9 +18,8 @@
         <module>commons</module>
         <module>framework</module>
         <module>app-web</module>
-        <module>sc</module>
         <module>common-bean</module>
-        <module>quartz-service</module>
+        <module>sc</module>
     </modules>
 
     <properties>
