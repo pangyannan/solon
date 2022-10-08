@@ -26,6 +26,11 @@ public class SecureConfig {
     private String adminPassword;
 
     /**
+     * 图形验证码过期时间，单位秒
+     */
+    private Integer captchaExpiresTime;
+
+    /**
      * JWT密钥
      */
     private String jwtKey;

@@ -73,7 +73,7 @@ public abstract class AbstractQuartzJob implements Job {
             jobLog.setMessage("success");
         }else{
             jobLog.setJobSuccess(0);
-            jobLog.setMessage(StrUtil.subPre(ex.getMessage(),200));
+            jobLog.setMessage(StrUtil.subPre(ex.getMessage(),1024));
         }
 
         //保存任务日志

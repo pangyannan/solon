@@ -56,14 +56,14 @@ public class MybatisConfig {
             public void insertFill(MetaObject metaObject) {
                 this.strictInsertFill(metaObject, "createTime", () -> LocalDateTime.now(), LocalDateTime.class);
                 this.strictInsertFill(metaObject, "updateTime", () -> LocalDateTime.now(), LocalDateTime.class);
-                this.strictInsertFill(metaObject, "createUserId", () -> frameworkContextService.currentUserId(), Long.class);
-                this.strictInsertFill(metaObject, "updateUserId", () -> frameworkContextService.currentUserId(), Long.class);
+                this.strictInsertFill(metaObject, "createUserId", () -> frameworkContextService.getLoginIdDefaultNull(), Long.class);
+                this.strictInsertFill(metaObject, "updateUserId", () -> frameworkContextService.getLoginIdDefaultNull(), Long.class);
             }
 
             @Override
             public void updateFill(MetaObject metaObject) {
                 this.strictInsertFill(metaObject, "updateTime", () -> LocalDateTime.now(), LocalDateTime.class);
-                this.strictInsertFill(metaObject, "updateUserId", () -> frameworkContextService.currentUserId(), Long.class);
+                this.strictInsertFill(metaObject, "updateUserId", () -> frameworkContextService.getLoginIdDefaultNull(), Long.class);
             }
         };
     }

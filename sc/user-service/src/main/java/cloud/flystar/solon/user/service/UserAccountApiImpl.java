@@ -2,8 +2,10 @@ package cloud.flystar.solon.user.service;
 
 import cloud.flystar.solon.commons.bean.constant.GlobeConstant;
 import cloud.flystar.solon.commons.bean.dto.Result;
+import cloud.flystar.solon.commons.bean.dto.user.UserSessionInfo;
 import cloud.flystar.solon.commons.bean.excetion.ErrorCodeEnum;
 import cloud.flystar.solon.commons.crypto.PasswordEncoder;
+import cloud.flystar.solon.commons.format.json.JsonUtil;
 import cloud.flystar.solon.framework.config.SecureConfig;
 import cloud.flystar.solon.user.api.UserAccountApi;
 import cloud.flystar.solon.user.api.dto.account.CaptchaImageResourceDto;
@@ -13,6 +15,7 @@ import cloud.flystar.solon.user.api.dto.account.UserLoginSuccessToken;
 import cloud.flystar.solon.user.service.convert.UserAccountDtoConvert;
 import cloud.flystar.solon.user.service.entity.UserInfo;
 import cn.dev33.satoken.secure.SaSecureUtil;
+import cn.dev33.satoken.session.SaSession;
 import cn.dev33.satoken.stp.SaTokenInfo;
 import cn.dev33.satoken.stp.StpUtil;
 import cn.hutool.core.date.DateUtil;
@@ -83,7 +86,7 @@ public class UserAccountApiImpl implements UserAccountApi {
                 .addHeaders(null)
                 .addPayloads(map)
                 //默认验证码1分钟过期
-                .setExpiresAt(DateUtil.offsetMinute(DateUtil.date(),1))
+                .setExpiresAt(DateUtil.offsetSecond(DateUtil.date(),Optional.ofNullable(secureConfig.getCaptchaExpiresTime()).orElse(GlobeConstant.captchaExpiresTimeDefault)))
                 .setKey(secureConfig.getJwtKey().getBytes(StandardCharsets.UTF_8))
                 .sign();
 
@@ -117,20 +120,17 @@ public class UserAccountApiImpl implements UserAccountApi {
         }
 
         //3.1查询用户
-        String loginId;
         UserAccountDto userAccountDto;
         if(StrUtil.equals(GlobeConstant.ADMIN_USERNAME,userLoginDto.getUserName())){
             userAccountDto = new UserAccountDto();
             userAccountDto
-                    .setUserId(0L)
-                    .setUserName(userLoginDto.getUserName())
+                    .setUserId(GlobeConstant.ADMIN_USERID)
+                    .setUserName(GlobeConstant.ADMIN_USERNAME)
                     .setPassword(secureConfig.getAdminPassword())
                     .setEnable(Boolean.TRUE)
                     .setDeleteFlag(Boolean.FALSE);
-            loginId = GlobeConstant.ADMIN_USERNAME;
         }else {
             userAccountDto = this.getBaseAccountByUserName(userLoginDto.getUserName());
-
             if (userAccountDto == null) {
                 return Result.failedBuild(ErrorCodeEnum.USER_ERROR_A0210);
             }
@@ -141,8 +141,10 @@ public class UserAccountApiImpl implements UserAccountApi {
             if (Boolean.TRUE == Optional.ofNullable(userAccountDto.getDeleteFlag()).orElse(Boolean.FALSE)) {
                 return Result.failedBuild(ErrorCodeEnum.USER_ERROR_A0203);
             }
-            loginId = userAccountDto.getUserId().toString();
         }
+
+        Long loginId = userAccountDto.getUserId();
+
 
         //3.2密码解密+验证
         String privateKey = secureConfig.getPrivateKey();
@@ -158,9 +160,16 @@ public class UserAccountApiImpl implements UserAccountApi {
 
         //登陆成功处理
         StpUtil.login(loginId,userLoginDto.getLoginDevice());
-
         SaTokenInfo tokenInfo = StpUtil.getTokenInfo();
-        UserLoginSuccessToken userLoginSuccessToken = this.convert(userAccountDto, tokenInfo);
+
+
+        //session数据填充
+        SaSession tokenSession = StpUtil.getTokenSession();
+        UserSessionInfo userSessionInfo = this.userSessionInfoBuild(userAccountDto, tokenInfo);
+        tokenSession.set(GlobeConstant.SESSION_USER_KEY, JsonUtil.json(userSessionInfo));
+
+        //登陆成功响应处理
+        UserLoginSuccessToken userLoginSuccessToken = this.loginTokenBuild(userAccountDto, tokenInfo);
         return Result.successBuild(userLoginSuccessToken);
     }
 
@@ -184,7 +193,7 @@ public class UserAccountApiImpl implements UserAccountApi {
         }
     }
 
-    private UserLoginSuccessToken convert(UserAccountDto userAccountDto, SaTokenInfo saTokenInfo){
+    private UserLoginSuccessToken loginTokenBuild(UserAccountDto userAccountDto, SaTokenInfo saTokenInfo){
         UserLoginSuccessToken userLoginSuccessToken = new UserLoginSuccessToken();
         userLoginSuccessToken.setUserId(userAccountDto.getUserId())
                 .setUserName(userAccountDto.getUserName())
@@ -193,6 +202,13 @@ public class UserAccountApiImpl implements UserAccountApi {
                 .setTokenTimeout(saTokenInfo.getTokenTimeout())
                 .setLoginDevice(saTokenInfo.getLoginDevice());
         return userLoginSuccessToken;
+    }
+
+    private UserSessionInfo userSessionInfoBuild(UserAccountDto userAccountDto, SaTokenInfo saTokenInfo){
+        UserSessionInfo userSessionInfo = new UserSessionInfo();
+        userSessionInfo.setUserId(userSessionInfo.getUserId())
+                .setUserName(userAccountDto.getUserName());
+        return userSessionInfo;
     }
 
 
