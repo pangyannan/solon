@@ -11,6 +11,7 @@ import cloud.flystar.solon.user.service.entity.ResourceInfo;
 import cloud.flystar.solon.user.service.mapper.PermissionResourceRefMapper;
 import cloud.flystar.solon.user.service.mapper.ResourceInfoMapper;
 import cn.hutool.core.collection.CollectionUtil;
+import cn.hutool.core.collection.ListUtil;
 import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.extension.toolkit.ChainWrappers;
 import com.google.common.collect.Lists;
@@ -40,7 +41,7 @@ public class ResourceInfoServiceImpl extends BaseServiceImpl<ResourceInfoMapper,
     public List<ResourceInfo> listUserResource(@NotNull Long userId, @NotBlank String resourceType, String projectCode) {
         List<Permission> permissions = permissionService.listUserPermission(userId);
         if(CollectionUtil.isEmpty(permissions)){
-            return Lists.newArrayList();
+            return ListUtil.empty();
         }
         Set<Long> permissionIds = permissions.stream().map(Permission::getPermissionId).collect(Collectors.toSet());
         List<PermissionResourceRef> permissionResourceRefs = ChainWrappers.lambdaQueryChain(permissionResourceRefMapper)
@@ -48,7 +49,7 @@ public class ResourceInfoServiceImpl extends BaseServiceImpl<ResourceInfoMapper,
                 .in(PermissionResourceRef::getPermissionId, permissionIds)
                 .list();
         if(CollectionUtil.isEmpty(permissionResourceRefs)){
-            return Lists.newArrayList();
+            return ListUtil.empty();
         }
         Set<Long> resourceIds = permissionResourceRefs.stream().map(PermissionResourceRef::getResourceId).collect(Collectors.toSet());
         return this.lambdaQuery()

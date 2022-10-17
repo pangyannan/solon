@@ -1,20 +1,19 @@
-package cloud.flystar.solon.dictionary.service.entity;
+package cloud.flystar.solon.dictionary.api.dto;
 
 import cloud.flystar.solon.commons.bean.constant.YesOrNoEnum;
-import com.baomidou.mybatisplus.annotation.*;
 import lombok.Data;
+import lombok.experimental.Accessors;
 
 import java.time.LocalDateTime;
 
 /**
- * 系统参数配置表
+ * 系统配置
  */
 @Data
-@TableName("sys_config")
-public class SysConfig {
+@Accessors(chain = true)
+public class SysConfigDto {
 
     /** 参数主键 */
-    @TableId(type = IdType.ASSIGN_ID)
     private Long sysConfigId;
 
     /** 参数键名 */
@@ -33,23 +32,16 @@ public class SysConfig {
      */
     private Integer configType;
 
-
     /**
      * 启用状态
      * @see YesOrNoEnum
      */
     private Integer enableFlag;
 
-
-    @TableLogic
-    private Integer deleteFlag;
-    @TableField(fill = FieldFill.INSERT)
     private LocalDateTime createTime;
-    @TableField(fill = FieldFill.INSERT)
     private Long createUserId;
-    @TableField(fill = FieldFill.INSERT_UPDATE)
     private LocalDateTime updateTime;
-    @TableField(fill = FieldFill.INSERT_UPDATE)
     private Long updateUserId;
+
 
 }

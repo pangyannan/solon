@@ -58,6 +58,8 @@
                 <artifactId>framework</artifactId>
                 <version>${project.version}</version>
             </dependency>
+
+
             <dependency>
                 <groupId>cloud.flystar.solon</groupId>
                 <artifactId>user-service</artifactId>
@@ -65,11 +67,26 @@
             </dependency>
             <dependency>
                 <groupId>cloud.flystar.solon</groupId>
+                <artifactId>user-api</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>cloud.flystar.solon</groupId>
                 <artifactId>quartz-service</artifactId>
                 <version>${project.version}</version>
             </dependency>
 
-
+            <dependency>
+                <groupId>cloud.flystar.solon</groupId>
+                <artifactId>dictionary-service</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>cloud.flystar.solon</groupId>
+                <artifactId>dictionary-api</artifactId>
+                <version>${project.version}</version>
+            </dependency>
 
 
             <dependency>

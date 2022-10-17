@@ -1,21 +1,20 @@
-package cloud.flystar.solon.dictionary.service.entity;
+package cloud.flystar.solon.dictionary.api.dto;
+
 
 import cloud.flystar.solon.commons.bean.constant.YesOrNoEnum;
-import com.baomidou.mybatisplus.annotation.FieldFill;
-import com.baomidou.mybatisplus.annotation.TableField;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
+import lombok.experimental.Accessors;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 /**
  * 数据字典主表
  */
 @Data
-@TableName("sys_dict")
-public class SysDict {
-    @TableId
+@Accessors(chain = true)
+public class SysDictDto {
+
     private Long dictId;
 
     /**
@@ -44,15 +43,14 @@ public class SysDict {
      */
     private String remark;
 
-
-
-    @TableField(fill = FieldFill.INSERT)
     private LocalDateTime createTime;
-    @TableField(fill = FieldFill.INSERT)
     private Long createUserId;
-    @TableField(fill = FieldFill.INSERT_UPDATE)
     private LocalDateTime updateTime;
-    @TableField(fill = FieldFill.INSERT_UPDATE)
     private Long updateUserId;
 
+
+    /**
+     * 字典值集合
+     */
+    private List<SysDictDetailDto> detailList;
 }

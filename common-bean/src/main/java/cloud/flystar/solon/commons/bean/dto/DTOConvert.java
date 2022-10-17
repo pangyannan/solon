@@ -1,9 +1,7 @@
 package cloud.flystar.solon.commons.bean.dto;
 
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public abstract class DTOConvert<A,B>  {
@@ -29,7 +27,7 @@ public abstract class DTOConvert<A,B>  {
      */
     public List<B> doForward(List<A> aList){
         if(aList == null || aList.isEmpty()){
-            return new ArrayList<>();
+            return new ArrayList<>(0);
         }
         return aList.stream().filter(Objects::nonNull).map(this::doForward).filter(Objects::nonNull).collect(Collectors.toList());
     }

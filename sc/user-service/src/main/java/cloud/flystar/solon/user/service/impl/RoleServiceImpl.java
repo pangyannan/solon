@@ -10,6 +10,7 @@ import cloud.flystar.solon.user.service.entity.UserRoleRef;
 import cloud.flystar.solon.user.service.mapper.RoleMapper;
 import cloud.flystar.solon.user.service.mapper.UserRoleRefMapper;
 import cn.hutool.core.collection.CollectionUtil;
+import cn.hutool.core.collection.ListUtil;
 import com.baomidou.mybatisplus.extension.toolkit.ChainWrappers;
 import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
@@ -35,7 +36,7 @@ public class RoleServiceImpl extends BaseServiceImpl<RoleMapper, Role> implement
     public List<Role> listUserEnableRole(@NotNull Long userId) {
         List<UserRoleRef> userRoleRefs = ChainWrappers.lambdaQueryChain(userRoleRefMapper).eq(UserRoleRef::getUserId, userId).list();
         if(CollectionUtil.isEmpty(userRoleRefs)){
-            return Lists.newArrayList();
+            return ListUtil.empty();
         }
         Set<Long> roleIds = userRoleRefs.stream().map(UserRoleRef::getRoleId).collect(Collectors.toSet());
         return this.lambdaQuery()

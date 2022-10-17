@@ -16,6 +16,10 @@
            <groupId>cloud.flystar.solon</groupId>
            <artifactId>framework</artifactId>
        </dependency>
+       <dependency>
+           <groupId>cloud.flystar.solon</groupId>
+           <artifactId>dictionary-api</artifactId>
+       </dependency>
    </dependencies>
 
 </project>

@@ -8,11 +8,10 @@ import cloud.flystar.solon.user.service.convert.PermissionDtoConvert;
 import cloud.flystar.solon.user.service.entity.Permission;
 import cloud.flystar.solon.user.service.entity.Role;
 import cloud.flystar.solon.user.service.entity.RolePermissionRef;
-import cloud.flystar.solon.user.service.entity.UserRoleRef;
 import cloud.flystar.solon.user.service.mapper.PermissionMapper;
 import cloud.flystar.solon.user.service.mapper.RolePermissionRefMapper;
-import cloud.flystar.solon.user.service.mapper.UserRoleRefMapper;
 import cn.hutool.core.collection.CollectionUtil;
+import cn.hutool.core.collection.ListUtil;
 import com.baomidou.mybatisplus.extension.toolkit.ChainWrappers;
 import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
@@ -41,13 +40,13 @@ public class PermissionServiceImpl extends BaseServiceImpl<PermissionMapper, Per
     public List<Permission> listUserPermission(@NotNull Long userId) {
         List<Role> roleList = roleService.listUserEnableRole(userId);
         if(CollectionUtil.isEmpty(roleList)){
-            return Lists.newArrayList();
+            return ListUtil.empty();
         }
         Set<Long> roleIds = roleList.stream().map(Role::getRoleId).collect(Collectors.toSet());
 
         List<RolePermissionRef> rolePermissionRefs = ChainWrappers.lambdaQueryChain(rolePermissionRefMapper).in(RolePermissionRef::getRoleId, roleIds).list();
         if(CollectionUtil.isEmpty(rolePermissionRefs)){
-            return Lists.newArrayList();
+            return ListUtil.empty();
         }
 
         Set<Long> permissionIds = rolePermissionRefs.stream().map(RolePermissionRef::getPermissionId).collect(Collectors.toSet());
