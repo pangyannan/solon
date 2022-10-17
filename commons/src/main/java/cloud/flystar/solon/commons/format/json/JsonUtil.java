@@ -1,13 +1,9 @@
 package cloud.flystar.solon.commons.format.json;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.SneakyThrows;
-import org.apache.logging.log4j.util.Strings;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 import java.nio.charset.StandardCharsets;
@@ -22,16 +18,9 @@ import java.util.Map;
  * @日期: 2021-10-27
  * @描述:
  */
-@Component
 public class JsonUtil {
 
-    private static  ObjectMapper mapper;
-
-    @Autowired
-    public JsonUtil(ObjectMapper objectMapper) {
-        mapper = objectMapper;
-    }
-
+    private static  ObjectMapper mapper = ObjectMapperFactory.buildDefaultObjectMapper();
 
     /**
      * 复制ObjectMapper，用于自定义场景，不影响全局配置

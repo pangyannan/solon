@@ -14,9 +14,10 @@
 
     <modules>
         <module>user-service</module>
-        <module>user-interface</module>
+        <module>user-api</module>
         <module>quartz-service</module>
         <module>dictionary-service</module>
+        <module>dictionary-api</module>
     </modules>
 
 </project>
