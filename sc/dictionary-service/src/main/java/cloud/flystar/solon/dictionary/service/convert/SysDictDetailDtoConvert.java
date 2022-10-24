@@ -29,7 +29,7 @@ public class SysDictDetailDtoConvert extends DTOConvert<SysDictDetail, SysDictDe
         return dto;    }
 
     @Override
-    public SysDictDetail doBackward(SysDictDetailDto sysDictDetailDto) {
-        throw new AssertionError("不支持逆向转化方法!");
+    public SysDictDetail doBackward(SysDictDetailDto dto) {
+        return super.defaultDoBackward(dto);
     }
 }

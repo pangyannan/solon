@@ -1,6 +1,6 @@
 package cloud.flystar.solon.user.service.impl;
 
-import cloud.flystar.solon.commons.bean.constant.YesOrNoEnum;
+import cloud.flystar.solon.commons.bean.constant.YesOrNo;
 import cloud.flystar.solon.framework.service.impl.BaseServiceImpl;
 import cloud.flystar.solon.user.api.dto.RoleDto;
 import cloud.flystar.solon.user.service.RoleService;
@@ -12,7 +12,6 @@ import cloud.flystar.solon.user.service.mapper.UserRoleRefMapper;
 import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.collection.ListUtil;
 import com.baomidou.mybatisplus.extension.toolkit.ChainWrappers;
-import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
@@ -41,8 +40,8 @@ public class RoleServiceImpl extends BaseServiceImpl<RoleMapper, Role> implement
         Set<Long> roleIds = userRoleRefs.stream().map(UserRoleRef::getRoleId).collect(Collectors.toSet());
         return this.lambdaQuery()
                 .in(Role::getRoleId, roleIds)
-                .eq(Role::getRoleStatus,YesOrNoEnum.YES.getKey())
-                .eq(Role::getDeleteFlag, YesOrNoEnum.NO.getKey())
+                .eq(Role::getRoleStatus, YesOrNo.YES.getKey())
+                .eq(Role::getDeleteFlag, YesOrNo.NO.getKey())
                 .list();
     }
 

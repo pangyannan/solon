@@ -1,12 +1,14 @@
 package cloud.flystar.solon.dictionary.service;
 
-import cloud.flystar.solon.commons.bean.constant.YesOrNoEnum;
+import cloud.flystar.solon.commons.bean.constant.YesOrNo;
 import cloud.flystar.solon.dictionary.api.SysDictApi;
 import cloud.flystar.solon.dictionary.api.dto.SysDictDetailDto;
 import cloud.flystar.solon.dictionary.api.dto.SysDictDto;
 import cloud.flystar.solon.dictionary.service.convert.SysDictDtoConvert;
 import cloud.flystar.solon.dictionary.service.entity.SysDict;
 import cloud.flystar.solon.dictionary.service.entity.SysDictDetail;
+import cloud.flystar.solon.dictionary.service.inner.SysDictDetailService;
+import cloud.flystar.solon.dictionary.service.inner.SysDictService;
 import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.collection.ListUtil;
 import cn.hutool.core.lang.Assert;
@@ -86,11 +88,11 @@ public class SysDictApiImpl implements SysDictApi {
             return null;
         }
 
-        if(YesOrNoEnum.isYes(sysDictDto.getEnableFlag())){
+        if(YesOrNo.isYes(sysDictDto.getEnableFlag())){
             List<SysDictDetailDto> enableDetailList = Optional.ofNullable(sysDictDto.getDetailList())
                     .orElse(ListUtil.empty())
                     .stream()
-                    .filter(t -> YesOrNoEnum.isYes(t.getEnableFlag()))
+                    .filter(t -> YesOrNo.isYes(t.getEnableFlag()))
                     .collect(Collectors.toList());
             sysDictDto.setDetailList(enableDetailList);
 
@@ -105,15 +107,24 @@ public class SysDictApiImpl implements SysDictApi {
     public List<SysDictDto> listByDictTypesAndEnable(List<String> dictTypes) {
         List<SysDictDto> sysDictDtoList = this.listByDictTypes(dictTypes);
 
-        List<SysDictDto> enableList = sysDictDtoList.stream().filter(t -> YesOrNoEnum.isYes(t.getEnableFlag())).collect(Collectors.toList());
+        List<SysDictDto> enableList = sysDictDtoList.stream().filter(t -> YesOrNo.isYes(t.getEnableFlag())).collect(Collectors.toList());
         for (SysDictDto sysDictDto : enableList) {
             List<SysDictDetailDto> enableDetailList = Optional.ofNullable(sysDictDto.getDetailList())
                     .orElse(ListUtil.empty())
                     .stream()
-                    .filter(t -> YesOrNoEnum.isYes(t.getEnableFlag()))
+                    .filter(t -> YesOrNo.isYes(t.getEnableFlag()))
                     .collect(Collectors.toList());
             sysDictDto.setDetailList(enableDetailList);
         }
         return enableList;
+    }
+
+    @Override
+    public List<SysDictDetailDto> listDetail(String dictType) {
+        SysDictDto sysDictDto = this.getByDictType(dictType);
+        if(sysDictDto == null){
+            return ListUtil.empty();
+        }
+        return sysDictDto.getDetailList();
     }
 }

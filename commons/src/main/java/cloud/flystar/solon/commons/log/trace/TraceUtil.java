@@ -13,7 +13,7 @@ public class TraceUtil {
         String traceId = TraceContext.getTraceId();
         Integer spanId = TraceContext.getSpanId();
 
-        if(StrUtil.isEmpty(traceId)){
+        if(StrUtil.isBlank(traceId)){
             traceId = IdUtil.simpleUUID();
         }
         if(spanId == null){

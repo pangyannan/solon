@@ -19,6 +19,9 @@ public abstract class DTOConvert<A,B>  {
      */
     public abstract A doBackward(B b);
 
+    public  A defaultDoBackward(B b){
+        throw new AssertionError("不支持逆向转化方法!");
+    }
 
     /**
      * 批量正向转换
@@ -27,7 +30,7 @@ public abstract class DTOConvert<A,B>  {
      */
     public List<B> doForward(List<A> aList){
         if(aList == null || aList.isEmpty()){
-            return new ArrayList<>(0);
+            return Collections.emptyList();
         }
         return aList.stream().filter(Objects::nonNull).map(this::doForward).filter(Objects::nonNull).collect(Collectors.toList());
     }
@@ -40,7 +43,7 @@ public abstract class DTOConvert<A,B>  {
      */
     public  List<A> doBackward(List<B> bList){
         if(bList == null || bList.isEmpty()){
-            return new ArrayList<>();
+            return Collections.emptyList();
         }
         return bList.stream().filter(Objects::nonNull).map(this::doBackward).filter(Objects::nonNull).collect(Collectors.toList());
     }

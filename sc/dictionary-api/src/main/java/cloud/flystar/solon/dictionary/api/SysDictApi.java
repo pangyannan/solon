@@ -1,5 +1,6 @@
 package cloud.flystar.solon.dictionary.api;
 
+import cloud.flystar.solon.dictionary.api.dto.SysDictDetailDto;
 import cloud.flystar.solon.dictionary.api.dto.SysDictDto;
 
 import java.util.List;
@@ -43,4 +44,12 @@ public interface SysDictApi {
      * @return 字典数据集合
      */
     List<SysDictDto> listByDictTypesAndEnable(List<String> dictTypes);
+
+
+    /**
+     * 根据字典类型编码查询字典明细数据
+     * @param dictType 字典类型编码
+     * @return 字典明细数据集合
+     */
+    List<SysDictDetailDto> listDetail(String dictType);
 }

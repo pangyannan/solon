@@ -28,7 +28,26 @@
             <artifactId>quartz-service</artifactId>
         </dependency>
 
+        <dependency>
+            <groupId>cloud.flystar.solon</groupId>
+            <artifactId>dictionary-service</artifactId>
+        </dependency>
 
+
+
+
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.junit.vintage</groupId>
+                    <artifactId>junit-vintage-engine</artifactId>
+                </exclusion>
+            </exclusions>
+            <scope>test</scope>
+        </dependency>
 
     </dependencies>
 

@@ -3,14 +3,14 @@ package cloud.flystar.solon.commons.bean.constant;
 import lombok.Getter;
 
 @Getter
-public enum YesOrNoEnum {
+public enum YesOrNo {
     NO(0,"否"),
     YES(1,"是")
     ;
     private Integer key;
     private String value;
 
-    YesOrNoEnum(Integer key, String value) {
+    YesOrNo(Integer key, String value) {
         this.key = key;
         this.value = value;
     }
@@ -22,11 +22,11 @@ public enum YesOrNoEnum {
      * null 不是
      */
     public  static boolean isYes(Integer key){
-       return YesOrNoEnum.YES.getKey().equals(key);
+       return YesOrNo.YES.getKey().equals(key);
     }
 
 
     public  static boolean isNo(Integer key){
-        return !YesOrNoEnum.isYes(key);
+        return !YesOrNo.isYes(key);
     }
 }

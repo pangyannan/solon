@@ -1,6 +1,6 @@
 package cloud.flystar.solon.dictionary.api.dto;
 
-import cloud.flystar.solon.commons.bean.constant.YesOrNoEnum;
+import cloud.flystar.solon.commons.bean.constant.YesOrNo;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
@@ -37,14 +37,14 @@ public class SysDictDetailDto {
      * 是否默认
      * 0-否  表示非默认
      * 1-是  表示默认
-     * @see YesOrNoEnum
+     * @see YesOrNo
      */
     private Integer defaultFlag;
 
 
     /**
      * 启用状态
-     * @see YesOrNoEnum
+     * @see YesOrNo
      */
     private Integer enableFlag;
 

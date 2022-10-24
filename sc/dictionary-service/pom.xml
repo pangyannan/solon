@@ -20,6 +20,46 @@
            <groupId>cloud.flystar.solon</groupId>
            <artifactId>dictionary-api</artifactId>
        </dependency>
+
+
+       <!--lucene核心包-->
+       <dependency>
+           <groupId>org.apache.lucene</groupId>
+           <artifactId>lucene-core</artifactId>
+           <version>8.9.0</version>
+       </dependency>
+       <!--lucene分词器-->
+       <dependency>
+           <groupId>org.apache.lucene</groupId>
+           <artifactId>lucene-analyzers-common</artifactId>
+           <version>8.9.0</version>
+       </dependency>
+
+       <dependency>
+           <groupId>org.apache.lucene</groupId>
+           <artifactId>lucene-memory</artifactId>
+           <version>8.9.0</version>
+       </dependency>
+       <!--IK分词器-->
+       <dependency>
+           <groupId>com.janeluo</groupId>
+           <artifactId>ikanalyzer</artifactId>
+           <version>2012_u6</version>
+       </dependency>
+
+
+
+       <dependency>
+           <groupId>org.springframework.boot</groupId>
+           <artifactId>spring-boot-starter-test</artifactId>
+           <exclusions>
+               <exclusion>
+                   <groupId>org.junit.vintage</groupId>
+                   <artifactId>junit-vintage-engine</artifactId>
+               </exclusion>
+           </exclusions>
+           <scope>test</scope>
+       </dependency>
    </dependencies>
 
 </project>

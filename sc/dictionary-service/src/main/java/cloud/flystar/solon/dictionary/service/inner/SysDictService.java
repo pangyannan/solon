@@ -1,4 +1,4 @@
-package cloud.flystar.solon.dictionary.service;
+package cloud.flystar.solon.dictionary.service.inner;
 
 import cloud.flystar.solon.dictionary.service.entity.SysDict;
 import cloud.flystar.solon.framework.service.IBaseService;

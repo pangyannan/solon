@@ -1,7 +1,7 @@
 package cloud.flystar.solon.dictionary.api.dto;
 
 
-import cloud.flystar.solon.commons.bean.constant.YesOrNoEnum;
+import cloud.flystar.solon.commons.bean.constant.YesOrNo;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
@@ -34,7 +34,7 @@ public class SysDictDto {
     private String dictFieldOpinions;
     /**
      * 启用状态
-     * @see YesOrNoEnum
+     * @see YesOrNo
      */
     private Integer enableFlag;
 

@@ -1,6 +1,6 @@
 package cloud.flystar.solon.dictionary.api.dto;
 
-import cloud.flystar.solon.commons.bean.constant.YesOrNoEnum;
+import cloud.flystar.solon.commons.bean.constant.YesOrNo;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
@@ -28,13 +28,13 @@ public class SysConfigDto {
     /** 系统内置
      *  0-否  非系统内置
      *  1-是  系统内置
-     *  @see YesOrNoEnum
+     *  @see YesOrNo
      */
     private Integer configType;
 
     /**
      * 启用状态
-     * @see YesOrNoEnum
+     * @see YesOrNo
      */
     private Integer enableFlag;
 

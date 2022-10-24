@@ -1,6 +1,6 @@
-package cloud.flystar.solon.dictionary.service.impl;
+package cloud.flystar.solon.dictionary.service.inner.impl;
 
-import cloud.flystar.solon.dictionary.service.SysDictService;
+import cloud.flystar.solon.dictionary.service.inner.SysDictService;
 import cloud.flystar.solon.dictionary.service.entity.SysDict;
 import cloud.flystar.solon.dictionary.service.mapper.SysDictMapper;
 import cloud.flystar.solon.framework.service.impl.BaseServiceImpl;

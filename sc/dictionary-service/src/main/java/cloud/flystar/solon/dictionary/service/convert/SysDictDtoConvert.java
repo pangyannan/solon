@@ -54,7 +54,7 @@ public class SysDictDtoConvert extends DTOConvert<SysDict, SysDictDto> {
     }
 
     @Override
-    public SysDict doBackward(SysDictDto sysDictDto) {
-        throw new AssertionError("不支持逆向转化方法!");
+    public SysDict doBackward(SysDictDto dto) {
+        return super.defaultDoBackward(dto);
     }
 }

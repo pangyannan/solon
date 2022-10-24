@@ -26,7 +26,7 @@ public class HttpRequestTraceInterceptor implements HandlerInterceptor {
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         //从request中获取traceId，如果没有就自己生成一个，放到Context中，以及返回response
         String traceId = request.getHeader(TraceContext.TRACE_ID_NAME);
-        if(StrUtil.isEmpty(traceId)){
+        if(StrUtil.isBlank(traceId)){
             traceId = IdUtil.simpleUUID();
         }
 

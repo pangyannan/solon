@@ -1,6 +1,6 @@
 package cloud.flystar.solon.dictionary.service.entity;
 
-import cloud.flystar.solon.commons.bean.constant.YesOrNoEnum;
+import cloud.flystar.solon.commons.bean.constant.YesOrNo;
 import com.baomidou.mybatisplus.annotation.FieldFill;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
@@ -41,14 +41,14 @@ public class SysDictDetail {
      * 是否默认
      * 0-否  表示非默认
      * 1-是  表示默认
-     * @see YesOrNoEnum
+     * @see YesOrNo
      */
     private Integer defaultFlag;
 
 
     /**
      * 启用状态
-     * @see YesOrNoEnum
+     * @see YesOrNo
      */
     private Integer enableFlag;
 
