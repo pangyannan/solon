@@ -6,8 +6,8 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 
 @SpringBootApplication(scanBasePackages = "cloud.flystar.solon")
 @EnableConfigurationProperties
-public class TestApp {
+public class JunitApp {
     public static void main(String[] args){
-        SpringApplication.run(TestApp.class, args);
+        SpringApplication.run(JunitApp.class, args);
     }
 }
