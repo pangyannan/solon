@@ -3,6 +3,7 @@ package cloud.flystar.solon.app.web.controller;
 import cloud.flystar.solon.commons.bean.constant.GlobeConstant;
 import cloud.flystar.solon.commons.bean.dto.Result;
 import cloud.flystar.solon.commons.format.json.JsonUtil;
+import cloud.flystar.solon.commons.log.audit.Audit;
 import cloud.flystar.solon.user.api.UserApi;
 import cloud.flystar.solon.user.api.dto.UserDto;
 import cn.dev33.satoken.annotation.SaCheckPermission;
@@ -41,6 +42,7 @@ public class UserController {
 
 
     @GetMapping("/redis")
+    @Audit
     public Result redis(@RequestParam(name = "id") Long id){
         UserDto userDto = new UserDto();
         userDto.setUserId(id);

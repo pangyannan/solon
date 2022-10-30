@@ -8,7 +8,7 @@ import java.util.List;
 /**
  * 配置服务
  */
-public interface SysConfigApi {
+public interface SysConfigApi  {
     /**
      * 根据配置ID查询配置参数
      * @param sysConfigId 配置ID

@@ -6,12 +6,15 @@ import cloud.flystar.solon.dictionary.api.dto.mdm.MdmGbT2659Dto;
 import cloud.flystar.solon.dictionary.service.convert.MdmGbT2659DtoConvert;
 import cloud.flystar.solon.dictionary.service.entity.MdmGbT2659;
 import cloud.flystar.solon.dictionary.service.inner.MdmGbT2659Service;
+import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.collection.ListUtil;
 import cn.hutool.core.util.StrUtil;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 public class MdmGbT2659ApiImpl implements MdmGbT2659Api {
@@ -35,6 +38,21 @@ public class MdmGbT2659ApiImpl implements MdmGbT2659Api {
                 .eq(MdmGbT2659::getCountryCode2, countryCode2)
                 .one();
         return mdmGbT2659DtoConvert.doForward(mdmGbT2659);
+    }
+
+    @Override
+    public List<MdmGbT2659Dto> listByCountryCode2(List<String> countryCode2List) {
+        if(CollectionUtil.isEmpty(countryCode2List)){
+            return ListUtil.empty();
+        }
+        Set<String> set = countryCode2List.stream().collect(Collectors.toSet());
+        if(CollectionUtil.isEmpty(set)){
+            return ListUtil.empty();
+        }
+        List<MdmGbT2659> list = mdmGbT2659Service.lambdaQuery()
+                .in(MdmGbT2659::getCountryCode2, set)
+                .list();
+        return mdmGbT2659DtoConvert.doForward(list);
     }
 
     @Override

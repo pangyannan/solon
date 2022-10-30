@@ -21,6 +21,13 @@ public interface MdmGbT2659Api {
      */
     MdmGbT2659Dto getByCountryCode2(String countryCode2);
 
+    /**
+     * 根据国家2位字母集合查询国家数据
+     * @param countryCode2List 国家2位字母集合
+     * @return 国家和地区列表
+     */
+    List<MdmGbT2659Dto> listByCountryCode2(List<String> countryCode2List);
+
 
     /**
      * 根据国家3位字母查询国家数据

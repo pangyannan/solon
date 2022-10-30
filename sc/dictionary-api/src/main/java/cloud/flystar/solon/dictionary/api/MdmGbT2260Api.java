@@ -10,30 +10,43 @@ import java.util.List;
 public interface MdmGbT2260Api {
     /**
      * 所有省
-     * @return
+     * @return 行政区数据
      */
     List<MdmGbT2260Dto> listProvince();
 
     /**
-     * 根据省编码查询市
+     * 根据省编码查询下属市
      * @param provinceAreaCode 省编码
-     * @return
+     * @return 行政区数据
      */
     List<MdmGbT2260Dto> listCity(String provinceAreaCode);
 
     /**
-     * 根据市编码查询 县/区
+     * 根据市编码查询下属县/区
      * @param cityAreaCode 市编码
-     * @return
+     * @return 行政区数据集合
      */
     List<MdmGbT2260Dto> listDistrict(String cityAreaCode);
 
 
     /**
-     * 根据父级编码查询行政区域
+     * 根据父级编码查询下属行政区域
      * @param parentCode
-     * @return
+     * @return 行政区数据集合
      */
     List<MdmGbT2260Dto> listByParentCode(String parentCode);
 
+    /**
+     * 根据行政区编码编码查询
+     * @param areaCode 行政区编码
+     * @return 行政区数据
+     */
+    MdmGbT2260Dto getByAreaCode(String areaCode);
+
+    /**
+     * 根据行政区编码编码集合查询
+     * @param areaCodeList 行政区编码集合
+     * @return 行政区数据集合
+     */
+    List<MdmGbT2260Dto> listByAreaCode(List<String> areaCodeList);
 }

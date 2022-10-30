@@ -5,7 +5,10 @@ import lombok.Data;
 import lombok.experimental.Accessors;
 
 import java.io.Serializable;
+import java.time.Instant;
 import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
+import java.time.format.DateTimeFormatter;
 
 /**
  * 统一返回包装
@@ -42,7 +45,7 @@ public class Result<T> implements Serializable {
     /**
      * 消息时间
      */
-    private LocalDateTime time;
+    private String time;
     /**
      * 返回数据
      */
@@ -56,7 +59,7 @@ public class Result<T> implements Serializable {
         this.code = code;
         this.message = message;
         this.data = data;
-        this.time = LocalDateTime.now();
+        this.time = OffsetDateTime.now().toString();
     }
 
     public static <T> Result<T> successBuild(){
