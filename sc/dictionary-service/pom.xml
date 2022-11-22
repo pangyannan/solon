@@ -60,6 +60,10 @@
            </exclusions>
            <scope>test</scope>
        </dependency>
+       <dependency>
+           <groupId>cloud.flystar.solon</groupId>
+           <artifactId>user-api</artifactId>
+       </dependency>
    </dependencies>
 
 </project>

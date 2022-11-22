@@ -22,6 +22,8 @@ public class CoreWebMvcConfigurer implements WebMvcConfigurer {
                 .addPathPatterns("/**")
                 .excludePathPatterns("/static/**");
 
+
+        //sa登陆注解拦截器，有sa注解的拦截
         registry.addInterceptor(new SaAnnotationInterceptor())
                 .order(CoreWebMvcConfigurer.CORE_BASE_ORDER + 100)
                 .addPathPatterns("/**")

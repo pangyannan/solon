@@ -8,8 +8,8 @@ import lombok.Getter;
 @Getter
 public enum ResourceTypeEnum {
     APP("app","前端项目"),
-    MENU("menu","惨的"),
-    ELEMENT("element","页面元素"),
+    MENU("menu","菜单"),
+    ACTION("action","页面元素"),
     API("api","页面元素"),
     ;
      private String key;

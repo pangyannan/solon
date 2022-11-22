@@ -28,6 +28,8 @@ public class SysDictApiImpl implements SysDictApi {
     @Resource
     private SysDictDtoConvert sysDictDtoConvert;
 
+
+
     @Override
     public SysDictDto getByDictType(String dictType) {
         if(StrUtil.isBlank(dictType)){

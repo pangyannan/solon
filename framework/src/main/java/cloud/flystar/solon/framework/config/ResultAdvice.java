@@ -3,6 +3,7 @@ package cloud.flystar.solon.framework.config;
 import cloud.flystar.solon.commons.bean.dto.Result;
 import cloud.flystar.solon.commons.log.trace.TraceUtil;
 import cn.hutool.core.util.StrUtil;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.MethodParameter;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageConverter;
@@ -14,6 +15,7 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseBodyAdvice;
 /**
  * 响应返回结果增强器
  */
+@Slf4j
 @RestControllerAdvice
 public class ResultAdvice implements ResponseBodyAdvice<Object> {
 
@@ -31,7 +33,6 @@ public class ResultAdvice implements ResponseBodyAdvice<Object> {
                 traceId = TraceUtil.getTraceId();
                 result.setTraceId(traceId);
             }
-
         }
         return body;
     }

@@ -2,8 +2,6 @@ package cloud.flystar.solon.app.web.controller;
 
 import cloud.flystar.solon.commons.bean.constant.GlobeConstant;
 import cloud.flystar.solon.commons.bean.dto.Result;
-import cloud.flystar.solon.commons.bean.excetion.ErrorCodeEnum;
-import cloud.flystar.solon.commons.bean.excetion.ErrorCodeException;
 import cloud.flystar.solon.commons.crypto.PasswordEncoder;
 import cloud.flystar.solon.commons.crypto.PasswordEncoderFactories;
 import cloud.flystar.solon.commons.log.audit.Audit;
@@ -16,11 +14,13 @@ import cn.dev33.satoken.secure.SaSecureUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.imageio.ImageIO;
 import javax.servlet.ServletOutputStream;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import java.awt.image.BufferedImage;
@@ -30,7 +30,7 @@ import java.io.IOException;
  * 登陆
  */
 @Slf4j
-@RestController
+@Controller
 @RequestMapping("/login")
 public class LoginController {
     @Resource
@@ -45,6 +45,10 @@ public class LoginController {
     @Autowired
     private RedisTemplate redisTemplate;
 
+    @GetMapping({""})
+    public String saLogin(HttpServletRequest request) {
+        return "sa-login.html";
+    }
 
     /**
      * 验证码生成
@@ -79,9 +83,6 @@ public class LoginController {
     //默认登陆
     @GetMapping("/encrypt/public")
     public Result<String> getEncode(String context)  {
-        if(context.equals("123456")){
-            throw  ErrorCodeException.build(ErrorCodeEnum.USER_ERROR_0001);
-        }
         String encryptByPublic = SaSecureUtil.rsaEncryptByPublic(secureConfig.getPublicKey(), context);
         return Result.successBuild(encryptByPublic);
     }

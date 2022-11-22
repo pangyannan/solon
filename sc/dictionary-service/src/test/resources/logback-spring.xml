@@ -29,6 +29,8 @@
 	<logger name="_org.springframework.web.servlet.HandlerMapping.Mappings" level="INFO" /> <!--主要是打印了路径映射关系,不需要-->
 	<logger name="io.lettuce.core.protocol" level="INFO" />
 	<logger name="io.lettuce.core.RedisChannelHandler" level="INFO" />
+<!--	<logger name="com.zaxxer.hikari" level="INFO" />-->
+<!--	<logger name="org.mybatis.spring" level="INFO" />-->
 
 	<root level="DEBUG">
 		<appender-ref ref="STDOUT" />

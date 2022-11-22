@@ -1,6 +1,13 @@
 package cloud.flystar.solon.dictionary.service;
 
+import cloud.flystar.solon.commons.format.json.JsonUtil;
 import cloud.flystar.solon.dictionary.api.dto.mdm.MdmGbT2260Dto;
+import cloud.flystar.solon.dictionary.service.entity.MdmGbT2260;
+import cloud.flystar.solon.dictionary.service.inner.MdmGbT2260Service;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.conditions.query.LambdaQueryChainWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.baomidou.mybatisplus.extension.plugins.pagination.PageDTO;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.RepeatedTest;
@@ -20,6 +27,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class MdmGbT2260ApiImplTest {
     @Resource
     private MdmGbT2260ApiImpl mdmGbT2260ApiImpl;
+
+    @Resource
+    private MdmGbT2260Service mdmGbT2260Service;
 
     @RepeatedTest(value = 10)
     void listProvince() {
@@ -59,5 +69,29 @@ class MdmGbT2260ApiImplTest {
     void getByAreaCode(String areaCode,String areaName) {
         MdmGbT2260Dto mdmGbT2260Dto = mdmGbT2260ApiImpl.getByAreaCode(areaCode);
         assertTrue(mdmGbT2260Dto.getAreaName().equals(areaName));
+    }
+
+
+    @Test
+    void page(){
+        IPage page = new Page();
+        page = mdmGbT2260Service.page(page);
+        log.info("========page========");
+        log.info(JsonUtil.jsonPretty(page));
+
+        PageDTO pageDTO = new PageDTO();
+        pageDTO = mdmGbT2260Service.page(pageDTO);
+        log.info("========pageDTO========");
+        log.info(JsonUtil.jsonPretty(pageDTO));
+    }
+
+    @Test
+    void page2(){
+        IPage page = new Page();
+        LambdaQueryChainWrapper<MdmGbT2260> queryChainWrapper = mdmGbT2260Service.lambdaQuery().eq(MdmGbT2260::getAreaCode, "370200");
+        page = mdmGbT2260Service.pageByDataScope(page,queryChainWrapper);
+        log.info("========page========");
+        log.info(JsonUtil.jsonPretty(page));
+
     }
 }

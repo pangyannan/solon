@@ -14,8 +14,9 @@ public class ResourceInfoDto {
     /**
      * app 应用
      * menu 菜单
-     * element 页面元素
+     * action 动作
      * api 接口资源
+     * data 数据范围
      */
 
     private String resourceType;
@@ -37,6 +38,8 @@ public class ResourceInfoDto {
      *    /api/user/list
      *    /api/user/add
      *    /api/user/delete
+     * 数据资源对象：
+     *    /data/{数据对象}/{数据范围类型}
      */
     private String resourceCode;
     /**

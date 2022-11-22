@@ -153,6 +153,7 @@
 	<logger name="_org.springframework.web.servlet.HandlerMapping.Mappings" level="INFO" /> <!--主要是打印了路径映射关系,不需要-->
 	<logger name="io.lettuce.core.protocol" level="INFO" />
 	<logger name="io.lettuce.core.RedisChannelHandler" level="INFO" />
+	<logger name="com.zaxxer.hikari" level="INFO" />
 
 	<!--开发环境配置-->
 	<springProfile name="dev">
