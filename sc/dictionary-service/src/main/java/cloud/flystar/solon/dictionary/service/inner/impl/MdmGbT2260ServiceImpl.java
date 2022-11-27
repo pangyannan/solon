@@ -1,28 +1,33 @@
 package cloud.flystar.solon.dictionary.service.inner.impl;
 
+import cloud.flystar.solon.commons.bean.constant.DataScopeEnum;
 import cloud.flystar.solon.dictionary.api.dto.mdm.MdmGbT2260AreaLevelEnum;
 import cloud.flystar.solon.dictionary.service.entity.MdmGbT2260;
-import cloud.flystar.solon.dictionary.service.entity.SysDict;
 import cloud.flystar.solon.dictionary.service.inner.MdmGbT2260Service;
 import cloud.flystar.solon.dictionary.service.mapper.MdmGbT2260Mapper;
 import cloud.flystar.solon.framework.service.impl.BaseServiceImpl;
-import cloud.flystar.solon.user.api.dto.DataScopeEnum;
 import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.collection.ListUtil;
 import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.conditions.query.LambdaQueryChainWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.Resource;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 @Slf4j
 @Service
 public class MdmGbT2260ServiceImpl extends BaseServiceImpl<MdmGbT2260Mapper, MdmGbT2260> implements MdmGbT2260Service {
+    @Resource
+    private MdmGbT2260DataScope mdmGbT2260DataScope;
+
     @Override
     public List<MdmGbT2260> listProvince() {
         return this.lambdaQuery().eq(MdmGbT2260::getAreaLevel, MdmGbT2260AreaLevelEnum.Province.getCode()).list();
@@ -49,12 +54,14 @@ public class MdmGbT2260ServiceImpl extends BaseServiceImpl<MdmGbT2260Mapper, Mdm
     }
 
     @Override
-    public IPage<MdmGbT2260> pageByDataScope(IPage<MdmGbT2260> page, LambdaQueryChainWrapper<MdmGbT2260> queryWrapper) {
+    public Page<MdmGbT2260> pageByDataScope(Page<MdmGbT2260> page, LambdaQueryChainWrapper<MdmGbT2260> queryWrapper) {
 
-        Consumer<LambdaQueryWrapper<MdmGbT2260>> consumer = this.consumer();
-        if(consumer != null){
-            queryWrapper.and(consumer);
-        }
+//        Consumer<LambdaQueryWrapper<MdmGbT2260>> consumer = this.consumer();
+//        if(consumer != null){
+//            queryWrapper.and(consumer);
+//        }
+        Optional<Consumer<LambdaQueryWrapper<MdmGbT2260>>> optional = mdmGbT2260DataScope.scopeQuery(1L);
+        optional.ifPresent(t -> queryWrapper.and(optional.get()));
         return super.page(page,queryWrapper.getWrapper());
     }
 
@@ -118,4 +125,6 @@ public class MdmGbT2260ServiceImpl extends BaseServiceImpl<MdmGbT2260Mapper, Mdm
     private List<Long> getDeptAndChild(){
         return ListUtil.toList(0L,1L,2L,4L);
     }
+
+
 }

@@ -54,9 +54,8 @@ public class ResourceInfo {
      * 说明
      */
     private String remarks;
-    /**
-     * 状态 0禁用 1启用
-     */
+
+    /** 状态（0停用 1正常）*/
     private Integer status;
 
 

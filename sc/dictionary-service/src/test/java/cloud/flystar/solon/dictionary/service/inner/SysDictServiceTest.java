@@ -20,9 +20,6 @@ class SysDictServiceTest {
 
     @Test
     void page() {
-        IPage page = new Page();
-        LambdaQueryChainWrapper<SysDict> queryChainWrapper = sysDictService.lambdaQuery().ge(SysDict::getDictId, 0L);
-        page = sysDictService.pageByDataScope(page, queryChainWrapper);
-        log.info(JsonUtil.jsonPretty(page));
+
     }
 }

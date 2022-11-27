@@ -1,6 +1,7 @@
 package cloud.flystar.solon.framework.service;
 
 import cloud.flystar.solon.commons.bean.dto.user.UserSessionInfo;
+import cloud.flystar.solon.commons.bean.dto.user.UserTokenSessionInfo;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 
@@ -23,7 +24,14 @@ public interface FrameworkContextService {
     Long getLoginId();
 
     /**
+     * 获取当前用户登陆TOKEN信息
+     */
+    Optional<UserTokenSessionInfo> getUserTokenSessionInfoDefaultNull();
+    /**
      * 获取当前用户登陆信息
      */
     Optional<UserSessionInfo> getUserSessionInfoDefaultNull();
+
+    Optional<UserSessionInfo> getUserSessionInfoDefaultNull(Long userId);
+
 }

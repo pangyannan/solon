@@ -1,5 +1,7 @@
 package cloud.flystar.solon.dictionary.service.entity;
 
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 
@@ -15,6 +17,7 @@ public class MdmGbT2260 {
     /**
      * 行政区国标编码
      */
+    @TableId(type = IdType.INPUT)
     private String areaCode;
     /**
      * 行政区国标名称

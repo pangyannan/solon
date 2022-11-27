@@ -2,7 +2,9 @@ package cloud.flystar.solon.user.service;
 
 import cloud.flystar.solon.commons.bean.constant.GlobeConstant;
 import cloud.flystar.solon.commons.bean.dto.Result;
+import cloud.flystar.solon.commons.bean.dto.user.UserDataResourceScope;
 import cloud.flystar.solon.commons.bean.dto.user.UserSessionInfo;
+import cloud.flystar.solon.commons.bean.dto.user.UserTokenSessionInfo;
 import cloud.flystar.solon.commons.bean.excetion.ErrorCodeEnum;
 import cloud.flystar.solon.commons.crypto.PasswordEncoder;
 import cloud.flystar.solon.commons.format.json.JsonUtil;
@@ -13,6 +15,8 @@ import cloud.flystar.solon.user.api.dto.account.UserAccountDto;
 import cloud.flystar.solon.user.api.dto.account.UserLoginDto;
 import cloud.flystar.solon.user.api.dto.account.UserLoginSuccessToken;
 import cloud.flystar.solon.user.service.convert.UserAccountDtoConvert;
+import cloud.flystar.solon.user.service.entity.Department;
+import cloud.flystar.solon.user.service.entity.ResourceInfo;
 import cloud.flystar.solon.user.service.entity.UserInfo;
 import cn.dev33.satoken.secure.SaSecureUtil;
 import cn.dev33.satoken.session.SaSession;
@@ -23,6 +27,7 @@ import cn.hutool.core.util.StrUtil;
 import cn.hutool.jwt.JWT;
 import cn.hutool.jwt.JWTValidator;
 import com.google.code.kaptcha.Producer;
+import com.google.common.collect.Lists;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
@@ -30,10 +35,9 @@ import javax.annotation.Resource;
 import javax.validation.constraints.NotBlank;
 import java.awt.image.BufferedImage;
 import java.nio.charset.StandardCharsets;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 
 @Service
@@ -42,6 +46,11 @@ public class UserAccountApiImpl implements UserAccountApi {
     private UserInfoService userInfoService;
     @Resource
     private UserAccountDtoConvert userAccountDtoConvert;
+    @Resource
+    private DepartmentService departmentService;
+    @Resource
+    private ResourceInfoService resourceInfoService;
+
     @Resource
     private SecureConfig secureConfig;
     @Resource
@@ -164,14 +173,20 @@ public class UserAccountApiImpl implements UserAccountApi {
 
 
         //session数据填充
+        UserTokenSessionInfo userTokenSessionInfo = this.userTokenSessionInfoBuild(userAccountDto, tokenInfo);
+
         SaSession tokenSession = StpUtil.getTokenSession();
-        UserSessionInfo userSessionInfo = this.userSessionInfoBuild(userAccountDto, tokenInfo);
-        tokenSession.set(GlobeConstant.SESSION_USER_KEY, JsonUtil.json(userSessionInfo));
+        tokenSession.set(GlobeConstant.TOKEN_SESSION_USER_KEY, JsonUtil.json(userTokenSessionInfo));
+
+        SaSession userSession = StpUtil.getSession(false);
+        UserSessionInfo userSessionInfo =  this.userSessionInfoBuild(userAccountDto, tokenInfo);
+        userSession.set(GlobeConstant.SESSION_USER_KEY,userSessionInfo);
 
         //登陆成功响应处理
         UserLoginSuccessToken userLoginSuccessToken = this.loginTokenBuild(userAccountDto, tokenInfo);
         return Result.successBuild(userLoginSuccessToken);
     }
+
 
     @Override
     public UserAccountDto getBaseAccountByUserName(@NotBlank String userName) {
@@ -204,10 +219,37 @@ public class UserAccountApiImpl implements UserAccountApi {
         return userLoginSuccessToken;
     }
 
-    private UserSessionInfo userSessionInfoBuild(UserAccountDto userAccountDto, SaTokenInfo saTokenInfo){
+    private UserTokenSessionInfo userTokenSessionInfoBuild(UserAccountDto userAccountDto, SaTokenInfo saTokenInfo){
+        UserTokenSessionInfo userTokenSessionInfo = new UserTokenSessionInfo();
+        userTokenSessionInfo.setUserId(userTokenSessionInfo.getUserId());
+        userTokenSessionInfo.setUserName(userAccountDto.getUserName());
+        return userTokenSessionInfo;
+    }
+
+    private UserSessionInfo userSessionInfoBuild(UserAccountDto userAccountDto, SaTokenInfo tokenInfo) {
         UserSessionInfo userSessionInfo = new UserSessionInfo();
-        userSessionInfo.setUserId(userSessionInfo.getUserId())
-                .setUserName(userAccountDto.getUserName());
+        userSessionInfo.setUserId(userSessionInfo.getUserId());
+        userSessionInfo.setUserName(userSessionInfo.getUserName());
+
+        //当前部门
+        List<Department> departments = departmentService.listUserDepartment(userAccountDto.getUserId());
+        List<Long> deptIds = departments.stream().map(Department::getDeptId).collect(Collectors.toList());
+        userSessionInfo.setDeptIds(deptIds);
+
+        //管辖部门
+        Set<Long> managementDeptIds = new HashSet<>();
+        for (Department department : departments) {
+            List<Department> childDeptList = departmentService.listByParentId(department.getDeptId());
+            List<Long> childDeptIds = childDeptList.stream().map(Department::getDeptId).collect(Collectors.toList());
+            managementDeptIds.addAll(childDeptIds);
+        }
+        userSessionInfo.setManagementDeptIds(Lists.newArrayList(managementDeptIds));
+
+
+        //数据权限
+        List<UserDataResourceScope> userDataResourceScopes = resourceInfoService.listUserDataResourceScope(userAccountDto.getUserId(), null);
+        userSessionInfo.setUserDataResourceScopes(userDataResourceScopes);
+
         return userSessionInfo;
     }
 

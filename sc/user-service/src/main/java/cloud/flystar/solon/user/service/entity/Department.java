@@ -36,8 +36,8 @@ public class Department {
     /** 部门编码，一般与其他系统关联使用 */
     private String deptCode;
 
-    /** 部门状态:0正常,1停用 */
-    private String status;
+    /** 部门状态（0停用 1正常）*/
+    private Integer status;
 
     private LocalDateTime createTime;
     private Long createUserId;

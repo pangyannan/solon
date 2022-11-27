@@ -16,7 +16,17 @@ public class GlobeConstant {
    public static final String ADMIN_USERNAME = "admin";
    public static final List<String> ADMIN_SA_PERMISSION = Arrays.asList("**");
    public static final List<String> ADMIN_SA_ROLE = Arrays.asList("**");
-   public static final String SESSION_USER_KEY = "USER";
+
+
+   /**
+    * 用户token session信息
+    */
+   public static final String TOKEN_SESSION_USER_KEY = "token_user";
+
+   /**
+    * 用户session信息
+    */
+   public static final String SESSION_USER_KEY = "session_user";
 
 
    //安全相关

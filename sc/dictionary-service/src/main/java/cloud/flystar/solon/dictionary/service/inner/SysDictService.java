@@ -11,5 +11,4 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
  * 字典服务
  */
 public interface SysDictService extends IBaseService<SysDict> {
-    IPage<SysDict> pageByDataScope(IPage<SysDict> page, LambdaQueryChainWrapper<SysDict> queryWrapper);
 }

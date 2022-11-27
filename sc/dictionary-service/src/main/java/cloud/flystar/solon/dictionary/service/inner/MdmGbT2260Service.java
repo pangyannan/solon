@@ -1,10 +1,10 @@
 package cloud.flystar.solon.dictionary.service.inner;
 
 import cloud.flystar.solon.dictionary.service.entity.MdmGbT2260;
-import cloud.flystar.solon.dictionary.service.entity.SysDict;
 import cloud.flystar.solon.framework.service.IBaseService;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.conditions.query.LambdaQueryChainWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 
 import java.util.List;
 
@@ -32,6 +32,6 @@ public interface MdmGbT2260Service extends IBaseService<MdmGbT2260> {
 
 
 
-    IPage<MdmGbT2260> pageByDataScope(IPage<MdmGbT2260> page, LambdaQueryChainWrapper<MdmGbT2260> queryWrapper);
+    Page<MdmGbT2260> pageByDataScope(Page<MdmGbT2260> page, LambdaQueryChainWrapper<MdmGbT2260> queryWrapper);
 
 }

@@ -40,6 +40,10 @@ public class ResourceInfoDto {
      *    /api/user/delete
      * 数据资源对象：
      *    /data/{数据对象}/{数据范围类型}
+     *    /data/user:all
+     *    /data/user:deptChild
+     *    /data/user:deptCurrent
+     *    /data/user:creator
      */
     private String resourceCode;
     /**

@@ -87,7 +87,8 @@ class MdmGbT2260ApiImplTest {
 
     @Test
     void page2(){
-        IPage page = new Page();
+        Page page = new Page();
+        page.setOptimizeCountSql(false);
         LambdaQueryChainWrapper<MdmGbT2260> queryChainWrapper = mdmGbT2260Service.lambdaQuery().eq(MdmGbT2260::getAreaCode, "370200");
         page = mdmGbT2260Service.pageByDataScope(page,queryChainWrapper);
         log.info("========page========");

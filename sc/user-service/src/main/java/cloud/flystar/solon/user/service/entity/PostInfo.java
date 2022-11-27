@@ -18,8 +18,8 @@ public class PostInfo {
     /** 岗位名称 */
     private String postName;
 
-    /** 状态（0正常 1停用） */
-    private String status;
+    /** 状态（0停用 1正常）*/
+    private Integer status;
 
     private LocalDateTime createTime;
     private Long createUserId;

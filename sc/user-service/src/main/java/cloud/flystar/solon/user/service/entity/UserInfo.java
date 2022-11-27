@@ -33,8 +33,8 @@ public class UserInfo {
     private String phone;
 
 
-    /** 帐号状态（false 禁用 true 启用） */
-    private Boolean enable;
+    /** 账号状态（0停用 1正常）*/
+    private Integer status;
 
     /** 删除标志（false 代表未删除 true 代表删除）*/
     private Boolean deleteFlag;
