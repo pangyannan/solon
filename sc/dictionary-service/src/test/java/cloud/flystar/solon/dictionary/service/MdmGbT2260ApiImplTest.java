@@ -1,24 +1,30 @@
 package cloud.flystar.solon.dictionary.service;
 
+import cloud.flystar.solon.commons.bean.dto.user.UserDataResourceScope;
+import cloud.flystar.solon.commons.bean.dto.user.UserSessionInfo;
 import cloud.flystar.solon.commons.format.json.JsonUtil;
+import cloud.flystar.solon.commons.pool.ThreadContextKey;
+import cloud.flystar.solon.commons.pool.ThreadContextUtil;
 import cloud.flystar.solon.dictionary.api.dto.mdm.MdmGbT2260Dto;
 import cloud.flystar.solon.dictionary.service.entity.MdmGbT2260;
 import cloud.flystar.solon.dictionary.service.inner.MdmGbT2260Service;
+import cn.hutool.core.collection.ListUtil;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.conditions.query.LambdaQueryChainWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.plugins.pagination.PageDTO;
 import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.RepeatedTest;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
-import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import javax.annotation.Resource;
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -30,6 +36,31 @@ class MdmGbT2260ApiImplTest {
 
     @Resource
     private MdmGbT2260Service mdmGbT2260Service;
+
+    @BeforeEach
+    public void beforeEach(){
+        ThreadContextUtil.initContext();
+        ThreadContextUtil.put(ThreadContextKey.FRAMEWORK_CONTEXT_USER_LOGINID,1L);
+
+        UserSessionInfo userSessionInfo = new UserSessionInfo();
+        userSessionInfo.setUserId(1L);
+        userSessionInfo.setUserName("admin");
+        userSessionInfo.setDeptIds(ListUtil.toList(1L));
+        userSessionInfo.setManagementDeptIds(ListUtil.toList(1L,2L,3L));
+
+        UserDataResourceScope userDataResourceScope = new UserDataResourceScope();
+        userDataResourceScope.setDataResourceKey("/data/mdm/gbt2260");
+        userDataResourceScope.setDataScopeCodes(ListUtil.toList("deptChild","deptCurrent","creator"));
+        userSessionInfo.setUserDataResourceScopes(ListUtil.toList(userDataResourceScope));
+        Optional<UserSessionInfo> optional  = Optional.of(userSessionInfo);
+        ThreadContextUtil.put(ThreadContextKey.FRAMEWORK_CONTEXT_USER_SESSION,optional);
+    }
+
+    @AfterEach
+    public void AfterEach(){
+        ThreadContextUtil.clearContext();
+    }
+
 
     @RepeatedTest(value = 10)
     void listProvince() {
@@ -85,7 +116,8 @@ class MdmGbT2260ApiImplTest {
         log.info(JsonUtil.jsonPretty(pageDTO));
     }
 
-    @Test
+
+    @RepeatedTest(10)
     void page2(){
         Page page = new Page();
         page.setOptimizeCountSql(false);

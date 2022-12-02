@@ -11,17 +11,25 @@ import java.util.List;
  */
 public interface DepartmentService  extends IBaseService<Department> {
     /**
-     * 当前用户的部门
+     * 用户的部门
      * @param userId
      * @return
      */
     List<Department> listUserDepartment(@NotNull Long userId);
 
     /**
-     * 查询所有子节点
+     * 用户管理的部门
+     * @param userId
+     * @return
+     */
+    List<Department> listUserManagerDepartment(@NotNull Long userId);
+
+    /**
+     * 查询子部门,不包含自己
      * @param deptId
      * @return
      */
-    List<Department> listByParentId(@NotNull Long deptId);
+    List<Department> listAllChildren(@NotNull Long deptId);
+
 
 }

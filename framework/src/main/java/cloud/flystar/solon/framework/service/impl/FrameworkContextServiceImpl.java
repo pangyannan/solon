@@ -1,14 +1,14 @@
 package cloud.flystar.solon.framework.service.impl;
 
 import cloud.flystar.solon.commons.bean.constant.GlobeConstant;
-import cloud.flystar.solon.commons.bean.dto.user.UserDataResourceScope;
 import cloud.flystar.solon.commons.bean.dto.user.UserSessionInfo;
 import cloud.flystar.solon.commons.bean.dto.user.UserTokenSessionInfo;
 import cloud.flystar.solon.commons.format.json.JsonUtil;
+import cloud.flystar.solon.commons.pool.ThreadContextKey;
+import cloud.flystar.solon.commons.pool.ThreadContextUtil;
 import cloud.flystar.solon.framework.service.FrameworkContextService;
 import cn.dev33.satoken.session.SaSession;
 import cn.dev33.satoken.stp.StpUtil;
-import cn.hutool.core.collection.ListUtil;
 import cn.hutool.core.util.StrUtil;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
@@ -21,39 +21,51 @@ public class FrameworkContextServiceImpl implements FrameworkContextService {
     @Override
     @Nullable
     public Long getLoginIdDefaultNull() {
-        Object loginId = StpUtil.getLoginIdDefaultNull();
-        if(loginId == null){
-            return  null;
+        if(ThreadContextUtil.containsKey(ThreadContextKey.FRAMEWORK_CONTEXT_USER_LOGINID)){
+            return (Long) ThreadContextUtil.get(ThreadContextKey.FRAMEWORK_CONTEXT_USER_LOGINID);
         }
-        return (Long) loginId;
+
+        Long loginId = (Long)StpUtil.getLoginIdDefaultNull();
+        ThreadContextUtil.put(ThreadContextKey.FRAMEWORK_CONTEXT_USER_LOGINID,loginId);
+        return loginId;
     }
 
     @Override
     @NonNull
     public Long getLoginId() {
-        return (Long)StpUtil.getLoginId();
+        Long loginId = (Long) ThreadContextUtil.get(ThreadContextKey.FRAMEWORK_CONTEXT_USER_LOGINID);
+        if(loginId != null){
+            return loginId;
+        }
+        loginId = (Long)StpUtil.getLoginId();
+        ThreadContextUtil.put(ThreadContextKey.FRAMEWORK_CONTEXT_USER_LOGINID,loginId);
+        return loginId;
     }
 
     @Override
     public Optional<UserTokenSessionInfo> getUserTokenSessionInfoDefaultNull() {
-        SaSession tokenSession = StpUtil.stpLogic.getTokenSession(false);
-        if(tokenSession == null){
-            return Optional.empty();
+        if(ThreadContextUtil.containsKey(ThreadContextKey.FRAMEWORK_CONTEXT_USER_TOKENSESSION)){
+            return (Optional<UserTokenSessionInfo>) ThreadContextUtil.get(ThreadContextKey.FRAMEWORK_CONTEXT_USER_TOKENSESSION);
         }
-        String userTokenSessionInfoJson = (String)tokenSession.get(GlobeConstant.TOKEN_SESSION_USER_KEY);
-        if(StrUtil.isBlank(userTokenSessionInfoJson)){
-            return Optional.empty();
-        }
-        UserTokenSessionInfo userTokenSessionInfo = JsonUtil.jsonToBean(userTokenSessionInfoJson, UserTokenSessionInfo.class);
 
-        return Optional.ofNullable(userTokenSessionInfo);
+        Optional<UserTokenSessionInfo> optional = Optional.empty();
+        SaSession tokenSession = StpUtil.stpLogic.getTokenSession(false);
+        if(tokenSession != null){
+            String userTokenSessionInfoJson = (String)tokenSession.get(GlobeConstant.TOKEN_SESSION_USER_KEY);
+            if(StrUtil.isNotBlank(userTokenSessionInfoJson)){
+                UserTokenSessionInfo userTokenSessionInfo = JsonUtil.jsonToBean(userTokenSessionInfoJson, UserTokenSessionInfo.class);
+                optional = Optional.ofNullable(userTokenSessionInfo);
+            }
+        }
+        ThreadContextUtil.put(ThreadContextKey.FRAMEWORK_CONTEXT_USER_TOKENSESSION,optional);
+        return optional;
     }
 
 
     @Override
     public Optional<UserSessionInfo> getUserSessionInfoDefaultNull() {
         Long userId = this.getLoginIdDefaultNull();
-        return getUserSessionInfoDefaultNull(userId);
+        return this.getUserSessionInfoDefaultNull(userId);
     }
 
 
@@ -62,32 +74,22 @@ public class FrameworkContextServiceImpl implements FrameworkContextService {
         if(userId == null){
             return Optional.empty();
         }
-        if(userId == 1L){
-            UserSessionInfo userSessionInfo = new UserSessionInfo();
-            userSessionInfo.setUserId(userId);
-            userSessionInfo.setUserName("admin");
-            userSessionInfo.setDeptIds(ListUtil.toList(1L));
-            userSessionInfo.setManagementDeptIds(ListUtil.toList(1L,2L,3L));
 
-            UserDataResourceScope userDataResourceScope = new UserDataResourceScope();
-            userDataResourceScope.setDataResourceKey("/data/mdm/gbt2260");
-            userDataResourceScope.setDataScopeCodes(ListUtil.toList("deptChild","deptCurrent","creator"));
-            userSessionInfo.setUserDataResourceScopes(ListUtil.toList(userDataResourceScope));
-            return Optional.of(userSessionInfo);
+        if(ThreadContextUtil.containsKey(ThreadContextKey.FRAMEWORK_CONTEXT_USER_SESSION)){
+            return (Optional<UserSessionInfo>)ThreadContextUtil.get(ThreadContextKey.FRAMEWORK_CONTEXT_USER_SESSION);
         }
 
-
-
+        Optional<UserSessionInfo> optional = Optional.empty();
         SaSession userSession = StpUtil.getSessionByLoginId(userId,false);
-        if(userSession == null){
-            return Optional.empty();
+        if(userSession != null){
+            String userSessionInfoJson = (String)userSession.get(GlobeConstant.SESSION_USER_KEY);
+            if(StrUtil.isNotBlank(userSessionInfoJson)) {
+                UserSessionInfo userSessionInfo = JsonUtil.jsonToBean(userSessionInfoJson, UserSessionInfo.class);
+                optional = Optional.ofNullable(userSessionInfo);
+            }
         }
-
-        String userSessionInfoJson = (String)userSession.get(GlobeConstant.SESSION_USER_KEY);
-        if(StrUtil.isBlank(userSessionInfoJson)){
-            return Optional.empty();
-        }
-        UserSessionInfo userSessionInfo = JsonUtil.jsonToBean(userSessionInfoJson, UserSessionInfo.class);
-        return Optional.ofNullable(userSessionInfo);
+        ThreadContextUtil.put(ThreadContextKey.FRAMEWORK_CONTEXT_USER_SESSION,optional);
+        return optional;
     }
+
 }

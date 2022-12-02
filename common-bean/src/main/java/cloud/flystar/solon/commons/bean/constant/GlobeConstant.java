@@ -34,6 +34,6 @@ public class GlobeConstant {
    //用户密码错误缓存
    public static final String REDIS_USER_PASSWORD_MATCHES_FAILED_PREFIX = "user:password_matches_failed:";
 
-   //用户图形验证码默认过期时间 120s
-   public static final Integer captchaExpiresTimeDefault = 120;
+   //用户图形验证码默认过期时间 10分钟
+   public static final Integer captchaExpiresTimeDefault = 600;
 }

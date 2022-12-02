@@ -2,7 +2,6 @@ package cloud.flystar.solon.commons.bean.constant;
 
 import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.collection.ListUtil;
-import lombok.Getter;
 
 import java.util.List;
 import java.util.Objects;

@@ -2,7 +2,6 @@ package cloud.flystar.solon.dictionary.service.inner;
 
 import cloud.flystar.solon.dictionary.service.entity.MdmGbT2260;
 import cloud.flystar.solon.framework.service.IBaseService;
-import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.conditions.query.LambdaQueryChainWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 

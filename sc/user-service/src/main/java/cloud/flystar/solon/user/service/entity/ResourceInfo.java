@@ -1,6 +1,7 @@
 package cloud.flystar.solon.user.service.entity;
 
 import cloud.flystar.solon.commons.constant.UserResourceTypeEnum;
+import com.baomidou.mybatisplus.annotation.*;
 import lombok.Data;
 
 import java.time.LocalDateTime;
@@ -9,7 +10,10 @@ import java.time.LocalDateTime;
  * 页面元素资源
  */
 @Data
+@TableName("resource_info")
 public class ResourceInfo {
+
+    @TableId(type = IdType.ASSIGN_ID)
     private Long resourceId;
 
     /**
@@ -56,11 +60,17 @@ public class ResourceInfo {
     private String remarks;
 
     /** 状态（0停用 1正常）*/
-    private Integer status;
+    private Integer enableFlag;
 
+    @TableLogic
+    private Integer deleteFlag;
 
+    @TableField(fill = FieldFill.INSERT)
     private LocalDateTime createTime;
+    @TableField(fill = FieldFill.INSERT)
     private Long createUserId;
+    @TableField(fill = FieldFill.INSERT_UPDATE)
     private LocalDateTime updateTime;
+    @TableField(fill = FieldFill.INSERT_UPDATE)
     private Long updateUserId;
 }

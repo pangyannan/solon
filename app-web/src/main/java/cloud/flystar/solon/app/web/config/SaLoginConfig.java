@@ -16,7 +16,7 @@ public class SaLoginConfig {
     //不用登陆的地址
     private List<String> excludeList = Arrays.asList(
             "/*.ico", "/js/**","/css/**","/lib/**",
-            "/login", "/doLogin");
+            "/login","/login/captcha", "/login/doLogin");
 
     @Bean
     @Order(-101)

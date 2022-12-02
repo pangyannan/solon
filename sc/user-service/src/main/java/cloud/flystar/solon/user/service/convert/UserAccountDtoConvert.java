@@ -21,7 +21,7 @@ public class UserAccountDtoConvert extends DTOConvert<UserInfo, UserAccountDto> 
         dto.setUserId(userInfo.getUserId())
                 .setUserName(userInfo.getUserName())
                 .setPassword(userInfo.getPassword())
-                .setEnable(userInfo.getEnable())
+                .setEnableFlag(userInfo.getEnableFlag())
                 .setDeleteFlag(userInfo.getDeleteFlag());
         return dto;
     }

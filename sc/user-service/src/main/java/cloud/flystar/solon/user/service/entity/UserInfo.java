@@ -34,9 +34,10 @@ public class UserInfo {
 
 
     /** 账号状态（0停用 1正常）*/
-    private Integer status;
+    private Boolean enableFlag;
 
     /** 删除标志（false 代表未删除 true 代表删除）*/
+    @TableLogic
     private Boolean deleteFlag;
 
 

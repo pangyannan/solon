@@ -15,12 +15,12 @@ import java.util.function.Consumer;
 @Service
 public class MdmGbT2260DataScope extends AbstractUserDataScopeService<MdmGbT2260> {
     @Override
-    protected String dataScopeKey() {
+    public String dataScopeKey() {
         return "/data/mdm/gbt2260";
     }
 
     @Override
-    protected Consumer<LambdaQueryWrapper<MdmGbT2260>> assertFalse(Long userId) {
+    protected Consumer<LambdaQueryWrapper<MdmGbT2260>> assertFilterFalse(Long userId) {
         return queryChainWrapper -> queryChainWrapper.eq(MdmGbT2260::getAreaCode,"");
     }
 
@@ -30,17 +30,12 @@ public class MdmGbT2260DataScope extends AbstractUserDataScopeService<MdmGbT2260
     }
 
     @Override
-    protected SFunction<MdmGbT2260, ?> deptChild() {
+    protected SFunction<MdmGbT2260, ?> getDataOwnerDept() {
         return MdmGbT2260::getAreaCode;
     }
 
     @Override
-    protected SFunction<MdmGbT2260, ?> deptCurrent() {
-        return MdmGbT2260::getAreaCode;
-    }
-
-    @Override
-    protected SFunction<MdmGbT2260, ?> creator() {
+    protected SFunction<MdmGbT2260, ?> getDataOwnerUser() {
         return MdmGbT2260::getParentCode;
     }
 }

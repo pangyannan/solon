@@ -45,7 +45,12 @@ public class LoginController {
     @Autowired
     private RedisTemplate redisTemplate;
 
-    @GetMapping({""})
+    /**
+     * 默认登陆夜
+     * @param request
+     * @return
+     */
+    @GetMapping({"","/"})
     public String saLogin(HttpServletRequest request) {
         return "sa-login.html";
     }
@@ -75,6 +80,7 @@ public class LoginController {
     //默认登陆
     @Audit(label = "默认用户名秘密登陆" ,paramLog = true)
     @PostMapping("/doLogin")
+    @ResponseBody
     public Result<UserLoginSuccessToken> doLogin(@RequestBody @Valid UserLoginDto userLoginDto) {
         userLoginDto.setLoginDevice(GlobeConstant.PROJECT_CODE_WEB);
         return userAccountApi.login(userLoginDto);
@@ -90,7 +96,7 @@ public class LoginController {
 
     public static void main(String[] args) throws Exception {
         PasswordEncoder delegatingPasswordEncoder = PasswordEncoderFactories.createDelegatingPasswordEncoder();
-        String password = "1234567";
+        String password = "123456";
         String encode = delegatingPasswordEncoder.encode(password);
         log.info("密码加密："+encode);
 

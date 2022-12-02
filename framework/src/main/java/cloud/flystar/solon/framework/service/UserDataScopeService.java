@@ -12,14 +12,26 @@ import java.util.function.Consumer;
  */
 public interface UserDataScopeService<T> {
     /**
-     * 支持的权限顾虑范围
-     * @return
+     * 当前服务对应的数据资源对象，比如 /data/user
+     * 一般是要和 ResourceInfo 中的定义一致的
+     * 需要子类自行实现和定义
+     * @return 当前服务的数据权限唯一键
      */
-    List<DataScopeEnum> supportDataScopeEnum();
+    String dataScopeKey();
+
+    /**
+     * 支持的权限过滤范围
+     */
+    List<DataScopeEnum> dataScopeTypes();
+
+    /**
+     * 获取当前用户的数据权限查询条件
+     */
+    Optional<Consumer<LambdaQueryWrapper<T>>> scopeQueryFilter();
+
     /**
      * 获取用户的数据权限查询条件
-     * @param userId
-     * @return
+     * @param userId 用户ID
      */
-    Optional<Consumer<LambdaQueryWrapper<T>>> scopeQuery(Long userId);
+    Optional<Consumer<LambdaQueryWrapper<T>>> scopeQueryFilter(Long userId);
 }

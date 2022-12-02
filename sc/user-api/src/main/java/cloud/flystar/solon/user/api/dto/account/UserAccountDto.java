@@ -21,7 +21,7 @@ public class UserAccountDto {
 
 
     /** 帐号状态（false 禁用 true启用） */
-    private Boolean enable;
+    private Boolean enableFlag;
 
     /** 删除标志（false 代表未删除 true代表删除）*/
     private Boolean deleteFlag;

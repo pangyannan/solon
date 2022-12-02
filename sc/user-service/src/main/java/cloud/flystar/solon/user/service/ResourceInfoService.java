@@ -8,7 +8,6 @@ import cloud.flystar.solon.user.service.entity.ResourceInfo;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.util.List;
-import java.util.Map;
 
 public interface ResourceInfoService extends IBaseService<ResourceInfo> {
     List<ResourceInfo> listUserResource(@NotNull Long userId, @NotBlank String resourceType,String projectCode);

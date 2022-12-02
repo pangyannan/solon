@@ -1,46 +1,54 @@
 package cloud.flystar.solon.user.service.entity;
 
 
-import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.*;
 import lombok.Data;
 
 import java.time.LocalDateTime;
 
 /**
  * 部门表
+ * 根部门ID为0，并且不能定义dept0的部门
  */
 @Data
+@TableName("department")
 public class Department {
     /** 部门ID */
-    @TableId
+    @TableId(type = IdType.ASSIGN_ID)
     private Long deptId;
 
     /** 部门名称 */
     private String deptName;
 
-    /** 显示顺序 */
-    private Integer orderNum;
+    /** 父部门ID*/
+    private Long parentDeptId;
 
-    /** 父部门ID */
-    private String parentId;
+    /**
+     * 所有父部门ID路径，从根路径开始，逗号分割 比如  0,9,20,301
+     * 不包含自己
+     */
+    private String parentDeptIdPath;
 
-    /** 父部门名称 */
-    private String parentName;
-
-    /** 所有父部门ID列表 */
-    private String parentIds;
-
-    /** 所有父部门名称,以/分割，例如 信息科技部/研发中心组 */
-    private String parentsName;
 
     /** 部门编码，一般与其他系统关联使用 */
-    private String deptCode;
+    private String deptSourceCode;
 
     /** 部门状态（0停用 1正常）*/
-    private Integer status;
+    private Integer enableFlag;
 
+    /** 删除标志（0代表未删除 1代表删除）*/
+    @TableLogic
+    private Integer deleteFlag;
+
+    /** 显示顺序 */
+    private Integer sortNum;
+
+    @TableField(fill = FieldFill.INSERT)
     private LocalDateTime createTime;
+    @TableField(fill = FieldFill.INSERT)
     private Long createUserId;
+    @TableField(fill = FieldFill.INSERT_UPDATE)
     private LocalDateTime updateTime;
+    @TableField(fill = FieldFill.INSERT_UPDATE)
     private Long updateUserId;
 }

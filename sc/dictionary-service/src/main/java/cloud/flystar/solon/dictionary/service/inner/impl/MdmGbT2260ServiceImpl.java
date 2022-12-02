@@ -10,7 +10,6 @@ import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.collection.ListUtil;
 import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.conditions.query.LambdaQueryChainWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.extern.slf4j.Slf4j;
@@ -55,12 +54,8 @@ public class MdmGbT2260ServiceImpl extends BaseServiceImpl<MdmGbT2260Mapper, Mdm
 
     @Override
     public Page<MdmGbT2260> pageByDataScope(Page<MdmGbT2260> page, LambdaQueryChainWrapper<MdmGbT2260> queryWrapper) {
-
-//        Consumer<LambdaQueryWrapper<MdmGbT2260>> consumer = this.consumer();
-//        if(consumer != null){
-//            queryWrapper.and(consumer);
-//        }
-        Optional<Consumer<LambdaQueryWrapper<MdmGbT2260>>> optional = mdmGbT2260DataScope.scopeQuery(1L);
+        //数据权限过滤条件
+        Optional<Consumer<LambdaQueryWrapper<MdmGbT2260>>> optional = mdmGbT2260DataScope.scopeQueryFilter();
         optional.ifPresent(t -> queryWrapper.and(optional.get()));
         return super.page(page,queryWrapper.getWrapper());
     }

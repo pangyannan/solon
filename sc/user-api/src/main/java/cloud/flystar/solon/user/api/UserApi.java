@@ -1,6 +1,9 @@
 package cloud.flystar.solon.user.api;
 
-import cloud.flystar.solon.user.api.dto.*;
+import cloud.flystar.solon.user.api.dto.PermissionDto;
+import cloud.flystar.solon.user.api.dto.ResourceInfoDto;
+import cloud.flystar.solon.user.api.dto.RoleDto;
+import cloud.flystar.solon.user.api.dto.UserDto;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;

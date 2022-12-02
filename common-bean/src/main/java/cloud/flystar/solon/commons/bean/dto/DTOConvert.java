@@ -1,7 +1,9 @@
 package cloud.flystar.solon.commons.bean.dto;
 
 
-import java.util.*;
+import java.util.Collections;
+import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 public abstract class DTOConvert<A,B>  {

@@ -1,6 +1,7 @@
 package cloud.flystar.solon.framework.config;
 
 import cloud.flystar.solon.commons.log.trace.HttpRequestTraceInterceptor;
+import cloud.flystar.solon.framework.interceptor.ThreadLocalInterceptor;
 import cn.dev33.satoken.interceptor.SaAnnotationInterceptor;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
@@ -16,9 +17,15 @@ public class CoreWebMvcConfigurer implements WebMvcConfigurer {
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
+        //ThreadLocalInterceptor
+        registry.addInterceptor(new ThreadLocalInterceptor())
+                .order(CORE_BASE_ORDER)
+                .addPathPatterns("/**")
+                .excludePathPatterns("/static/**");
+
         // Trace拦截器
         registry.addInterceptor(new HttpRequestTraceInterceptor())
-                .order(CORE_BASE_ORDER)
+                .order(CORE_BASE_ORDER + 10)
                 .addPathPatterns("/**")
                 .excludePathPatterns("/static/**");
 

@@ -8,7 +8,6 @@ import cloud.flystar.solon.framework.service.UserDataScopeService;
 import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.collection.ListUtil;
 import cn.hutool.core.util.StrUtil;
-import com.baomidou.mybatisplus.core.conditions.ISqlSegment;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.support.SFunction;
 
@@ -24,31 +23,29 @@ public abstract class AbstractUserDataScopeService<T> implements UserDataScopeSe
     FrameworkContextService frameworkContextService;
 
     /**
-     * 当前服务对应的数据资源对象，比如 /data/user
-     * 一般是要和 ResourceInfo 中的定义一致的
-     * 需要子类自行实现和定义
-     * @return
-     */
-    protected abstract String dataScopeKey();
-
-    /**
      * 保证查询条件一定为false的实现
-     * 例如 return queryChainWrapper -> queryChainWrapper.eq(User::getUserId,-1);
-     * @param userId
-     * @return
+     * 一般是用于用户没有数据权限时的条件
+     * @param userId 用户id
+     * @return 例如 return queryChainWrapper -> queryChainWrapper.eq(User::getUserId,-1);
      */
-    protected abstract Consumer<LambdaQueryWrapper<T>> assertFalse(Long userId);
+    protected abstract Consumer<LambdaQueryWrapper<T>> assertFilterFalse(Long userId);
 
 
     @Override
-    public List<DataScopeEnum> supportDataScopeEnum() {
+    public List<DataScopeEnum> dataScopeTypes() {
         return ListUtil.toList(DataScopeEnum.values());
     }
 
     @Override
-    public Optional<Consumer<LambdaQueryWrapper<T>>> scopeQuery(Long userId){
+    public Optional<Consumer<LambdaQueryWrapper<T>>> scopeQueryFilter() {
+        Long loginId = frameworkContextService.getLoginIdDefaultNull();
+        return this.scopeQueryFilter(loginId);
+    }
+
+    @Override
+    public Optional<Consumer<LambdaQueryWrapper<T>>> scopeQueryFilter(Long userId){
         //如果当前未实现任何权限类型定义，则直接返回
-        List<DataScopeEnum> supportDataScopeEnums = this.supportDataScopeEnum();
+        List<DataScopeEnum> supportDataScopeEnums = this.dataScopeTypes();
         if(CollectionUtil.isEmpty(supportDataScopeEnums)){
             return Optional.empty();
         }
@@ -64,7 +61,7 @@ public abstract class AbstractUserDataScopeService<T> implements UserDataScopeSe
         List<DataScopeEnum> userDataScopeEnum = this.getUserDataScopeEnum(userId);
         //如果没有数据权限范围，直接返回一个一定为false的条件
         if(CollectionUtil.isEmpty(userDataScopeEnum)){
-            return Optional.of(this.assertFalse(userId));
+            return Optional.of(this.assertFilterFalse(userId));
         }
         if(userDataScopeEnum.contains(DataScopeEnum.ALL)){
             return this.all(userId);
@@ -75,7 +72,7 @@ public abstract class AbstractUserDataScopeService<T> implements UserDataScopeSe
 
         //如果没有其他数据范围的权限，直接返回一个一定为false的条件
         if(CollectionUtil.isEmpty(list)){
-            return Optional.of(this.assertFalse(userId));
+            return Optional.of(this.assertFilterFalse(userId));
         }
 
         Consumer<LambdaQueryWrapper<T>> consumer = queryChainWrapper ->{
@@ -83,24 +80,24 @@ public abstract class AbstractUserDataScopeService<T> implements UserDataScopeSe
                 DataScopeEnum scopeEnum = list.get(i);
                 if(DataScopeEnum.DEPT_CHILD == scopeEnum
                         && supportDataScopeEnums.contains(scopeEnum)
-                        && this.deptChild() != null ){
+                        && this.getDataOwnerDept() != null ){
                     if(CollectionUtil.isNotEmpty(userSessionInfo.getManagementDeptIds())){
-                        queryChainWrapper.or(i > 0 ).in(this.deptChild(),userSessionInfo.getManagementDeptIds());
+                        queryChainWrapper.or(i > 0 ).in(this.getDataOwnerDept(),userSessionInfo.getManagementDeptIds());
                     }
                 }
 
                 if(DataScopeEnum.DEPT_CURRENT == scopeEnum
-                        && this.supportDataScopeEnum().contains(scopeEnum)
-                        && this.deptChild() != null){
+                        && this.dataScopeTypes().contains(scopeEnum)
+                        && this.getDataOwnerDept() != null){
                     if(CollectionUtil.isNotEmpty(userSessionInfo.getDeptIds())){
-                        queryChainWrapper.or(i > 0 ).in(this.deptCurrent(),userSessionInfo.getDeptIds());
+                        queryChainWrapper.or(i > 0 ).in(this.getDataOwnerDept(),userSessionInfo.getDeptIds());
                     }
                 }
 
                 if(DataScopeEnum.CREATOR == scopeEnum
                         && supportDataScopeEnums.contains(scopeEnum)
-                        && this.creator() != null){
-                    queryChainWrapper.or(i > 0 ).eq(this.creator(),userSessionInfo.getUserId());
+                        && this.getDataOwnerUser() != null){
+                    queryChainWrapper.or(i > 0 ).eq(this.getDataOwnerUser(),userSessionInfo.getUserId());
                 }
             }
         };
@@ -111,7 +108,7 @@ public abstract class AbstractUserDataScopeService<T> implements UserDataScopeSe
      * 获取当前数据资源对象的数据权限
      */
     protected  List<DataScopeEnum> getUserDataScopeEnum(Long userId){
-        Optional<UserSessionInfo> optional = frameworkContextService.getUserSessionInfoDefaultNull(2L);
+        Optional<UserSessionInfo> optional = frameworkContextService.getUserSessionInfoDefaultNull(userId);
         if(!optional.isPresent()){
             return ListUtil.empty();
         }
@@ -132,39 +129,29 @@ public abstract class AbstractUserDataScopeService<T> implements UserDataScopeSe
 
 
     /**
-     * 默认如果为全部，则无需限制查询条件
-     * @param userId
-     * @return
+     * 如果用户所有权限，则返回空的无需过滤的条件
+     * @param userId 用户id
+     * @return 空的无需过滤的条件表达式
      */
     protected Optional<Consumer<LambdaQueryWrapper<T>>> all(Long userId){
         return Optional.empty();
     }
 
-    protected SFunction<T, ?> deptChild(){
+    /**
+     * 数据权属部门列
+     * 按照约定大于配置的思想，建议所有的权属部门字段命名全部统一为：data_owner_dept, 并且是单部门属性值
+     * @return 例如 User::getDataOwnerDept
+     */
+    protected SFunction<T, ?> getDataOwnerDept(){
         return null;
     }
 
-    protected SFunction<T, ?> deptCurrent( ){
+    /**
+     * 数据权属人数据列
+     * 按照约定大于配置的思想，建议所有的权属部门字段命名全部统一为：data_owner_user, 并且是单人员属性
+     * @return 例如 User::getDataOwnerDept
+     */
+    protected SFunction<T, ?> getDataOwnerUser( ){
         return null;
-    }
-
-    protected SFunction<T, ?> creator( ){
-        return null;
-    }
-
-
-
-
-    public static class EmptyDataScopesISqlSegment implements ISqlSegment {
-        private String sqlSegment;
-
-        public EmptyDataScopesISqlSegment(String sqlSegment) {
-            this.sqlSegment = sqlSegment;
-        }
-
-        @Override
-        public String getSqlSegment() {
-            return sqlSegment;
-        }
     }
 }

@@ -47,7 +47,6 @@ public class ResourceInfoServiceImpl extends BaseServiceImpl<ResourceInfoMapper,
         }
         Set<Long> permissionIds = permissions.stream().map(Permission::getPermissionId).collect(Collectors.toSet());
         List<PermissionResourceRef> permissionResourceRefs = ChainWrappers.lambdaQueryChain(permissionResourceRefMapper)
-                .eq(PermissionResourceRef::getResourceType,resourceType)
                 .in(PermissionResourceRef::getPermissionId, permissionIds)
                 .list();
         if(CollectionUtil.isEmpty(permissionResourceRefs)){
@@ -55,9 +54,9 @@ public class ResourceInfoServiceImpl extends BaseServiceImpl<ResourceInfoMapper,
         }
         Set<Long> resourceIds = permissionResourceRefs.stream().map(PermissionResourceRef::getResourceId).collect(Collectors.toSet());
         return this.lambdaQuery()
-                .in(ResourceInfo::getResourceId,resourceIds)
-                .eq(ResourceInfo::getResourceType,resourceType)
-                .eq(StrUtil.isNotBlank(projectCode),ResourceInfo::getProjectCode,permissionIds)
+                .in(ResourceInfo::getResourceId, resourceIds)
+                .eq(StrUtil.isNotBlank(resourceType), ResourceInfo::getResourceType,resourceType)
+                .eq(StrUtil.isNotBlank(projectCode), ResourceInfo::getProjectCode,permissionIds)
                 .list();
     }
 

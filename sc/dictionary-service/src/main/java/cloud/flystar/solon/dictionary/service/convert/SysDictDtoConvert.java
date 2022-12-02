@@ -6,7 +6,6 @@ import cloud.flystar.solon.dictionary.api.dto.SysDictDto;
 import cloud.flystar.solon.dictionary.service.entity.SysDict;
 import cloud.flystar.solon.dictionary.service.entity.SysDictDetail;
 import cn.hutool.core.collection.ListUtil;
-import com.google.common.collect.Lists;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;

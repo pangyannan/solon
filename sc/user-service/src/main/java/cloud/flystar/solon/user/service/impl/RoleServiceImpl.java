@@ -40,7 +40,7 @@ public class RoleServiceImpl extends BaseServiceImpl<RoleMapper, Role> implement
         Set<Long> roleIds = userRoleRefs.stream().map(UserRoleRef::getRoleId).collect(Collectors.toSet());
         return this.lambdaQuery()
                 .in(Role::getRoleId, roleIds)
-                .eq(Role::getRoleStatus, YesOrNo.YES.getKey())
+                .eq(Role::getEnableFlag, YesOrNo.YES.getKey())
                 .eq(Role::getDeleteFlag, YesOrNo.NO.getKey())
                 .list();
     }

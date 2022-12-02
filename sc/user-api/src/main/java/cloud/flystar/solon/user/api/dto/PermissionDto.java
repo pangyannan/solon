@@ -10,7 +10,6 @@ import java.time.LocalDateTime;
 @Data
 public class PermissionDto {
    private Long permissionId;
-   private String permissionCode;
    private String permissionName;
 
     private LocalDateTime createTime;

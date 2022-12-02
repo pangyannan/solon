@@ -13,7 +13,6 @@ import cloud.flystar.solon.user.service.mapper.RolePermissionRefMapper;
 import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.collection.ListUtil;
 import com.baomidou.mybatisplus.extension.toolkit.ChainWrappers;
-import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;

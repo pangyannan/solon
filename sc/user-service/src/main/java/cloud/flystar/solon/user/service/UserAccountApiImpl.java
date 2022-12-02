@@ -16,7 +16,6 @@ import cloud.flystar.solon.user.api.dto.account.UserLoginDto;
 import cloud.flystar.solon.user.api.dto.account.UserLoginSuccessToken;
 import cloud.flystar.solon.user.service.convert.UserAccountDtoConvert;
 import cloud.flystar.solon.user.service.entity.Department;
-import cloud.flystar.solon.user.service.entity.ResourceInfo;
 import cloud.flystar.solon.user.service.entity.UserInfo;
 import cn.dev33.satoken.secure.SaSecureUtil;
 import cn.dev33.satoken.session.SaSession;
@@ -136,7 +135,7 @@ public class UserAccountApiImpl implements UserAccountApi {
                     .setUserId(GlobeConstant.ADMIN_USERID)
                     .setUserName(GlobeConstant.ADMIN_USERNAME)
                     .setPassword(secureConfig.getAdminPassword())
-                    .setEnable(Boolean.TRUE)
+                    .setEnableFlag(Boolean.TRUE)
                     .setDeleteFlag(Boolean.FALSE);
         }else {
             userAccountDto = this.getBaseAccountByUserName(userLoginDto.getUserName());
@@ -144,7 +143,7 @@ public class UserAccountApiImpl implements UserAccountApi {
                 return Result.failedBuild(ErrorCodeEnum.USER_ERROR_A0210);
             }
 
-            if (Boolean.FALSE == Optional.ofNullable(userAccountDto.getEnable()).orElse(Boolean.FALSE)) {
+            if (Boolean.FALSE == Optional.ofNullable(userAccountDto.getEnableFlag()).orElse(Boolean.FALSE)) {
                 return Result.failedBuild(ErrorCodeEnum.USER_ERROR_A0202);
             }
             if (Boolean.TRUE == Optional.ofNullable(userAccountDto.getDeleteFlag()).orElse(Boolean.FALSE)) {
@@ -237,14 +236,9 @@ public class UserAccountApiImpl implements UserAccountApi {
         userSessionInfo.setDeptIds(deptIds);
 
         //管辖部门
-        Set<Long> managementDeptIds = new HashSet<>();
-        for (Department department : departments) {
-            List<Department> childDeptList = departmentService.listByParentId(department.getDeptId());
-            List<Long> childDeptIds = childDeptList.stream().map(Department::getDeptId).collect(Collectors.toList());
-            managementDeptIds.addAll(childDeptIds);
-        }
+        List<Department> managerDepartments = departmentService.listUserManagerDepartment(userAccountDto.getUserId());
+        List<Long> managementDeptIds = managerDepartments.stream().map(Department::getDeptId).collect(Collectors.toList());
         userSessionInfo.setManagementDeptIds(Lists.newArrayList(managementDeptIds));
-
 
         //数据权限
         List<UserDataResourceScope> userDataResourceScopes = resourceInfoService.listUserDataResourceScope(userAccountDto.getUserId(), null);

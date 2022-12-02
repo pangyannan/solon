@@ -14,7 +14,6 @@ public class PermissionDtoConvert extends DTOConvert<Permission, PermissionDto> 
         }
         PermissionDto dto = new PermissionDto();
         dto.setPermissionId(permission.getPermissionId());
-        dto.setPermissionCode(permission.getPermissionCode());
         dto.setPermissionName(permission.getPermissionName());
 
         dto.setCreateTime(permission.getCreateTime());
