@@ -26,7 +26,7 @@ public class SysConfig {
     /** 参数键值 */
     private String configValue;
 
-    /** 系统内置
+    /** 是否系统内置
      *  0-否  非系统内置
      *  1-是  系统内置
      *  @see YesOrNo
@@ -40,9 +40,9 @@ public class SysConfig {
      */
     private Integer enableFlag;
 
-
     @TableLogic
     private Integer deleteFlag;
+
     @TableField(fill = FieldFill.INSERT)
     private LocalDateTime createTime;
     @TableField(fill = FieldFill.INSERT)

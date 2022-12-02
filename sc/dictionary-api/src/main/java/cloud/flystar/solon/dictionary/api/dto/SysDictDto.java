@@ -31,7 +31,7 @@ public class SysDictDto {
     /**
      * 属性命名建议
      */
-    private String dictFieldOpinions;
+    private String dictFieldSuggest;
     /**
      * 启用状态
      * @see YesOrNo

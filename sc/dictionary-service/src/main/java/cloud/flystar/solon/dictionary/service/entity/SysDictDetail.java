@@ -53,11 +53,6 @@ public class SysDictDetail {
     private Integer enableFlag;
 
 
-    /**
-     * 备注
-     */
-    private String remark;
-
     @TableField(fill = FieldFill.INSERT)
     private LocalDateTime createTime;
     @TableField(fill = FieldFill.INSERT)

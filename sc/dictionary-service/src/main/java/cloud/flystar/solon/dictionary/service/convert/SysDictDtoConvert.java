@@ -28,7 +28,7 @@ public class SysDictDtoConvert extends DTOConvert<SysDict, SysDictDto> {
         dto.setDictId(source.getDictId())
                 .setDictType(source.getDictType())
                 .setDictName(source.getDictName())
-                .setDictFieldOpinions(source.getDictFieldOpinions())
+                .setDictFieldSuggest(source.getDictFieldSuggest())
                 .setEnableFlag(source.getEnableFlag())
                 .setRemark(source.getRemark())
                 .setCreateTime(source.getCreateTime())

@@ -21,7 +21,6 @@ public class SysDictDetailDtoConvert extends DTOConvert<SysDictDetail, SysDictDe
                 .setDictIndex(source.getDictIndex())
                 .setDefaultFlag(source.getDefaultFlag())
                 .setEnableFlag(source.getEnableFlag())
-                .setRemark(source.getRemark())
                 .setCreateTime(source.getCreateTime())
                 .setCreateUserId(source.getCreateUserId())
                 .setUpdateTime(source.getUpdateTime())

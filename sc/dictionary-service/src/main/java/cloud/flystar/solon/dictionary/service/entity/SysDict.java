@@ -36,19 +36,18 @@ public class SysDict {
     /**
      * 属性命名建议
      */
-    private String dictFieldOpinions;
-    /**
-     * 启用状态
-     * @see YesOrNo
-     */
-    private Integer enableFlag;
+    private String dictFieldSuggest;
 
     /**
      * 备注
      */
     private String remark;
 
-
+    /**
+     * 启用状态
+     * @see YesOrNo
+     */
+    private Integer enableFlag;
 
     @TableField(fill = FieldFill.INSERT)
     private LocalDateTime createTime;
