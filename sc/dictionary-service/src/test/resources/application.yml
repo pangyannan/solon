@@ -26,9 +26,9 @@ spring:
         # 连接池中的最大空闲连接 建议 cpu*2
         max-idle: 8
         # 连接池中的最小空闲连接
-        min-idle: 0
+        min-idle: 1
         # 空闲连接线程释放周期
-        time-between-eviction-runs: 10s
+        time-between-eviction-runs: 60s
 mybatis-plus:
   global-config:
     banner: false

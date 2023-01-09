@@ -14,10 +14,7 @@ import com.baomidou.mybatisplus.extension.conditions.query.LambdaQueryChainWrapp
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.plugins.pagination.PageDTO;
 import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.RepeatedTest;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -30,6 +27,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @Slf4j
 @SpringBootTest(classes= JunitApp.class,properties="classpath:/application.yml")
+@TestMethodOrder (MethodOrderer.OrderAnnotation. class )
+@DisplayName("行政区测试")
 class MdmGbT2260ApiImplTest {
     @Resource
     private MdmGbT2260ApiImpl mdmGbT2260ApiImpl;
@@ -63,12 +62,16 @@ class MdmGbT2260ApiImplTest {
 
 
     @RepeatedTest(value = 10)
+    @DisplayName("查询所有省份")
+    @Order(1)
     void listProvince() {
         List<MdmGbT2260Dto> list = mdmGbT2260ApiImpl.listProvince();
         assertTrue(list.size()>30);
     }
 
     @Test
+    @DisplayName("根据省份查询城市")
+    @Order(2)
     void listCity() {
         //山东
         List<MdmGbT2260Dto> list = mdmGbT2260ApiImpl.listCity("370000");
@@ -76,6 +79,8 @@ class MdmGbT2260ApiImplTest {
     }
 
     @Test
+    @DisplayName("根据城市查询区域")
+    @Order(3)
     void listDistrict() {
         //青岛市
         List<MdmGbT2260Dto> list = mdmGbT2260ApiImpl.listDistrict("370200");
@@ -83,6 +88,8 @@ class MdmGbT2260ApiImplTest {
     }
 
     @Test
+    @DisplayName("根据父级别编码查询子编码")
+    @Order(4)
     void listByParentCode() {
         List<MdmGbT2260Dto> shandong = mdmGbT2260ApiImpl.listByParentCode("370000");
         assertTrue(shandong.size() == 16);
@@ -97,6 +104,8 @@ class MdmGbT2260ApiImplTest {
             "370000, 山东省",
             "370200, 青岛市",
     })
+    @DisplayName("根据编码查询")
+    @Order(5)
     void getByAreaCode(String areaCode,String areaName) {
         MdmGbT2260Dto mdmGbT2260Dto = mdmGbT2260ApiImpl.getByAreaCode(areaCode);
         assertTrue(mdmGbT2260Dto.getAreaName().equals(areaName));
@@ -104,6 +113,8 @@ class MdmGbT2260ApiImplTest {
 
 
     @Test
+    @DisplayName("分页查询")
+    @Order(6)
     void page(){
         IPage page = new Page();
         page = mdmGbT2260Service.page(page);
@@ -118,6 +129,8 @@ class MdmGbT2260ApiImplTest {
 
 
     @RepeatedTest(10)
+    @DisplayName("分页查询2")
+    @Order(8)
     void page2(){
         Page page = new Page();
         page.setOptimizeCountSql(false);

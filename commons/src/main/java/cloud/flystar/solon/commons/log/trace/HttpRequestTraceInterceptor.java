@@ -38,7 +38,8 @@ public class HttpRequestTraceInterceptor implements HandlerInterceptor {
             spanId = Integer.valueOf(spanIdStr) + 1;
         }
 
-//        addHeader(request,response,traceId,spanId);
+        //加入到Request中
+        addHeader(request,response,traceId,spanId);
 
         TraceContext.putTraceId(traceId);
         TraceContext.putMdcTraceId(traceId);
@@ -61,6 +62,7 @@ public class HttpRequestTraceInterceptor implements HandlerInterceptor {
     }
 
 
+
     /**
      * @link https://www.jianshu.com/p/6549bef972c0
      */
@@ -68,27 +70,65 @@ public class HttpRequestTraceInterceptor implements HandlerInterceptor {
     private void addHeader(HttpServletRequest request,HttpServletResponse response, String traceId, Integer spanId){
         if(request instanceof RequestFacade ){
             // 从 RequestFacade 中获取 org.apache.catalina.connector.Request
-            Field connectorField = ReflectionUtils.findField(RequestFacade.class, "request", Request.class);
-            connectorField.setAccessible(true);
+            Field connectorField = this.connectorField();
             Request connectorRequest = (Request) connectorField.get(request);
 
             // 从 org.apache.catalina.connector.Request 中获取 org.apache.coyote.Request
-            Field coyoteField = ReflectionUtils.findField(Request.class, "coyoteRequest", org.apache.coyote.Request.class);
-            coyoteField.setAccessible(true);
+            Field coyoteField = this.coyoteField();
             org.apache.coyote.Request coyoteRequest = (org.apache.coyote.Request) coyoteField.get(connectorRequest);
 
             // 从 org.apache.coyote.Request 中获取 MimeHeaders
-            Field mimeHeadersField =  ReflectionUtils.findField(org.apache.coyote.Request.class, "headers", MimeHeaders.class);
-            mimeHeadersField.setAccessible(true);
+            Field mimeHeadersField =  this.mimeHeadersField();
             MimeHeaders mimeHeaders =  (MimeHeaders) mimeHeadersField.get(coyoteRequest);
 
-            mimeHeaders.removeHeader("Trace-Id");
-            mimeHeaders.addValue("Trace-Id").setString(traceId);
+            mimeHeaders.removeHeader(TraceContext.TRACE_ID_NAME);
+            mimeHeaders.addValue(TraceContext.TRACE_ID_NAME).setString(traceId);
 
-            mimeHeaders.removeHeader("Span-Id");
-            mimeHeaders.addValue("Span-Id").setString(spanId.toString());
+            mimeHeaders.removeHeader(TraceContext.SPAN_ID_NAME);
+            mimeHeaders.addValue(TraceContext.SPAN_ID_NAME).setString(spanId.toString());
         }
 
         response.setHeader("Trace-Id",traceId);
     }
+
+
+    private Field connectorField = null;
+    private Field coyoteField = null;
+    private Field mimeHeadersField = null;
+
+
+    private Field connectorField(){
+        if(connectorField != null){
+            return this.connectorField;
+        }
+
+        Field connectorFieldTemp = ReflectionUtils.findField(RequestFacade.class, "request", Request.class);
+        connectorFieldTemp.setAccessible(true);
+        this.connectorField = connectorFieldTemp;
+        return connectorField;
+
+    }
+
+    private Field coyoteField(){
+        if(this.coyoteField != null){
+            return this.coyoteField;
+        }
+
+        Field coyoteFieldTemp = ReflectionUtils.findField(Request.class, "coyoteRequest", org.apache.coyote.Request.class);
+        coyoteFieldTemp.setAccessible(true);
+        this.coyoteField  = coyoteFieldTemp;
+        return this.coyoteField;
+    }
+
+    private Field mimeHeadersField(){
+        if(this.mimeHeadersField != null){
+            return this.mimeHeadersField;
+        }
+
+        Field mimeHeadersFieldTemp =  ReflectionUtils.findField(org.apache.coyote.Request.class, "headers", MimeHeaders.class);
+        mimeHeadersFieldTemp.setAccessible(true);
+        this.mimeHeadersField  = mimeHeadersFieldTemp;
+        return this.mimeHeadersField;
+    }
+
 }

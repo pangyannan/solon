@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
  */
 @Data
 @TableName("mdm_gbt2259")
-public class MdmGbT2659 {
+public class  MdmGbT2659 {
     /**
      * 两字符代码
      */
