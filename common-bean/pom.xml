@@ -11,11 +11,11 @@
 
     <artifactId>common-bean</artifactId>
 
-    <dependencies>
-        <dependency>
-            <groupId>cn.hutool</groupId>
-            <artifactId>hutool-core</artifactId>
-        </dependency>
-    </dependencies>
+<!--    <dependencies>-->
+<!--        <dependency>-->
+<!--            <groupId>cn.hutool</groupId>-->
+<!--            <artifactId>hutool-core</artifactId>-->
+<!--        </dependency>-->
+<!--    </dependencies>-->
 
 </project>

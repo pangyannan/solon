@@ -20,8 +20,8 @@ import java.util.List;
  * 定时清理日志
  */
 @Service
-@PersistJobDataAfterExecution
-@DisallowConcurrentExecution
+@PersistJobDataAfterExecution  //禁止并发执行
+@DisallowConcurrentExecution //禁止并发执行
 public class JobLogClear extends AbstractQuartzJob {
     @Autowired
     private JobLogService jobLogService;
@@ -36,10 +36,7 @@ public class JobLogClear extends AbstractQuartzJob {
             if(maxLogDay != null){
                 //保留日志的最大天数
                 DateTime dateTime = DateUtil.offsetDay(DateTime.now(), -maxLogDay);
-                QueryWrapper wrapper = new QueryWrapper(new JobLog());
-                wrapper.eq("job_config_id", config.getId());
-                wrapper.le("start_time", dateTime);
-                jobLogService.remove(wrapper);
+                jobLogService.removeBeforeTime(config.getId(),dateTime);
             }
         }
     }

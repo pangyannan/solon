@@ -20,7 +20,7 @@ import java.util.Map;
  */
 public class JsonUtil {
 
-    private static  ObjectMapper mapper = ObjectMapperFactory.buildDefaultObjectMapper();
+    private static  ObjectMapper mapper = ObjectMapperFactory.INSTANCE();
 
     /**
      * 复制ObjectMapper，用于自定义场景，不影响全局配置

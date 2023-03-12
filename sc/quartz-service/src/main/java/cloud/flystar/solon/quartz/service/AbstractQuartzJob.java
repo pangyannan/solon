@@ -1,5 +1,6 @@
 package cloud.flystar.solon.quartz.service;
 
+import cloud.flystar.solon.commons.log.trace.TraceContext;
 import cloud.flystar.solon.commons.util.IpUtil;
 import cloud.flystar.solon.quartz.service.config.JobConstants;
 import cloud.flystar.solon.quartz.service.entity.JobConfig;
@@ -10,6 +11,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext;
 
 import java.time.LocalDateTime;
 
@@ -18,6 +21,9 @@ import java.time.LocalDateTime;
  */
 @Slf4j
 public abstract class AbstractQuartzJob implements Job {
+    @Autowired
+    private ServletWebServerApplicationContext servletWebServerApplicationContext;
+
     private static String localIp  = null;
     /**
      * 线程本地变量
@@ -29,6 +35,7 @@ public abstract class AbstractQuartzJob implements Job {
     public void execute(JobExecutionContext context) throws JobExecutionException {
         JobConfig jobConfig = (JobConfig)context.getMergedJobDataMap().get(JobConstants.JOB_CONFIG);
         try {
+            TraceContext.initTrace();
             this.before(context,jobConfig);
             this.doExecute(context, jobConfig);
             this.after(context, jobConfig, null);
@@ -37,6 +44,7 @@ public abstract class AbstractQuartzJob implements Job {
             this.after(context, jobConfig, ex);
         }finally {
             threadLocal.remove();
+            TraceContext.removeAll();
         }
     }
 
@@ -73,7 +81,7 @@ public abstract class AbstractQuartzJob implements Job {
             jobLog.setMessage("success");
         }else{
             jobLog.setJobSuccess(0);
-            jobLog.setMessage(StrUtil.subPre(ex.getMessage(),1024));
+            jobLog.setMessage(StrUtil.subPre(ex.getMessage(),256));
         }
 
         //保存任务日志
@@ -84,7 +92,8 @@ public abstract class AbstractQuartzJob implements Job {
 
     private String getLocalIp(){
         if (localIp == null){
-            localIp = IpUtil.getHostIp();
+            localIp = IpUtil.getHostIp() + ":" + servletWebServerApplicationContext.getWebServer().getPort();
+
         }
         return localIp;
     }

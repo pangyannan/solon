@@ -29,9 +29,12 @@ import com.google.code.kaptcha.Producer;
 import com.google.common.collect.Lists;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.validation.annotation.Validated;
 
 import javax.annotation.Resource;
+import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import java.awt.image.BufferedImage;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
@@ -40,6 +43,7 @@ import java.util.stream.Collectors;
 
 
 @Service
+@Validated
 public class UserAccountApiImpl implements UserAccountApi {
     @Resource
     private UserInfoService userInfoService;
@@ -114,7 +118,7 @@ public class UserAccountApiImpl implements UserAccountApi {
      * @return
      */
     @Override
-    public Result<UserLoginSuccessToken> login(UserLoginDto userLoginDto) {
+    public Result<UserLoginSuccessToken> login(@NotNull @Valid UserLoginDto userLoginDto) {
         //1.图形验证码验证
         Result result = this.captchaCodeCheck(userLoginDto);
         if(!result.getSuccess()){

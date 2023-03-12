@@ -1,5 +1,7 @@
 package cloud.flystar.solon.commons.log.trace;
 
+import cn.hutool.core.util.IdUtil;
+import cn.hutool.core.util.StrUtil;
 import com.alibaba.ttl.TransmittableThreadLocal;
 import org.slf4j.MDC;
 
@@ -15,9 +17,25 @@ public class TraceContext {
     private static final TransmittableThreadLocal<String> traceIdThreadLocal = new TransmittableThreadLocal<>();
     private static final TransmittableThreadLocal<Integer> spanIdThreadLocal = new TransmittableThreadLocal<>();
 
+    public static void initTrace(){
+        String traceId = TraceContext.getTraceId();
+        Integer spanId = TraceContext.getSpanId();
+
+        if(StrUtil.isBlank(traceId)){
+            traceId = IdUtil.simpleUUID();
+        }
+        if(spanId == null){
+            spanId = 0;
+        }else {
+            spanId ++;
+        }
+        TraceContext.putTraceId(traceId);
+        TraceContext.putSpanId(spanId);
+    }
 
     public static void putTraceId(String traceId) {
         traceIdThreadLocal.set(traceId);
+        MDC.put(TRACE_ID_NAME, traceId);
     }
 
     public static String getTraceId() {
@@ -26,13 +44,6 @@ public class TraceContext {
 
     public static void removeTraceId() {
         traceIdThreadLocal.remove();
-    }
-
-    public static void putMdcTraceId(String traceId) {
-        MDC.put(TRACE_ID_NAME, traceId);
-    }
-
-    public static void removeMdcTraceId() {
         MDC.remove(TRACE_ID_NAME);
     }
 
@@ -49,20 +60,12 @@ public class TraceContext {
 
     public static void removeSpanId() {
         spanIdThreadLocal.remove();
-    }
-
-    public static void putMdcSpanId(Integer spanId) {
-        MDC.put(SPAN_ID_NAME, String.valueOf(spanId));
-    }
-
-    public static void removeMdcSpanId() {
         MDC.remove(SPAN_ID_NAME);
+
     }
 
     public static void removeAll(){
         removeTraceId();
-        removeMdcTraceId();
         removeSpanId();
-        removeMdcSpanId();
     }
 }

@@ -203,7 +203,7 @@ public class IpUtil {
      *
      * @return 本地IP地址
      */
-    public static String getHostIp()
+    public static String   getHostIp()
     {
         try
         {

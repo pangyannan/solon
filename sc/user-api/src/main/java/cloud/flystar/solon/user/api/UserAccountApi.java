@@ -6,7 +6,9 @@ import cloud.flystar.solon.user.api.dto.account.UserAccountDto;
 import cloud.flystar.solon.user.api.dto.account.UserLoginDto;
 import cloud.flystar.solon.user.api.dto.account.UserLoginSuccessToken;
 
+import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 
 /**
  * 用户账号服务
@@ -23,7 +25,7 @@ public interface UserAccountApi {
      * @param userLoginDto
      * @return
      */
-    Result<UserLoginSuccessToken> login(UserLoginDto userLoginDto);
+    Result<UserLoginSuccessToken> login(@NotNull @Valid UserLoginDto userLoginDto);
     /**
      * 根据用户名查询账号基本
      * @param userName

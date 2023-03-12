@@ -11,6 +11,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 import org.springframework.core.convert.converter.Converter;
+import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -23,7 +24,13 @@ public class JacksonConfig {
     @Bean
     @Primary
     public ObjectMapper objectMapper(){
-        return ObjectMapperFactory.buildDefaultObjectMapper();
+        return ObjectMapperFactory.INSTANCE();
+    }
+
+    @Bean
+    @Primary
+    public MappingJackson2HttpMessageConverter mappingJackson2HttpMessageConverter(){
+        return new MappingJackson2HttpMessageConverter(objectMapper());
     }
 
 

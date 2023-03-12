@@ -2,7 +2,7 @@ package cloud.flystar.solon.commons.log.audit;
 
 import cloud.flystar.solon.commons.bean.dto.Result;
 import cloud.flystar.solon.commons.format.json.JsonUtil;
-import cloud.flystar.solon.commons.log.trace.TraceUtil;
+import cloud.flystar.solon.commons.log.trace.TraceContext;
 import cn.hutool.core.util.StrUtil;
 
 /**
@@ -19,7 +19,7 @@ public class DefaultAuditLogStoreImpl implements AuditLogStore {
             Result result = (Result) resultObject;
             String traceId = result.getTraceId();
             if(StrUtil.isBlank(traceId)){
-                traceId = TraceUtil.getTraceId();
+                traceId = TraceContext.getTraceId();
                 result.setTraceId(traceId);
             }
         }

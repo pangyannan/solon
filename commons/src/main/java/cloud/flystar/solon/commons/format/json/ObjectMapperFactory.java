@@ -32,10 +32,14 @@ import java.util.Date;
  *
  */
 public class ObjectMapperFactory {
+    private static final ObjectMapper OBJECT_MAPPER_INSTANCE = buildDefaultObjectMapper();
+
+    public static ObjectMapper INSTANCE(){
+        return OBJECT_MAPPER_INSTANCE;
+    }
 
     /**
      * 创建默认的 ObjectMapper
-     * @return
      */
     public static ObjectMapper buildDefaultObjectMapper(){
         ObjectMapper objectMapper = new ObjectMapper();

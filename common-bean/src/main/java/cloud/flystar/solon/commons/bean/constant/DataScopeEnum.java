@@ -1,8 +1,6 @@
 package cloud.flystar.solon.commons.bean.constant;
 
-import cn.hutool.core.collection.CollectionUtil;
-import cn.hutool.core.collection.ListUtil;
-
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -46,8 +44,8 @@ public enum DataScopeEnum {
     }
 
     public static List<DataScopeEnum> getByCodes(List<String> codes){
-        if(CollectionUtil.isEmpty(codes)){
-            return ListUtil.empty();
+        if(codes == null || codes.isEmpty()){
+            return Collections.emptyList();
         }
 
         return codes.stream().map(t -> DataScopeEnum.getByCode(t)).filter(Objects::nonNull).collect(Collectors.toList());

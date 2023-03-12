@@ -1,7 +1,7 @@
 package cloud.flystar.solon.framework.config;
 
 import cloud.flystar.solon.commons.bean.dto.Result;
-import cloud.flystar.solon.commons.log.trace.TraceUtil;
+import cloud.flystar.solon.commons.log.trace.TraceContext;
 import cn.hutool.core.util.StrUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.MethodParameter;
@@ -30,7 +30,7 @@ public class ResultAdvice implements ResponseBodyAdvice<Object> {
             Result result = (Result) body;
             String traceId = result.getTraceId();
             if(StrUtil.isBlank(traceId)){
-                traceId = TraceUtil.getTraceId();
+                traceId = TraceContext.getTraceId();
                 result.setTraceId(traceId);
             }
         }

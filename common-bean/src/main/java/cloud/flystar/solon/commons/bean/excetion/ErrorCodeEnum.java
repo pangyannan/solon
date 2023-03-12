@@ -86,7 +86,7 @@ public enum ErrorCodeEnum {
     /**
      * 二级宏观错误码
      */
-    USER_ERROR_A0400("A0400", "用户请求参数错误"),
+    USER_ERROR_A0400("A0400", "请求参数错误"),
     USER_ERROR_A0401("A0401", "包含非法恶意跳转链接"),
     USER_ERROR_A0402("A0402", "无效的用户输入"),
     USER_ERROR_A0410("A0410", "请求必填参数为空"),

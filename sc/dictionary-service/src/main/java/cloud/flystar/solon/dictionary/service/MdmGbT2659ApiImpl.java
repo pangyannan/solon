@@ -9,6 +9,7 @@ import cloud.flystar.solon.dictionary.service.inner.MdmGbT2659Service;
 import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.collection.ListUtil;
 import cn.hutool.core.util.StrUtil;
+import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -16,6 +17,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+@Scope
 @Service
 public class MdmGbT2659ApiImpl implements MdmGbT2659Api {
     @Resource
