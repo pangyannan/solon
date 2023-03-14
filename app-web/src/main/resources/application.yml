@@ -92,5 +92,6 @@ secure:
   publicKey: MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCigi4ij+AOVQuHQhad9OJZFnjkyYK7QrVlhR2sBw74J000ulG+vouhoASJJcO5CP1Y62OfdFWpDA+ujJsPnMYxaFVxljfP8ojIvgg4dK3JdTHZ89yu31nLMPlhSSbbKGkgBpHQCArt5/uzda3UP4TyqcOPhUeA1DMpLOSZyJy5VwIDAQAB
   jwtKey: Z7I59VUJhjqN4ABMSsrKdztfHmDXYlQp
   captchaExpiresTime: 60000
+  captchaOpen: false
 
 

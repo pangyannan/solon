@@ -179,9 +179,10 @@ public class UserAccountApiImpl implements UserAccountApi {
         UserTokenSessionInfo userTokenSessionInfo = this.userTokenSessionInfoBuild(userAccountDto, tokenInfo);
 
         SaSession tokenSession = StpUtil.getTokenSession();
-        tokenSession.set(GlobeConstant.TOKEN_SESSION_USER_KEY, JsonUtil.json(userTokenSessionInfo));
+//        tokenSession.set(GlobeConstant.TOKEN_SESSION_USER_KEY, JsonUtil.json(userTokenSessionInfo));
+        tokenSession.set(GlobeConstant.TOKEN_SESSION_USER_KEY, userTokenSessionInfo);
 
-        SaSession userSession = StpUtil.getSession(false);
+        SaSession userSession = StpUtil.getSessionByLoginId(loginId,false);
         UserSessionInfo userSessionInfo =  this.userSessionInfoBuild(userAccountDto, tokenInfo);
         userSession.set(GlobeConstant.SESSION_USER_KEY,userSessionInfo);
 
@@ -224,15 +225,15 @@ public class UserAccountApiImpl implements UserAccountApi {
 
     private UserTokenSessionInfo userTokenSessionInfoBuild(UserAccountDto userAccountDto, SaTokenInfo saTokenInfo){
         UserTokenSessionInfo userTokenSessionInfo = new UserTokenSessionInfo();
-        userTokenSessionInfo.setUserId(userTokenSessionInfo.getUserId());
+        userTokenSessionInfo.setUserId(userAccountDto.getUserId());
         userTokenSessionInfo.setUserName(userAccountDto.getUserName());
         return userTokenSessionInfo;
     }
 
     private UserSessionInfo userSessionInfoBuild(UserAccountDto userAccountDto, SaTokenInfo tokenInfo) {
         UserSessionInfo userSessionInfo = new UserSessionInfo();
-        userSessionInfo.setUserId(userSessionInfo.getUserId());
-        userSessionInfo.setUserName(userSessionInfo.getUserName());
+        userSessionInfo.setUserId(userAccountDto.getUserId());
+        userSessionInfo.setUserName(userAccountDto.getUserName());
 
         //当前部门
         List<Department> departments = departmentService.listUserDepartment(userAccountDto.getUserId());
@@ -253,6 +254,10 @@ public class UserAccountApiImpl implements UserAccountApi {
 
 
     private Result captchaCodeCheck(UserLoginDto  userLoginDto){
+        Boolean captchaOpen = Optional.ofNullable(secureConfig.getCaptchaOpen()).orElse(Boolean.FALSE);
+        if(!captchaOpen){
+            return Result.successBuild();
+        }
 
         String captchaCode = userLoginDto.getCaptchaCode();
         String captchaToken = userLoginDto.getCaptchaToken();

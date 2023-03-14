@@ -26,6 +26,11 @@ public class SecureConfig {
     private String adminPassword;
 
     /**
+     * 是否开启图形验证码
+     */
+    private Boolean captchaOpen;
+
+    /**
      * 图形验证码过期时间，单位秒
      */
     private Integer captchaExpiresTime;
