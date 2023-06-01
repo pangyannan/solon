@@ -18,7 +18,7 @@ public class ThreadPoolUtil {
      * 定时任务线程池
      */
     private static final String SCHEDULED_POOL_NAME = "common-scheduled";
-    private static final ScheduledExecutorService scheduledExecutor = Executors.newScheduledThreadPool(1, new ThreadFactoryBuilder().setNameFormat(SCHEDULED_POOL_NAME+"-%d").build());
+    private static final ScheduledExecutorService scheduledExecutor = Executors.newScheduledThreadPool(Runtime.getRuntime().availableProcessors() * 2, new ThreadFactoryBuilder().setNameFormat(SCHEDULED_POOL_NAME+"-%d").build());
 
     //添加关闭线程池的钩子
     static {

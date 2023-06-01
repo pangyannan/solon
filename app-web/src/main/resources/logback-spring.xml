@@ -155,6 +155,11 @@
 	<logger name="io.lettuce.core.RedisChannelHandler" level="INFO" />
 	<logger name="com.zaxxer.hikari" level="INFO" />
 
+	<logger name="org.apache" level="INFO" />
+	<logger name="org.apache.http.wire" level="INFO" />
+	<logger name="org.apache.http.headers" level="INFO" />
+
+
 	<!--开发环境配置-->
 	<springProfile name="dev">
 		<!-- root节点：启动配置以及定义日志的输出级别

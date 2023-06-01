@@ -2,6 +2,7 @@ package cloud.flystar.solon.framework.config.http;
 
 import cloud.flystar.solon.commons.httpclient.DefaultHttpPoolConstants;
 import cloud.flystar.solon.commons.httpclient.HttpClientConfig;
+import cloud.flystar.solon.commons.httpclient.HttpClientUtil2;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.config.RequestConfig;
 import org.springframework.context.annotation.Bean;
@@ -21,9 +22,8 @@ import java.util.stream.Collectors;
 
 @Configuration
 public class RestTemplateConfig {
-
     @Bean
-    public HttpClient httpClient(cloud.flystar.solon.framework.config.http.HttpClientConfig httpClientConfig){
+    public RequestConfig requestConfig(cloud.flystar.solon.framework.config.http.HttpClientConfig httpClientConfig){
         DefaultHttpPoolConstants defaultHttpPoolConstants = HttpClientConfig.getDefaultHttpPoolConstants();
         Optional.ofNullable(httpClientConfig.getPoolMaxSize()).ifPresent(defaultHttpPoolConstants::setPoolMaxSize);
         Optional.ofNullable(httpClientConfig.getMaxPerRoute()).ifPresent(defaultHttpPoolConstants::setMaxPerRoute);
@@ -36,12 +36,22 @@ public class RestTemplateConfig {
         Optional.ofNullable(httpClientConfig.getRetryIntervalTime()).ifPresent(defaultHttpPoolConstants::setRetryIntervalTime);
 
         RequestConfig requestConfig = HttpClientConfig.buildRequestConfig(defaultHttpPoolConstants);
+        return requestConfig;
+    }
+
+    @Bean
+    public HttpClient httpClient(RequestConfig requestConfig){
+        DefaultHttpPoolConstants defaultHttpPoolConstants = HttpClientConfig.getDefaultHttpPoolConstants();
         HttpClientConfig.setRequestConfig(requestConfig);
 
         HttpClient httpClient = HttpClientConfig.buildHttpClient(defaultHttpPoolConstants, requestConfig);
         HttpClientConfig.setHttpClient(httpClient);
 
         return httpClient;
+    }
+    @Bean
+    public HttpClientUtil2 httpClientUtil2(RequestConfig requestConfig, HttpClient httpClient){
+       return HttpClientUtil2.instanceInit(httpClient,requestConfig);
     }
 
 

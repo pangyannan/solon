@@ -4,6 +4,8 @@ package cloud.flystar.solon.commons.httpclient;
 import lombok.SneakyThrows;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.config.RequestConfig;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpGet;
 import org.apache.http.config.ConnectionConfig;
 import org.apache.http.config.Registry;
 import org.apache.http.config.RegistryBuilder;
@@ -11,17 +13,20 @@ import org.apache.http.config.SocketConfig;
 import org.apache.http.conn.socket.ConnectionSocketFactory;
 import org.apache.http.conn.socket.PlainConnectionSocketFactory;
 import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
+import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.DefaultConnectionKeepAliveStrategy;
 import org.apache.http.impl.client.DefaultHttpRequestRetryHandler;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.conn.ManagedHttpClientConnectionFactory;
 import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
+import org.apache.http.util.EntityUtils;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.ClientHttpRequestFactory;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.web.client.RestTemplate;
 
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.concurrent.TimeUnit;
 
 public class HttpClientConfig {
@@ -116,14 +121,13 @@ public class HttpClientConfig {
 
     @SneakyThrows
     public static void main(String[] args) {
-//        CloseableHttpClient httpClient = (CloseableHttpClient) httpClient();
-//        HttpGet httpGet = new HttpGet("http://wwww.taobaoasdasdas.com");
-//
-//
-//        for (int i = 0; i < 100; i++) {
-//            CloseableHttpResponse response = httpClient.execute(httpGet);
-//            System.out.println(EntityUtils.toString(response.getEntity(), StandardCharsets.UTF_8).length());
-//        }
+        CloseableHttpClient httpClient = (CloseableHttpClient) httpClient();
+        HttpGet httpGet = new HttpGet("https://wwww.taobao.com");
+
+        for (int i = 0; i < 100; i++) {
+            CloseableHttpResponse response = httpClient.execute(httpGet);
+            System.out.println(EntityUtils.toString(response.getEntity(), StandardCharsets.UTF_8).length());
+        }
 
 //
 //        HttpPost httpPost = new HttpPost("https://wwww.baidu.com");
@@ -134,7 +138,7 @@ public class HttpClientConfig {
 //        System.out.println(postResponse);//
 
         RestTemplate restTemplate = new RestTemplate(clientHttpRequestFactory());
-        ResponseEntity<String> forEntity = restTemplate.getForEntity("http://wwww.taobaoklklkl.com", String.class);
+        ResponseEntity<String> forEntity = restTemplate.getForEntity("http://wwww.taobao.com", String.class);
 
 
     }

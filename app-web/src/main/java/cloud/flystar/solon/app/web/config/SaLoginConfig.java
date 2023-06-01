@@ -23,6 +23,7 @@ public class SaLoginConfig {
     public SaServletFilter getSaServletFilter() {
         SaServletFilter saServletFilter = new SaServletFilter();
         saServletFilter
+                //所有地址默认均拦截
                 .addInclude("/**")
                 .setExcludeList(excludeList)
                 .setAuth(auth ->{

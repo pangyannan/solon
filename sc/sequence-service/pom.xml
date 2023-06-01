@@ -8,19 +8,13 @@
         <version>1.0-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
-    <artifactId>sc</artifactId>
-    <packaging>pom</packaging>
 
-
-    <modules>
-        <module>user-service</module>
-        <module>user-api</module>
-        <module>quartz-service</module>
-        <module>dictionary-service</module>
-        <module>dictionary-api</module>
-        <module>remote-service</module>
-        <module>sequence-service</module>
-
-    </modules>
+    <artifactId>sequence-service</artifactId>
+    <dependencies>
+        <dependency>
+            <groupId>cloud.flystar.solon</groupId>
+            <artifactId>framework</artifactId>
+        </dependency>
+    </dependencies>
 
 </project>
