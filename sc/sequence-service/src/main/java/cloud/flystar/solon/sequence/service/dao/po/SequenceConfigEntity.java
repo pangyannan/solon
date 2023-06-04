@@ -9,7 +9,7 @@ import lombok.Data;
  */
 @Data
 public class SequenceConfigEntity {
-    /** 部门ID */
+    /** 流水号配置ID */
     @TableId(type = IdType.ASSIGN_ID)
     private Long id;
 
@@ -41,7 +41,7 @@ public class SequenceConfigEntity {
      * 月：yyyyMM
      * 年：yyyy
      */
-    private String loopByTime;
+    private String loopTimeFormat;
 
     /**
      * 每个循环的开始数字，一般为 1
@@ -49,7 +49,7 @@ public class SequenceConfigEntity {
     private Long loopNumberMin;
 
     /**
-     * 每个循环的最大数字，
+     * 每个循环的最大数字，超过此数字一般就报错
      * 小于0表示没有限制，一般用-1表示无限制
      */
     private Long loopNumberMax;
@@ -64,4 +64,15 @@ public class SequenceConfigEntity {
      * 循环分段大小，一般根据并发量估计。一般为 100～10000 即可满足大多数应用
      */
     private Integer loopSegmentStep;
+
+    /**
+     * 每次流水号增长时的步长范围最小值
+     */
+    private Integer nextNumberRandomMin;
+
+    /**
+     * 每次流水号增长时的步长范围最大值，流水号自增数为最小最大值之间的整数
+     */
+    private Integer nextNumberRandomMax;
+
 }
