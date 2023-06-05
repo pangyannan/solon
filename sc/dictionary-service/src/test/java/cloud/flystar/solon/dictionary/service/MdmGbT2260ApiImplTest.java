@@ -3,8 +3,8 @@ package cloud.flystar.solon.dictionary.service;
 import cloud.flystar.solon.commons.bean.dto.user.UserDataResourceScope;
 import cloud.flystar.solon.commons.bean.dto.user.UserSessionInfo;
 import cloud.flystar.solon.commons.format.json.JsonUtil;
-import cloud.flystar.solon.commons.pool.ThreadContextKey;
-import cloud.flystar.solon.commons.pool.ThreadContextUtil;
+import cloud.flystar.solon.commons.pool.WebThreadContextKey;
+import cloud.flystar.solon.commons.pool.WebThreadContextUtil;
 import cloud.flystar.solon.dictionary.api.dto.mdm.MdmGbT2260Dto;
 import cloud.flystar.solon.dictionary.service.entity.MdmGbT2260;
 import cloud.flystar.solon.dictionary.service.inner.MdmGbT2260Service;
@@ -38,8 +38,8 @@ class MdmGbT2260ApiImplTest {
 
     @BeforeEach
     public void beforeEach(){
-        ThreadContextUtil.initContext();
-        ThreadContextUtil.put(ThreadContextKey.FRAMEWORK_CONTEXT_USER_LOGINID,1L);
+        WebThreadContextUtil.initContext();
+        WebThreadContextUtil.put(WebThreadContextKey.FRAMEWORK_CONTEXT_USER_LOGINID,1L);
 
         UserSessionInfo userSessionInfo = new UserSessionInfo();
         userSessionInfo.setUserId(1L);
@@ -52,12 +52,12 @@ class MdmGbT2260ApiImplTest {
         userDataResourceScope.setDataScopeCodes(ListUtil.toList("deptChild","deptCurrent","creator"));
         userSessionInfo.setUserDataResourceScopes(ListUtil.toList(userDataResourceScope));
         Optional<UserSessionInfo> optional  = Optional.of(userSessionInfo);
-        ThreadContextUtil.put(ThreadContextKey.FRAMEWORK_CONTEXT_USER_SESSION,optional);
+        WebThreadContextUtil.put(WebThreadContextKey.FRAMEWORK_CONTEXT_USER_SESSION,optional);
     }
 
     @AfterEach
     public void AfterEach(){
-        ThreadContextUtil.clearContext();
+        WebThreadContextUtil.clearContext();
     }
 
 

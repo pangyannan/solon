@@ -1,13 +1,15 @@
 package cloud.flystar.solon.sequence.service.dao.po;
 
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.*;
 import lombok.Data;
+
+import java.time.LocalDateTime;
 
 /**
  * 流水号配置表实体
  */
 @Data
+@TableName("sequence_config")
 public class SequenceConfigEntity {
     /** 流水号配置ID */
     @TableId(type = IdType.ASSIGN_ID)
@@ -27,6 +29,8 @@ public class SequenceConfigEntity {
      */
     private String bizName;
 
+
+
     /**
      * 流水号前缀
      */
@@ -41,7 +45,7 @@ public class SequenceConfigEntity {
      * 月：yyyyMM
      * 年：yyyy
      */
-    private String loopTimeFormat;
+    private String loopCode;
 
     /**
      * 每个循环的开始数字，一般为 1
@@ -66,6 +70,13 @@ public class SequenceConfigEntity {
     private Integer loopSegmentStep;
 
     /**
+     * 每个Segment的持续时间，单位秒，到达该时间后，自动切换Segment
+     * 注意，Duration应根据节点数、loop内总的可能的Segment上限进行评估，防止耗尽
+     * 目的也是为防止序号连续防猜，也为了保证整体趋势递增防止个别节点一直不切换
+     */
+    private Integer loopSegmentDurationSecond;
+
+    /**
      * 每次流水号增长时的步长范围最小值
      */
     private Integer nextNumberRandomMin;
@@ -74,5 +85,15 @@ public class SequenceConfigEntity {
      * 每次流水号增长时的步长范围最大值，流水号自增数为最小最大值之间的整数
      */
     private Integer nextNumberRandomMax;
+
+
+    @TableField(fill = FieldFill.INSERT)
+    private LocalDateTime createTime;
+    @TableField(fill = FieldFill.INSERT)
+    private Long createUserId;
+    @TableField(fill = FieldFill.INSERT_UPDATE)
+    private LocalDateTime updateTime;
+    @TableField(fill = FieldFill.INSERT_UPDATE)
+    private Long updateUserId;
 
 }

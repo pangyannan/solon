@@ -4,8 +4,8 @@ import cloud.flystar.solon.commons.bean.constant.GlobeConstant;
 import cloud.flystar.solon.commons.bean.dto.user.UserSessionInfo;
 import cloud.flystar.solon.commons.bean.dto.user.UserTokenSessionInfo;
 import cloud.flystar.solon.commons.format.json.JsonUtil;
-import cloud.flystar.solon.commons.pool.ThreadContextKey;
-import cloud.flystar.solon.commons.pool.ThreadContextUtil;
+import cloud.flystar.solon.commons.pool.WebThreadContextKey;
+import cloud.flystar.solon.commons.pool.WebThreadContextUtil;
 import cloud.flystar.solon.framework.service.FrameworkContextService;
 import cn.dev33.satoken.session.SaSession;
 import cn.dev33.satoken.stp.StpUtil;
@@ -21,31 +21,31 @@ public class FrameworkContextServiceImpl implements FrameworkContextService {
     @Override
     @Nullable
     public Long getLoginIdDefaultNull() {
-        if(ThreadContextUtil.containsKey(ThreadContextKey.FRAMEWORK_CONTEXT_USER_LOGINID)){
-            return (Long) ThreadContextUtil.get(ThreadContextKey.FRAMEWORK_CONTEXT_USER_LOGINID);
+        if(WebThreadContextUtil.containsKey(WebThreadContextKey.FRAMEWORK_CONTEXT_USER_LOGINID)){
+            return (Long) WebThreadContextUtil.get(WebThreadContextKey.FRAMEWORK_CONTEXT_USER_LOGINID);
         }
 
         Long loginId = (Long)StpUtil.getLoginIdDefaultNull();
-        ThreadContextUtil.put(ThreadContextKey.FRAMEWORK_CONTEXT_USER_LOGINID,loginId);
+        WebThreadContextUtil.put(WebThreadContextKey.FRAMEWORK_CONTEXT_USER_LOGINID,loginId);
         return loginId;
     }
 
     @Override
     @NonNull
     public Long getLoginId() {
-        Long loginId = (Long) ThreadContextUtil.get(ThreadContextKey.FRAMEWORK_CONTEXT_USER_LOGINID);
+        Long loginId = (Long) WebThreadContextUtil.get(WebThreadContextKey.FRAMEWORK_CONTEXT_USER_LOGINID);
         if(loginId != null){
             return loginId;
         }
         loginId = (Long)StpUtil.getLoginId();
-        ThreadContextUtil.put(ThreadContextKey.FRAMEWORK_CONTEXT_USER_LOGINID,loginId);
+        WebThreadContextUtil.put(WebThreadContextKey.FRAMEWORK_CONTEXT_USER_LOGINID,loginId);
         return loginId;
     }
 
     @Override
     public Optional<UserTokenSessionInfo> getUserTokenSessionInfoDefaultNull() {
-        if(ThreadContextUtil.containsKey(ThreadContextKey.FRAMEWORK_CONTEXT_USER_TOKENSESSION)){
-            return (Optional<UserTokenSessionInfo>) ThreadContextUtil.get(ThreadContextKey.FRAMEWORK_CONTEXT_USER_TOKENSESSION);
+        if(WebThreadContextUtil.containsKey(WebThreadContextKey.FRAMEWORK_CONTEXT_USER_TOKENSESSION)){
+            return (Optional<UserTokenSessionInfo>) WebThreadContextUtil.get(WebThreadContextKey.FRAMEWORK_CONTEXT_USER_TOKENSESSION);
         }
 
         Optional<UserTokenSessionInfo> optional = Optional.empty();
@@ -57,7 +57,7 @@ public class FrameworkContextServiceImpl implements FrameworkContextService {
                 optional = Optional.ofNullable(userTokenSessionInfo);
             }
         }
-        ThreadContextUtil.put(ThreadContextKey.FRAMEWORK_CONTEXT_USER_TOKENSESSION,optional);
+        WebThreadContextUtil.put(WebThreadContextKey.FRAMEWORK_CONTEXT_USER_TOKENSESSION,optional);
         return optional;
     }
 
@@ -75,8 +75,8 @@ public class FrameworkContextServiceImpl implements FrameworkContextService {
             return Optional.empty();
         }
 
-        if(ThreadContextUtil.containsKey(ThreadContextKey.FRAMEWORK_CONTEXT_USER_SESSION)){
-            return (Optional<UserSessionInfo>)ThreadContextUtil.get(ThreadContextKey.FRAMEWORK_CONTEXT_USER_SESSION);
+        if(WebThreadContextUtil.containsKey(WebThreadContextKey.FRAMEWORK_CONTEXT_USER_SESSION)){
+            return (Optional<UserSessionInfo>) WebThreadContextUtil.get(WebThreadContextKey.FRAMEWORK_CONTEXT_USER_SESSION);
         }
 
         Optional<UserSessionInfo> optional = Optional.empty();
@@ -88,7 +88,7 @@ public class FrameworkContextServiceImpl implements FrameworkContextService {
                 optional = Optional.ofNullable(userSessionInfo);
             }
         }
-        ThreadContextUtil.put(ThreadContextKey.FRAMEWORK_CONTEXT_USER_SESSION,optional);
+        WebThreadContextUtil.put(WebThreadContextKey.FRAMEWORK_CONTEXT_USER_SESSION,optional);
         return optional;
     }
 

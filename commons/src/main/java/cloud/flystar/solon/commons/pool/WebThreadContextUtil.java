@@ -9,7 +9,7 @@ import java.util.Map;
 /**
  * 本地线程环境
  */
-public class ThreadContextUtil {
+public class WebThreadContextUtil {
     private static final ThreadLocal<Map<String,Object>> threadLocal = new ThreadLocal<>() ;
 
 
@@ -23,6 +23,15 @@ public class ThreadContextUtil {
         }
     }
 
+
+    /**
+     * 初始化线程环境
+     */
+    public static void initContext(Map<String, Object> map){
+        if(threadLocal.get() == null){
+            threadLocal.set(map);
+        }
+    }
 
     public static void clearContext(){
         if(threadLocal.get() != null){
