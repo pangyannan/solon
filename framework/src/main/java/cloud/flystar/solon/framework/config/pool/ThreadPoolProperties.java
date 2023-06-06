@@ -11,9 +11,20 @@ import org.springframework.context.annotation.Configuration;
 @ConfigurationProperties(prefix = "thread.pool")
 @Data
 public class ThreadPoolProperties {
-    /**
-     * cpu核数,一般使用系统默认
-     */
-    private Integer poolCpuNumber;
+
+    //cpu密集型线程配置
+    private Integer cpuExecutorCorePoolSize;
+    private Integer cpuExecutorMaxPoolSize;
+    private Integer cpuExecutorQueueCapacity;
+    private Integer cpuExecutorKeepAliveSeconds;
+
+
+
+
+    //cpu密集型线程配置
+    private Integer ioExecutorCorePoolSize;
+    private Integer ioExecutorMaxPoolSize;
+    private Integer ioExecutorQueueCapacity;
+    private Integer ioExecutorKeepAliveSeconds;
 
 }

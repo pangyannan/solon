@@ -28,14 +28,19 @@ public class ThreadPoolConfig {
     @Bean("cpuExecutor")
     public ThreadPoolTaskExecutor cpuExecutor() {
         ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
-        //获取逻辑可用CPU数
-        Integer poolCpuNumber = Optional.ofNullable(threadPoolProperties.getPoolCpuNumber()).orElse(Runtime.getRuntime().availableProcessors());
-        //如果是核心业务，需要保活足够的线程数随时支持运行，提高响应速度，因此设置核心线程数为压测后的理论最优值
-        executor.setCorePoolSize(poolCpuNumber + 1);
+
+        //核心线程数，需要保活足够的线程数随时支持运行，提高响应速度，因此设置核心线程数为压测后的理论最优值
+        Integer corePoolSize = Optional.ofNullable(threadPoolProperties.getCpuExecutorCorePoolSize()).orElse(Runtime.getRuntime().availableProcessors() + 1);
+        executor.setCorePoolSize(corePoolSize);
+
         //设置和核心线程数一致，用队列控制任务总数
-        executor.setMaxPoolSize(poolCpuNumber + 1);
+        Integer maxPoolSize = Optional.ofNullable(threadPoolProperties.getCpuExecutorMaxPoolSize()).orElse(Runtime.getRuntime().availableProcessors() + 1);
+        executor.setMaxPoolSize(maxPoolSize);
+
+
         //Spring默认使用LinkedBlockingQueue
-        executor.setQueueCapacity(poolCpuNumber * 32);
+        Integer queueCapacity = Optional.ofNullable(threadPoolProperties.getCpuExecutorQueueCapacity()).orElse(Runtime.getRuntime().availableProcessors()  * 1024);
+        executor.setQueueCapacity(queueCapacity);
 
         //默认60秒，维持不变
         executor.setKeepAliveSeconds(60);
@@ -45,8 +50,6 @@ public class ThreadPoolConfig {
         executor.setRejectedExecutionHandler(RejectPolicy.CALLER_RUNS.getValue());
         //线程环境传递
         executor.setTaskDecorator(new ContextCopyingDecorator());
-
-        sum = LongStream.rangeClosed(0, 1000000000L).parallel().sum();
 
         executor.initialize();
         return executor;
@@ -61,16 +64,21 @@ public class ThreadPoolConfig {
     @Bean("ioExecutor")
     public ThreadPoolTaskExecutor ioExecutor() {
         ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
-        Integer poolCpuNumber = Optional.ofNullable(threadPoolProperties.getPoolCpuNumber()).orElse(Runtime.getRuntime().availableProcessors());
 
-        //如果是核心业务，需要保活足够的线程数随时支持运行，提高响应速度，因此设置核心线程数为压测后的理论最优值
-        executor.setCorePoolSize(poolCpuNumber * 2 + 1);
+        //核心线程数，需要保活足够的线程数随时支持运行，提高响应速度，因此设置核心线程数为压测后的理论最优值
+        Integer corePoolSize = Optional.ofNullable(threadPoolProperties.getIoExecutorCorePoolSize()).orElse(Runtime.getRuntime().availableProcessors() * 2);
+        executor.setCorePoolSize(corePoolSize);
+
         //设置和核心线程数一致，用队列控制任务总数
-        executor.setMaxPoolSize(poolCpuNumber * 2 + 1);
-        //Spring默认使用LinkedBlockingQueue
-        executor.setQueueCapacity(poolCpuNumber * 2 * 64);
+        Integer maxPoolSize = Optional.ofNullable(threadPoolProperties.getIoExecutorMaxPoolSize()).orElse(Runtime.getRuntime().availableProcessors() * 4);
+        executor.setMaxPoolSize(maxPoolSize);
 
-        //默认120秒，维持不变
+
+        //Spring默认使用LinkedBlockingQueue
+        Integer queueCapacity = Optional.ofNullable(threadPoolProperties.getIoExecutorQueueCapacity()).orElse(Runtime.getRuntime().availableProcessors()  * 256);
+        executor.setQueueCapacity(queueCapacity);
+
+        //默认60秒，维持不变
         executor.setKeepAliveSeconds(120);
         //使用自定义前缀，方便问题排查
         executor.setThreadNamePrefix("ioExecutor");
@@ -79,9 +87,10 @@ public class ThreadPoolConfig {
         //线程环境传递
         executor.setTaskDecorator(new ContextCopyingDecorator());
 
-
         executor.initialize();
         return executor;
     }
+
+//    ThreadPoolTaskScheduler
 
 }

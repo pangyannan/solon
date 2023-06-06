@@ -1,4 +1,4 @@
-package cloud.flystar.solon.commons.pool;
+package cloud.flystar.solon.framework.constant;
 
 
 /**

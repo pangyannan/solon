@@ -4,7 +4,7 @@ import cloud.flystar.solon.commons.bean.constant.GlobeConstant;
 import cloud.flystar.solon.commons.bean.dto.user.UserSessionInfo;
 import cloud.flystar.solon.commons.bean.dto.user.UserTokenSessionInfo;
 import cloud.flystar.solon.commons.format.json.JsonUtil;
-import cloud.flystar.solon.commons.pool.WebThreadContextKey;
+import cloud.flystar.solon.framework.constant.WebThreadContextKey;
 import cloud.flystar.solon.commons.pool.WebThreadContextUtil;
 import cloud.flystar.solon.framework.service.FrameworkContextService;
 import cn.dev33.satoken.session.SaSession;
