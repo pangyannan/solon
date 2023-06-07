@@ -19,12 +19,15 @@ public class ThreadPoolProperties {
     private Integer cpuExecutorKeepAliveSeconds;
 
 
-
-
     //cpu密集型线程配置
     private Integer ioExecutorCorePoolSize;
     private Integer ioExecutorMaxPoolSize;
     private Integer ioExecutorQueueCapacity;
     private Integer ioExecutorKeepAliveSeconds;
+
+
+    //内置定时任务线程池
+    private Integer schedulerCorePoolSize;
+
 
 }
