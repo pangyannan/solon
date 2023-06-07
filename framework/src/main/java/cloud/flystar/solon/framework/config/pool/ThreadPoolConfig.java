@@ -19,7 +19,7 @@ import java.util.concurrent.ThreadPoolExecutor;
 public class ThreadPoolConfig {
     public static final String cpuExecutorName = "cpuExecutor";
     public static final String ioExecutorName = "ioExecutor";
-    public static final String scheduler = "scheduler";
+    public static final String schedulerExecutor = "schedulerExecutor";
     final ThreadPoolProperties threadPoolProperties;
     /**
      * CPU密集型线程池
@@ -96,8 +96,8 @@ public class ThreadPoolConfig {
      * 定时任务线程池
      * @return
      */
-    @Bean(ThreadPoolConfig.scheduler)
-    public ThreadPoolTaskScheduler scheduler() {
+    @Bean(ThreadPoolConfig.schedulerExecutor)
+    public ThreadPoolTaskScheduler schedulerExecutor() {
         ThreadPoolTaskScheduler scheduler = new ThreadPoolTaskScheduler();
 
         Integer poolSize = Optional.ofNullable(threadPoolProperties.getSchedulerCorePoolSize()).orElse(2);
