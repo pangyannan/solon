@@ -53,20 +53,6 @@
            <artifactId>transmittable-thread-local</artifactId>
        </dependency>
 
-       <dependency>
-           <groupId>com.google.guava</groupId>
-           <artifactId>guava</artifactId>
-<!--           <exclusions>-->
-<!--               <exclusion>-->
-<!--                   <groupId>com.google.code.findbugs</groupId>-->
-<!--                   <artifactId>jsr305</artifactId>-->
-<!--               </exclusion>-->
-<!--           </exclusions>-->
-       </dependency>
-       <dependency>
-           <groupId>cn.hutool</groupId>
-           <artifactId>hutool-all</artifactId>
-       </dependency>
 
        <!-- jackson序列化 -->
        <dependency>
@@ -90,21 +76,38 @@
            <artifactId>slf4j-api</artifactId>
        </dependency>
 
-
-<!--       <dependency>-->
-<!--           <groupId>org.apache.httpcomponents.client5</groupId>-->
-<!--           <artifactId>httpclient5</artifactId>-->
-<!--       </dependency>-->
-<!--       &lt;!&ndash; https://mvnrepository.com/artifact/org.apache.httpcomponents.client5/httpclient5-fluent &ndash;&gt;-->
-<!--       <dependency>-->
-<!--           <groupId>org.apache.httpcomponents.client5</groupId>-->
-<!--           <artifactId>httpclient5-fluent</artifactId>-->
-<!--       </dependency>-->
-
        <dependency>
            <groupId>org.apache.httpcomponents</groupId>
            <artifactId>httpclient</artifactId>
        </dependency>
+
+       <dependency>
+           <groupId>org.apache.commons</groupId>
+           <artifactId>commons-lang3</artifactId>
+       </dependency>
+       <dependency>
+           <groupId>org.apache.commons</groupId>
+           <artifactId>commons-collections4</artifactId>
+       </dependency>
+       <dependency>
+           <groupId>commons-io</groupId>
+           <artifactId>commons-io</artifactId>
+       </dependency>
+
+       <dependency>
+           <groupId>com.google.guava</groupId>
+           <artifactId>guava</artifactId>
+       </dependency>
+       <dependency>
+           <groupId>cn.hutool</groupId>
+           <artifactId>hutool-all</artifactId>
+       </dependency>
+
+       <dependency>
+           <groupId>com.github.ben-manes.caffeine</groupId>
+           <artifactId>caffeine</artifactId>
+       </dependency>
+
 
        <dependency>
            <groupId>org.junit.jupiter</groupId>

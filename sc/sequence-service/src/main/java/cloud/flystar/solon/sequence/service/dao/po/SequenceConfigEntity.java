@@ -37,6 +37,12 @@ public class SequenceConfigEntity {
     private String seqPrefix;
 
     /**
+     * 循环方式
+     * NONE: 无循环
+     * DATE: 时间循环模式
+     */
+    private String loopType;
+    /**
      * 日期循环，一般常见的循环方式为 天、月
      * 格式：
      * 分：yyyyMMddHHmm
