@@ -1,13 +1,9 @@
 package cloud.flystar.solon.sequence.service;
 
-import cloud.flystar.solon.sequence.service.bo.Segment;
-import cloud.flystar.solon.sequence.service.bo.SegmentBuffer;
-import cloud.flystar.solon.sequence.service.bo.SegmentKey;
-import cloud.flystar.solon.sequence.service.bo.SequenceConfigLoopTypeEnum;
+import cloud.flystar.solon.sequence.service.bo.*;
 import cloud.flystar.solon.sequence.service.dao.po.SequenceConfigEntity;
 import cn.hutool.core.lang.Assert;
-import cn.hutool.core.util.NumberUtil;
-import cn.hutool.core.util.StrUtil;
+import cn.hutool.core.util.RandomUtil;
 import com.github.benmanes.caffeine.cache.CacheLoader;
 import com.github.benmanes.caffeine.cache.Caffeine;
 import com.github.benmanes.caffeine.cache.LoadingCache;
@@ -23,7 +19,6 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Component;
 
 import java.text.DecimalFormat;
-import java.text.NumberFormat;
 import java.util.Date;
 import java.util.Map;
 import java.util.Objects;
@@ -46,13 +41,16 @@ public class SerialNoGenerator {
     private Map<SegmentKey, SegmentBuffer> cache = new ConcurrentHashMap<>();
 
     //配置对象缓存，缓存时间为1个小时
-    private LoadingCache<String, SequenceConfigEntity> configCache = Caffeine.newBuilder()
-            .maximumSize(1000)
+    private LoadingCache<String, SequenceConfigBo> configCache = Caffeine.newBuilder()
+            .maximumSize(1024)
             .expireAfterWrite(1L, TimeUnit.HOURS)
-            .build(new CacheLoader<String, SequenceConfigEntity>() {
+            .build(new CacheLoader<String, SequenceConfigBo>() {
                 @Override
-                public @Nullable SequenceConfigEntity load(@NonNull String bizCode) {
-                    return sequenceConfigService.getByBizCode(bizCode);
+                public @Nullable SequenceConfigBo load(@NonNull String bizCode) {
+                    SequenceConfigEntity sequenceConfigEntity = sequenceConfigService.getByBizCode(bizCode);
+                    SequenceConfigBo sequenceConfigBo = new SequenceConfigBo();
+                    sequenceConfigBo.setSequenceConfigEntity(sequenceConfigEntity);
+                    return sequenceConfigBo;
                 }
             });
 
@@ -63,29 +61,40 @@ public class SerialNoGenerator {
      * @return 序列号
      */
     public String getSerialNo(final String bizCode) throws Exception {
+        //1.获取当前业务+循环主键
         SegmentKey segmentKey = this.getSegmentKey(bizCode);
+
+        //2.SegmentBuffer初始化
         SegmentBuffer buffer = cache.get(segmentKey);
         if (Objects.isNull(buffer)) {
             synchronized (this) {
                 buffer = cache.get(segmentKey);
                 if (Objects.isNull(buffer)) {
-                    buffer = new SegmentBuffer(segmentKey);
+                    buffer = new SegmentBuffer(segmentKey, configCache.get(bizCode));
                     updateSegmentFromDb(segmentKey, buffer.getCurrent());
                     cache.put(segmentKey, buffer);
                 }
             }
         }
-        long segmentSeq = getSerialNoFromSegmentBuffer(buffer);
-        DecimalFormat decimalFormat = new DecimalFormat("#.##");
-        String segmentSeqFormat = decimalFormat.format(segmentSeq);
 
-        NumberFormat instance = DecimalFormat.getInstance();
-        NumberUtil.f
-        instance.
-        NumberFormat serialFormat = NumberFormat.getNumberInstance();
-        serialFormat.setMinimumIntegerDigits(SERIAL_LENGTH);
-        serialFormat.setGroupingUsed(false);
-        return serialFormat.format(seq);
+        //3.生成流水号
+        long segmentSeq = this.getSerialNoFromSegmentBuffer(buffer);
+
+
+        //4.格式化拼接
+        SequenceConfigEntity sequenceConfigEntity = buffer.getSequenceConfigBo().getSequenceConfigEntity();
+        StringBuilder sb = new StringBuilder()
+                .append(sequenceConfigEntity.getSeqPrefix())
+                .append(segmentKey.getLoopKey());
+
+        if(StringUtils.isNotBlank(sequenceConfigEntity.getLoopNumberFormat())){
+            DecimalFormat decimalFormat = new DecimalFormat(sequenceConfigEntity.getLoopNumberFormat());
+            sb.append(decimalFormat.format(segmentSeq));
+        }else{
+            sb.append(segmentSeq);
+        }
+
+        return sb.toString();
     }
 
     /**
@@ -136,6 +145,7 @@ public class SerialNoGenerator {
      */
     private long getSerialNoFromSegmentBuffer(final SegmentBuffer buffer) throws Exception {
         while (true) {
+            log.trace("获取序列号:SegmentBuffer=[{}]",buffer);
             buffer.rLock().lock();
             try {
                 final Segment segment = buffer.getCurrent();
@@ -202,18 +212,32 @@ public class SerialNoGenerator {
     }
 
     /**
-     * 从segment获取自增数并检查是否符合条件  如果没有获取到则返回-1
+     * 从segment获取自增数并检查是否符合条件  如果没有获取到符合条件的则返回-1
      */
     private long segmentGetAndIncrementAndCheck(final Segment segment){
-        long value = segment.getValue().getAndIncrement();
+        //自增步长
+        long nextNumberRandomMin = segment.getSegmentBuffer().getSequenceConfigBo().getSequenceConfigEntity().getNextNumberRandomMin().longValue();
+        long nextNumberRandomMax = segment.getSegmentBuffer().getSequenceConfigBo().getSequenceConfigEntity().getNextNumberRandomMax().longValue();
+        long randomInt;
+        if(nextNumberRandomMin == nextNumberRandomMax){
+            randomInt = nextNumberRandomMin;
+        }else{
+            randomInt = RandomUtil.randomLong(nextNumberRandomMin, nextNumberRandomMax);
+        }
+
+        long value = segment.getValue().getAndAdd(randomInt);
+
+        //应该在segment创建的时候判断，没有必要每次判断浪费CPU
+//        long loopNumberMax = segment.getSegmentBuffer().getSequenceConfigBo().getSequenceConfigEntity().getLoopNumberMax().longValue();
+//        if(loopNumberMax > 0L & value > loopNumberMax){
+//            throw new IllegalStateException(String.format("the value=[%s] is greater than LoopNumberMax=[%s]",value,loopNumberMax));
+//        }
+
         if (value <= segment.getMax()) {
-            long loopNumberMax = segment.getSegmentBuffer().getSequenceConfigEntity().getLoopNumberMax().longValue();
-            if(value >= loopNumberMax){
-                throw new IllegalStateException(String.format("the value=[%s] is greater than LoopNumberMax=[%s]",value,loopNumberMax));
-            }
             return value;
         }
-        return -1;
+//        throw new IllegalStateException(String.format("the value=[%s] is greater than segmentMax=[%s]",value, segment.getMax()));
+        return -1L;
     }
 
 
@@ -241,9 +265,16 @@ public class SerialNoGenerator {
      * 获取当前业务类型的流水号段主键
      */
     private SegmentKey getSegmentKey(String bizCode){
-        SequenceConfigEntity sequenceConfigEntity = configCache.get(bizCode);
-        Assert.isTrue(Objects.nonNull(sequenceConfigEntity),"bizCode=[{}] is not exist",bizCode);
-        return new SegmentKey(sequenceConfigEntity.getBizCode(), this.getLoopKey(sequenceConfigEntity));
+        SequenceConfigBo sequenceConfigBo = configCache.get(bizCode);
+        Assert.isTrue(Objects.nonNull(sequenceConfigBo),"bizCode=[{}] is not exist",bizCode);
+        String loopKey = this.getLoopKey(sequenceConfigBo.getSequenceConfigEntity());
+        if(sequenceConfigBo.getCurrentSegmentKey() != null && StringUtils.equals(sequenceConfigBo.getCurrentSegmentKey().getLoopKey(),loopKey)){
+            return sequenceConfigBo.getCurrentSegmentKey();
+        }
+        //没有必要进行并发控制创建
+        SegmentKey segmentKey = new SegmentKey(sequenceConfigBo.getSequenceConfigEntity().getBizCode(), loopKey);
+        sequenceConfigBo.setCurrentSegmentKey(segmentKey);
+        return segmentKey;
     }
 
     /**

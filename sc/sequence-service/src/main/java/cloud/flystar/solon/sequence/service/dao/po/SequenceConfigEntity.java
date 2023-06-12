@@ -85,12 +85,12 @@ public class SequenceConfigEntity {
     /**
      * 每次流水号增长时的步长范围最小值
      */
-    private Integer nextNumberRandomMin;
+    private Long nextNumberRandomMin;
 
     /**
      * 每次流水号增长时的步长范围最大值，流水号自增数为最小最大值之间的整数
      */
-    private Integer nextNumberRandomMax;
+    private Long nextNumberRandomMax;
 
 
     @TableField(fill = FieldFill.INSERT)

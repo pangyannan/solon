@@ -1,6 +1,7 @@
 package cloud.flystar.solon.sequence.service.bo;
 
 import lombok.Data;
+import org.apache.commons.lang3.builder.ToStringBuilder;
 
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -15,7 +16,7 @@ public class Segment {
     /**
      * 自增值
      */
-    private AtomicLong value = new AtomicLong(0);
+    private AtomicLong value = new AtomicLong(1);
 
     /**
      * 当前段的最大值
@@ -48,15 +49,12 @@ public class Segment {
 
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder("Segment(");
-        sb.append("value:");
-        sb.append(value);
-        sb.append(",max:");
-        sb.append(max);
-        sb.append(",step:");
-        sb.append(segmentBuffer.getSequenceConfigEntity().getLoopSegmentStep());
-        sb.append(")");
-        return sb.toString();
+        return new ToStringBuilder(this)
+                .append("segmentKey", segmentKey)
+                .append("value", value)
+                .append("max", max)
+                .append("step", step)
+                .toString();
     }
 
 }

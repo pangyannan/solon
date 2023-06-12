@@ -1,6 +1,5 @@
 package cloud.flystar.solon.sequence.service.bo;
 
-import cloud.flystar.solon.sequence.service.dao.po.SequenceConfigEntity;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
@@ -14,11 +13,10 @@ public class SegmentKey {
     private final String loopKey;
 
 
-    private final SequenceConfigEntity sequenceConfig;
-    public SegmentKey(SequenceConfigEntity sequenceConfig, String loopKey) {
-        this.bizCode = sequenceConfig.getBizCode();
+
+    public SegmentKey(String bizCode, String loopKey) {
+        this.bizCode = bizCode;
         this.loopKey = loopKey;
-        this.sequenceConfig = sequenceConfig;
     }
 
     public String getBizCode() {

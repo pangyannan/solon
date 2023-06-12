@@ -2,6 +2,7 @@ package cloud.flystar.solon.sequence.service.bo;
 
 import cloud.flystar.solon.sequence.service.dao.po.SequenceConfigEntity;
 import lombok.Data;
+import org.apache.commons.lang3.builder.ToStringBuilder;
 
 import java.util.Arrays;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -20,15 +21,17 @@ public class SegmentBuffer {
      */
     private SegmentKey key;
 
+
+    /**
+     * 流水号配置
+     */
+    private SequenceConfigBo sequenceConfigBo;
+
     /**
      * 双buffer段数组，只有2段
      */
     private Segment[] segments;
 
-    /**
-     * 流水号配置
-     */
-    private SequenceConfigEntity sequenceConfigEntity;
 
     /**
      * 当前使用的segment的index
@@ -55,8 +58,9 @@ public class SegmentBuffer {
      */
     private volatile long updateTimestamp;
 
-    public SegmentBuffer(SegmentKey key) {
+    public SegmentBuffer(SegmentKey key, SequenceConfigBo sequenceConfigBo) {
         this.key = key;
+        this.sequenceConfigBo = sequenceConfigBo;
         segments = new Segment[]{new Segment(this), new Segment(this)};
         currentPos = 0;
         nextReady = false;
@@ -101,16 +105,15 @@ public class SegmentBuffer {
 
     @Override
     public String toString() {
-        final StringBuilder sb = new StringBuilder("SegmentBuffer{");
-        sb.append("key='").append(key);
-        sb.append(", segments=").append(Arrays.toString(segments));
-        sb.append(", currentPos=").append(currentPos);
-        sb.append(", nextReady=").append(nextReady);
-        sb.append(", threadRunning=").append(threadRunning);
-        sb.append(", step=").append(this.getSequenceConfigEntity().getLoopSegmentStep());
-        sb.append(", updateTimestamp=").append(updateTimestamp);
-        sb.append('}');
-        return sb.toString();
+        return new ToStringBuilder(this)
+                .append("key", key)
+                .append("sequenceConfigBo", sequenceConfigBo)
+                .append("segments", segments)
+                .append("currentPos", currentPos)
+                .append("nextReady", nextReady)
+                .append("threadRunning", threadRunning)
+                .append("updateTimestamp", updateTimestamp)
+                .toString();
     }
 
 }
