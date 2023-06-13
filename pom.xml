@@ -104,6 +104,14 @@
                 <version>3.9.1</version>
             </dependency>
 
+            <!--redis缓存-->
+            <dependency>
+                <groupId>org.redisson</groupId>
+                <artifactId>redisson-spring-boot-starter</artifactId>
+                <version>3.16.4</version>
+            </dependency>
+
+
 
 
             <!-- Sa-Token 权限认证, 在线文档：http://sa-token.dev33.cn/ -->

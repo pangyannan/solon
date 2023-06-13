@@ -26,7 +26,7 @@ public class Segment {
     /**
      * 步长
      */
-    public volatile int step;
+    public volatile long step;
 
 
     /**
