@@ -11,15 +11,23 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>dictionary-service</artifactId>
+    <version>${evn.project.version}</version>
 
    <dependencies>
        <dependency>
            <groupId>cloud.flystar.solon</groupId>
            <artifactId>framework</artifactId>
+           <version>${evn.project.version}</version>
        </dependency>
        <dependency>
            <groupId>cloud.flystar.solon</groupId>
            <artifactId>dictionary-api</artifactId>
+           <version>${evn.project.version}</version>
+       </dependency>
+       <dependency>
+           <groupId>cloud.flystar.solon</groupId>
+           <artifactId>user-api</artifactId>
+           <version>${evn.project.version}</version>
        </dependency>
 
 
@@ -73,10 +81,7 @@
            <artifactId>junitperf</artifactId>
            <version>2.0.7</version>
        </dependency>
-       <dependency>
-           <groupId>cloud.flystar.solon</groupId>
-           <artifactId>user-api</artifactId>
-       </dependency>
+
    </dependencies>
 
 </project>

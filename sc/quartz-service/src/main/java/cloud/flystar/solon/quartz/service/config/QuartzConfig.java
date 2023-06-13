@@ -78,7 +78,7 @@ public class QuartzConfig {
      * @return
      * @throws IOException
      */
-    @Bean(name = "quartzScheduler")
+    @Bean(name = "scheduler")
     public Scheduler scheduler(JobFactory customJobFactory, DataSource dataSource) throws IOException {
         return schedulerFactoryBean(customJobFactory, dataSource).getScheduler();
     }

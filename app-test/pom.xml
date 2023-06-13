@@ -6,17 +6,40 @@
         <artifactId>solon</artifactId>
         <groupId>cloud.flystar.solon</groupId>
         <version>1.0-SNAPSHOT</version>
-        <relativePath>../pom.xml</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>app-web</artifactId>
-    <version>${evn.project.version}</version>
+    <artifactId>app-test</artifactId>
+
+    <properties>
+        <maven.compiler.source>8</maven.compiler.source>
+        <maven.compiler.target>8</maven.compiler.target>
+    </properties>
+
 
     <dependencies>
+
         <dependency>
             <groupId>cloud.flystar.solon</groupId>
-            <artifactId>framework</artifactId>
+            <artifactId>dictionary-service</artifactId>
+            <version>${evn.project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>cloud.flystar.solon</groupId>
+            <artifactId>quartz-service</artifactId>
+            <version>${evn.project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>cloud.flystar.solon</groupId>
+            <artifactId>remote-service</artifactId>
+            <version>${evn.project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>cloud.flystar.solon</groupId>
+            <artifactId>sequence-service</artifactId>
             <version>${evn.project.version}</version>
         </dependency>
 
@@ -29,27 +52,10 @@
 
         <dependency>
             <groupId>cloud.flystar.solon</groupId>
-            <artifactId>quartz-service</artifactId>
-            <version>${evn.project.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>cloud.flystar.solon</groupId>
             <artifactId>dictionary-service</artifactId>
             <version>${evn.project.version}</version>
         </dependency>
 
-<!--        &lt;!&ndash; Sa-Token-Quick-Login 插件 &ndash;&gt;-->
-<!--        <dependency>-->
-<!--            <groupId>cn.dev33</groupId>-->
-<!--            <artifactId>sa-token-quick-login</artifactId>-->
-<!--            <version>1.30.0</version>-->
-<!--        </dependency>-->
-
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-thymeleaf</artifactId>
-        </dependency>
 
 
         <dependency>
@@ -65,17 +71,5 @@
         </dependency>
 
     </dependencies>
-
-
-    <!--将应用打包成可执行jar包-->
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-maven-plugin</artifactId>
-            </plugin>
-        </plugins>
-    </build>
-
 
 </project>

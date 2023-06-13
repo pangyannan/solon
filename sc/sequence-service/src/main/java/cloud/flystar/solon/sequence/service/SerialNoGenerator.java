@@ -8,7 +8,6 @@ import cn.hutool.core.util.RandomUtil;
 import com.github.benmanes.caffeine.cache.CacheLoader;
 import com.github.benmanes.caffeine.cache.Caffeine;
 import com.github.benmanes.caffeine.cache.LoadingCache;
-import com.google.common.base.Stopwatch;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -49,16 +48,19 @@ public class SerialNoGenerator {
     private final RedissonClient redissonClient;
 
     //配置对象缓存，缓存时间为1个小时
-    private LoadingCache<String, SequenceConfigBo> configCache = Caffeine.newBuilder()
+    private final LoadingCache<String, SequenceConfigBo> configCache = Caffeine.newBuilder()
             .maximumSize(1024)
             .expireAfterWrite(1L, TimeUnit.HOURS)
             .build(new CacheLoader<String, SequenceConfigBo>() {
                 @Override
                 public @Nullable SequenceConfigBo load(@NonNull String bizCode) {
                     SequenceConfigEntity sequenceConfigEntity = sequenceConfigService.getByBizCode(bizCode);
-                    SequenceConfigBo sequenceConfigBo = new SequenceConfigBo();
-                    sequenceConfigBo.setSequenceConfigEntity(sequenceConfigEntity);
-                    return sequenceConfigBo;
+                    if(sequenceConfigEntity != null){
+                        SequenceConfigBo sequenceConfigBo = new SequenceConfigBo();
+                        sequenceConfigBo.setSequenceConfigEntity(sequenceConfigEntity);
+                        return sequenceConfigBo;
+                    }
+                    return null;
                 }
             });
 
@@ -111,46 +113,63 @@ public class SerialNoGenerator {
      * @param key 唯一键
      * @param segment segment
      */
-    private void updateSegmentFromDb(SegmentKey key, Segment segment) throws Exception {
+    private void updateSegmentFromDb(SegmentKey key, Segment segment)  {
 
         SegmentBuffer segmentBuffer = segment.getSegmentBuffer();
-        Long loopSegmentStep = Long.valueOf(segmentBuffer.getSequenceConfigEntity().getLoopSegmentStep());
+        SequenceConfigEntity sequenceConfigEntity = segmentBuffer.getSequenceConfigBo().getSequenceConfigEntity();
+        long loopSegmentStep = Long.valueOf(sequenceConfigEntity.getLoopSegmentStep());
+        long loopNumberMax = sequenceConfigEntity.getLoopNumberMax() < 0 ? Long.MAX_VALUE : sequenceConfigEntity.getLoopNumberMax();
         RLock lock = redissonClient.getLock(this.getClass().getName() + ":updateSegmentFromDb" + ":" + key.getBizCode() + ":" + key.getLoopKey());
-        boolean tryLock = lock.tryLock(1000, 5000, TimeUnit.MILLISECONDS);
-        long value;
-        if(tryLock){
-            SequenceSegmentEntity sequenceSegmentEntity = sequenceSegmentService.selectByBizAndLook(key.getBizCode(), key.getLoopKey());
-            if(sequenceSegmentEntity == null){
-                value = segmentBuffer.getSequenceConfigEntity().getLoopNumberMin();
-
-                sequenceSegmentEntity = new SequenceSegmentEntity();
-                sequenceSegmentEntity.setBizCode(key.getBizCode());
-                sequenceSegmentEntity.setLoopCode(key.getLoopKey());
-                sequenceSegmentEntity.setMaxId(loopSegmentStep);
-                sequenceSegmentEntity.setVersion(0L);
-                sequenceSegmentService.save(sequenceSegmentEntity);
-
-            }else{
-                value = sequenceSegmentEntity.getMaxId() + 1L;
-                sequenceSegmentEntity.setMaxId(sequenceSegmentEntity.getMaxId() + loopSegmentStep);
-                sequenceSegmentEntity.setVersion(sequenceSegmentEntity.getVersion() + 1L);
-                sequenceSegmentService.updateById(sequenceSegmentEntity);
+        boolean tryLock = false;
+        try {
+            tryLock = lock.tryLock(1000, 5000, TimeUnit.MILLISECONDS);
+            if(!tryLock){
+                throw  new RuntimeException("序列号生成异常");
             }
 
+            long value;
+            if(tryLock){
+                SequenceSegmentEntity sequenceSegmentEntity = sequenceSegmentService.selectByBizAndLoop(key.getBizCode(), key.getLoopKey());
+                if(sequenceSegmentEntity == null){
+                    value = sequenceConfigEntity.getLoopNumberMin();
 
-            segmentBuffer.setUpdateTimestamp(System.currentTimeMillis());
+                    sequenceSegmentEntity = new SequenceSegmentEntity();
+                    sequenceSegmentEntity.setBizCode(key.getBizCode());
+                    sequenceSegmentEntity.setLoopCode(key.getLoopKey());
+                    sequenceSegmentEntity.setMaxId(loopSegmentStep);
+                    sequenceSegmentEntity.setVersion(0L);
 
-            segment.getValue().set(value);
-            segment.setMax(sequenceSegmentEntity.getMaxId());
-            segment.setStep(loopSegmentStep);
+                    Assert.isTrue( sequenceSegmentEntity.getMaxId() < loopNumberMax, "segment maxId {} is gl loopNumberMax {}", sequenceSegmentEntity.getMaxId(), loopNumberMax);
+                    sequenceSegmentService.save(sequenceSegmentEntity);
+
+                }else{
+                    value = sequenceSegmentEntity.getMaxId() + 1L;
+
+                    sequenceSegmentEntity.setMaxId(sequenceSegmentEntity.getMaxId() + loopSegmentStep);
+                    sequenceSegmentEntity.setVersion(sequenceSegmentEntity.getVersion() + 1L);
+
+                    Assert.isTrue( sequenceSegmentEntity.getMaxId() < loopNumberMax, "segment maxId {} is gl loopNumberMax {}", sequenceSegmentEntity.getMaxId(), loopNumberMax);
+                    sequenceSegmentService.updateById(sequenceSegmentEntity);
+                }
+
+                segmentBuffer.setUpdateTimestamp(System.currentTimeMillis());
+
+                segment.getValue().set(value);
+                segment.setMax(sequenceSegmentEntity.getMaxId());
+                segment.setStep(loopSegmentStep);
+            }
+
+        } catch (InterruptedException e) {
+            log.error("锁异常",e);
+            throw  new RuntimeException("序列号生成异常");
+        }finally {
+            lock.unlock();
         }
+
     }
 
     /**
-     * @description: 从buffer中获取序列号
-     *
-     * @param buffer buffer
-     * @return long
+     * 从buffer中获取序列号
      */
     private long getSerialNoFromSegmentBuffer(final SegmentBuffer buffer) throws Exception {
         while (true) {
@@ -181,6 +200,7 @@ public class SerialNoGenerator {
                                 buffer.getThreadRunning().set(false);
                                 buffer.wLock().unlock();
                             } else {
+                                buffer.setNextReady(false);
                                 buffer.getThreadRunning().set(false);
                             }
                         }
@@ -225,8 +245,8 @@ public class SerialNoGenerator {
      */
     private long segmentGetAndIncrementAndCheck(final Segment segment){
         //自增步长
-        long nextNumberRandomMin = segment.getSegmentBuffer().getSequenceConfigBo().getSequenceConfigEntity().getNextNumberRandomMin().longValue();
-        long nextNumberRandomMax = segment.getSegmentBuffer().getSequenceConfigBo().getSequenceConfigEntity().getNextNumberRandomMax().longValue();
+        long nextNumberRandomMin = segment.getSegmentBuffer().getSequenceConfigBo().getSequenceConfigEntity().getNextNumberRandomMin();
+        long nextNumberRandomMax = segment.getSegmentBuffer().getSequenceConfigBo().getSequenceConfigEntity().getNextNumberRandomMax();
         long randomInt;
         if(nextNumberRandomMin == nextNumberRandomMax){
             randomInt = nextNumberRandomMin;
@@ -236,16 +256,9 @@ public class SerialNoGenerator {
 
         long value = segment.getValue().getAndAdd(randomInt);
 
-        //应该在segment创建的时候判断，没有必要每次判断浪费CPU
-//        long loopNumberMax = segment.getSegmentBuffer().getSequenceConfigBo().getSequenceConfigEntity().getLoopNumberMax().longValue();
-//        if(loopNumberMax > 0L & value > loopNumberMax){
-//            throw new IllegalStateException(String.format("the value=[%s] is greater than LoopNumberMax=[%s]",value,loopNumberMax));
-//        }
-
         if (value <= segment.getMax()) {
             return value;
         }
-//        throw new IllegalStateException(String.format("the value=[%s] is greater than segmentMax=[%s]",value, segment.getMax()));
         return -1L;
     }
 
@@ -255,17 +268,20 @@ public class SerialNoGenerator {
      */
     private void waitAndSleep(SegmentBuffer segmentBuffer) {
         int roll = 0;
-        while (segmentBuffer.getThreadRunning().get()) {
+        int max = 1000 * 10;
+        while (roll <= max && segmentBuffer.getThreadRunning().compareAndSet(true,true)) {
             roll += 1;
-            if (roll > 100) {
+            if (roll > 1000) {
                 try {
                     TimeUnit.MILLISECONDS.sleep(10);
-                    break;
                 } catch (InterruptedException e) {
                     log.error("SerialNoGenerator waitAndSleep 线程睡眠异常，Thread:{}, 异常:{}", Thread.currentThread().getName(), e);
                     break;
                 }
             }
+        }
+        if(roll > max){
+            log.error("未能等待Segment加载完毕");
         }
     }
 
@@ -276,6 +292,7 @@ public class SerialNoGenerator {
     private SegmentKey getSegmentKey(String bizCode){
         SequenceConfigBo sequenceConfigBo = configCache.get(bizCode);
         Assert.isTrue(Objects.nonNull(sequenceConfigBo),"bizCode=[{}] is not exist",bizCode);
+        assert sequenceConfigBo != null;
         String loopKey = this.getLoopKey(sequenceConfigBo.getSequenceConfigEntity());
         if(sequenceConfigBo.getCurrentSegmentKey() != null && StringUtils.equals(sequenceConfigBo.getCurrentSegmentKey().getLoopKey(),loopKey)){
             return sequenceConfigBo.getCurrentSegmentKey();
@@ -288,11 +305,9 @@ public class SerialNoGenerator {
 
     /**
      * 根据配置获取循环主键
-     * @param sequenceConfigEntity
-     * @return
      */
     private String getLoopKey(SequenceConfigEntity sequenceConfigEntity){
-        SequenceConfigLoopTypeEnum sequenceConfigLoopTypeEnum = SequenceConfigLoopTypeEnum.getByCode(sequenceConfigEntity.getLoopCode());
+        SequenceConfigLoopTypeEnum sequenceConfigLoopTypeEnum = SequenceConfigLoopTypeEnum.getByCode(sequenceConfigEntity.getLoopType());
         String lookKey = StringUtils.EMPTY;
         switch (sequenceConfigLoopTypeEnum){
             case NONE:{
@@ -300,7 +315,7 @@ public class SerialNoGenerator {
                 break;
             }
             case DATE:{
-                lookKey = DateFormatUtils.format(new Date(),lookKey);
+                lookKey = DateFormatUtils.format(new Date(),sequenceConfigEntity.getLoopCode());
                 break;
             }
             default:

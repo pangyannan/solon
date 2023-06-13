@@ -1,6 +1,8 @@
 package cloud.flystar.solon.sequence.service.bo;
 
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
 import java.util.concurrent.atomic.AtomicLong;
@@ -10,7 +12,8 @@ import java.util.concurrent.atomic.AtomicLong;
  *
  * @author: pangyannan
  */
-@Data
+@Getter
+@Setter
 public class Segment {
     private SegmentKey segmentKey;
     /**

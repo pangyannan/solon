@@ -20,9 +20,12 @@
         <module>app-web</module>
         <module>common-bean</module>
         <module>sc</module>
+        <module>app-test</module>
     </modules>
 
     <properties>
+        <evn.project.version>1.0-SNAPSHOT</evn.project.version>
+
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>8</maven.compiler.source>
         <maven.compiler.target>8</maven.compiler.target>
@@ -47,48 +50,48 @@
             <dependency>
                 <groupId>cloud.flystar.solon</groupId>
                 <artifactId>common-bean</artifactId>
-                <version>${project.version}</version>
+                <version>${evn.project.version}</version>
             </dependency>
 
             <dependency>
                 <groupId>cloud.flystar.solon</groupId>
                 <artifactId>commons</artifactId>
-                <version>${project.version}</version>
+                <version>${evn.project.version}</version>
             </dependency>
 
             <dependency>
                 <groupId>cloud.flystar.solon</groupId>
                 <artifactId>framework</artifactId>
-                <version>${project.version}</version>
+                <version>${evn.project.version}</version>
             </dependency>
 
 
             <dependency>
                 <groupId>cloud.flystar.solon</groupId>
                 <artifactId>user-service</artifactId>
-                <version>${project.version}</version>
+                <version>${evn.project.version}</version>
             </dependency>
             <dependency>
                 <groupId>cloud.flystar.solon</groupId>
                 <artifactId>user-api</artifactId>
-                <version>${project.version}</version>
+                <version>${evn.project.version}</version>
             </dependency>
 
             <dependency>
                 <groupId>cloud.flystar.solon</groupId>
                 <artifactId>quartz-service</artifactId>
-                <version>${project.version}</version>
+                <version>${evn.project.version}</version>
             </dependency>
 
             <dependency>
                 <groupId>cloud.flystar.solon</groupId>
                 <artifactId>dictionary-service</artifactId>
-                <version>${project.version}</version>
+                <version>${evn.project.version}</version>
             </dependency>
             <dependency>
                 <groupId>cloud.flystar.solon</groupId>
                 <artifactId>dictionary-api</artifactId>
-                <version>${project.version}</version>
+                <version>${evn.project.version}</version>
             </dependency>
 
 

@@ -12,15 +12,19 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>user-service</artifactId>
+    <version>${evn.project.version}</version>
+
 
     <dependencies>
         <dependency>
             <groupId>cloud.flystar.solon</groupId>
             <artifactId>framework</artifactId>
+            <version>${evn.project.version}</version>
         </dependency>
         <dependency>
             <groupId>cloud.flystar.solon</groupId>
             <artifactId>user-api</artifactId>
+            <version>${evn.project.version}</version>
         </dependency>
     </dependencies>
 

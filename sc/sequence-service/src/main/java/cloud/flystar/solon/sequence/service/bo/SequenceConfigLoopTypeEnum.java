@@ -1,7 +1,5 @@
 package cloud.flystar.solon.sequence.service.bo;
 
-import cn.hutool.core.util.StrUtil;
-
 public enum SequenceConfigLoopTypeEnum {
     NONE("NONE","无循环"),
     DATE("DATE","时间")

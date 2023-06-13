@@ -12,19 +12,22 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>quartz-service</artifactId>
+    <version>${evn.project.version}</version>
+
 
 
     <dependencies>
         <dependency>
+            <groupId>cloud.flystar.solon</groupId>
+            <artifactId>framework</artifactId>
+            <version>${evn.project.version}</version>
+        </dependency>
+
+
+        <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-quartz</artifactId>
         </dependency>
-
-        <dependency>
-            <groupId>cloud.flystar.solon</groupId>
-            <artifactId>framework</artifactId>
-        </dependency>
-
     </dependencies>
 
 </project>

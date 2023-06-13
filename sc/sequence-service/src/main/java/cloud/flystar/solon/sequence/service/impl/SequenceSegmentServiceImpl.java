@@ -11,4 +11,11 @@ import org.springframework.stereotype.Service;
 @Service
 public class SequenceSegmentServiceImpl extends ServiceImpl<SequenceSegmentMapper, SequenceSegmentEntity> implements SequenceSegmentService {
 
+    @Override
+    public SequenceSegmentEntity selectByBizAndLoop(String bizCode, String loopCode) {
+        return this.lambdaQuery()
+                .eq(SequenceSegmentEntity::getBizCode,bizCode)
+                .eq(SequenceSegmentEntity::getLoopCode,loopCode)
+                .one();
+    }
 }

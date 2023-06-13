@@ -26,9 +26,13 @@ public class TtlRunnableDecorator implements TaskDecorator {
         //使用TtlRunnable包装原始Runnable
         return TtlRunnable.get(() -> {
             try {
-                MDC.setContextMap(mdcMap);
-                RequestContextHolder.setRequestAttributes(requestAttributes);
+                if(mdcMap !=null ){
+                    MDC.setContextMap(mdcMap);
+                }
+                if(requestAttributes != null){
+                    RequestContextHolder.setRequestAttributes(requestAttributes);
 
+                }
                 //设置子线程的环境变量
                 runnable.run();
             } finally {

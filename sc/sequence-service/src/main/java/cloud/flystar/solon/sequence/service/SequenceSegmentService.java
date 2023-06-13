@@ -13,15 +13,7 @@ public interface SequenceSegmentService extends IService<SequenceSegmentEntity> 
      * @param loopCode
      * @return
      */
-    SequenceSegmentEntity selectByBizAndLook(String bizCode,String loopCode);
+    SequenceSegmentEntity selectByBizAndLoop(String bizCode, String loopCode);
 
-    /**
-     * 根据步长更新断的最大值
-     * @param bizCode
-     * @param loopCode
-     * @param step
-     * @return
-     */
-    SequenceSegmentEntity modifyMaxId(String bizCode,String loopCode, Integer step);
 
 }

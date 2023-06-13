@@ -21,8 +21,8 @@ import java.time.LocalDateTime;
  */
 @Slf4j
 public abstract class AbstractQuartzJob implements Job {
-    @Autowired
-    private ServletWebServerApplicationContext servletWebServerApplicationContext;
+//    @Autowired
+//    private ServletWebServerApplicationContext servletWebServerApplicationContext;
 
     private static String localIp  = null;
     /**
@@ -92,6 +92,7 @@ public abstract class AbstractQuartzJob implements Job {
 
     private String getLocalIp(){
         if (localIp == null){
+            ServletWebServerApplicationContext servletWebServerApplicationContext = SpringUtil.getBean(ServletWebServerApplicationContext.class);
             localIp = IpUtil.getHostIp() + ":" + servletWebServerApplicationContext.getWebServer().getPort();
 
         }
