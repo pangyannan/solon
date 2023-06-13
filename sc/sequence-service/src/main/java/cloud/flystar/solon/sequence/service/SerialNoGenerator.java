@@ -5,6 +5,7 @@ import cloud.flystar.solon.sequence.service.bo.SegmentBuffer;
 import cloud.flystar.solon.sequence.service.bo.SegmentKey;
 import cloud.flystar.solon.sequence.service.bo.SequenceConfigLoopTypeEnum;
 import cloud.flystar.solon.sequence.service.dao.po.SequenceConfigEntity;
+import cloud.flystar.solon.sequence.service.dao.po.SequenceSegmentEntity;
 import cn.hutool.core.lang.Assert;
 import cn.hutool.core.util.NumberUtil;
 import cn.hutool.core.util.StrUtil;
@@ -18,6 +19,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DateFormatUtils;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
+import org.redisson.api.RLock;
+import org.redisson.api.RedissonClient;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Component;
@@ -39,11 +42,16 @@ import java.util.concurrent.TimeUnit;
 public class SerialNoGenerator {
     //每个segment的剩余空闲ID比例阈值,当空闲ID小于该比例时,则异步加载下一段
     private static final double IdleFreePercent = 0.8;
+    private static final Map<SegmentKey, SegmentBuffer> cache = new ConcurrentHashMap<>();
+
+
+
+
     private final SequenceSegmentService sequenceSegmentService;
     private final SequenceConfigService sequenceConfigService;
     @Qualifier("ioExecutor")
     private final ThreadPoolTaskExecutor ioExecutor;
-    private Map<SegmentKey, SegmentBuffer> cache = new ConcurrentHashMap<>();
+    private final RedissonClient redissonClient;
 
     //配置对象缓存，缓存时间为1个小时
     private LoadingCache<String, SequenceConfigEntity> configCache = Caffeine.newBuilder()
@@ -95,37 +103,38 @@ public class SerialNoGenerator {
      * @param segment segment
      */
     private void updateSegmentFromDb(SegmentKey key, Segment segment) throws Exception {
-        Stopwatch sw = Stopwatch.createStarted();
+
         SegmentBuffer segmentBuffer = segment.getSegmentBuffer();
-        PsmSerialNoRecord record;
-        if (segmentBuffer.getUpdateTimestamp() == 0) {
-            record = psmSerialNoRecordService.modifyMaxIdAndGet(key, SegmentBuffer.MIN_STEP, SERIAL_NO_LIMIT);
-            segmentBuffer.setUpdateTimestamp(System.currentTimeMillis());
-            segmentBuffer.setStep(SegmentBuffer.MIN_STEP);
-        } else {
-            long duration = System.currentTimeMillis() - segmentBuffer.getUpdateTimestamp();
-            int nextStep = segmentBuffer.getStep();
-            if (duration < SEGMENT_DURATION) {
-                if (nextStep << 1 > SegmentBuffer.MAX_STEP) {
-                    // do nothing
-                } else {
-                    nextStep = nextStep << 1;
-                }
-            } else if (duration < SEGMENT_DURATION << 1) {
-                // do nothing with nextStep
-            } else {
-                nextStep = nextStep >> 1 >= SegmentBuffer.MIN_STEP ? nextStep >> 1 : nextStep;
+        Long loopSegmentStep = Long.valueOf(segmentBuffer.getSequenceConfigEntity().getLoopSegmentStep());
+        RLock lock = redissonClient.getLock(this.getClass().getName() + ":updateSegmentFromDb" + ":" + key.getBizCode() + ":" + key.getLoopKey());
+        boolean tryLock = lock.tryLock(1000, 5000, TimeUnit.MILLISECONDS);
+        long value;
+        if(tryLock){
+            SequenceSegmentEntity sequenceSegmentEntity = sequenceSegmentService.selectByBizAndLook(key.getBizCode(), key.getLoopKey());
+            if(sequenceSegmentEntity == null){
+                value = segmentBuffer.getSequenceConfigEntity().getLoopNumberMin();
+
+                sequenceSegmentEntity = new SequenceSegmentEntity();
+                sequenceSegmentEntity.setBizCode(key.getBizCode());
+                sequenceSegmentEntity.setLoopCode(key.getLoopKey());
+                sequenceSegmentEntity.setMaxId(loopSegmentStep);
+                sequenceSegmentEntity.setVersion(0L);
+                sequenceSegmentService.save(sequenceSegmentEntity);
+
+            }else{
+                value = sequenceSegmentEntity.getMaxId() + 1L;
+                sequenceSegmentEntity.setMaxId(sequenceSegmentEntity.getMaxId() + loopSegmentStep);
+                sequenceSegmentEntity.setVersion(sequenceSegmentEntity.getVersion() + 1L);
+                sequenceSegmentService.updateById(sequenceSegmentEntity);
             }
-            log.info("SerialNoGenerator updateSegmentFromDb key:{}, step:{}, duration:{}min, nextStep{}", key, segmentBuffer.getStep(), String.format("%.2f", ((double) duration / (1000 * 60))), nextStep);
-            record = psmSerialNoRecordService.modifyMaxIdAndGet(key, nextStep, SERIAL_NO_LIMIT);
+
+
             segmentBuffer.setUpdateTimestamp(System.currentTimeMillis());
-            segmentBuffer.setStep(nextStep);
+
+            segment.getValue().set(value);
+            segment.setMax(sequenceSegmentEntity.getMaxId());
+            segment.setStep(loopSegmentStep);
         }
-        long value = SERIAL_NO_LIMIT != record.getMaxId() ? record.getMaxId() - segmentBuffer.getStep() + 1 : segmentBuffer.getCurrent().getMax() + 1;
-        segment.getValue().set(value);
-        segment.setMax(record.getMaxId());
-        segment.setStep(segmentBuffer.getStep());
-        log.info("SerialNoGenerator updateSegmentFromDb 数据库更新耗时:{}", sw.stop().elapsed(TimeUnit.MILLISECONDS));
     }
 
     /**
