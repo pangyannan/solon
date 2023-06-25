@@ -35,11 +35,9 @@ import java.util.concurrent.TimeUnit;
 @RequiredArgsConstructor
 public class SerialNoGenerator {
     //每个segment的剩余空闲ID比例阈值,当空闲ID小于该比例时,则异步加载下一段
-    private static final double IdleFreePercent = 0.8;
-    private static final Map<SegmentKey, SegmentBuffer> cache = new ConcurrentHashMap<>();
-
-
-
+    private  final double IdleFreePercent = 0.8;
+    private  final int cacheSize = 1024;
+    //    private static final Map<SegmentKey, SegmentBuffer> cache = new ConcurrentHashMap<>();
 
     private final SequenceSegmentService sequenceSegmentService;
     private final SequenceConfigService sequenceConfigService;
@@ -49,7 +47,7 @@ public class SerialNoGenerator {
 
     //配置对象缓存，缓存时间为1个小时
     private final LoadingCache<String, SequenceConfigBo> configCache = Caffeine.newBuilder()
-            .maximumSize(1024)
+            .maximumSize(cacheSize)
             .expireAfterWrite(1L, TimeUnit.HOURS)
             .build(new CacheLoader<String, SequenceConfigBo>() {
                 @Override
@@ -64,6 +62,18 @@ public class SerialNoGenerator {
                 }
             });
 
+    //配置对象缓存，缓存时间为1个小时
+    private final LoadingCache<SegmentKey, SegmentBuffer> cache = Caffeine.newBuilder()
+            .maximumSize(cacheSize * 2)
+            .expireAfterAccess(24L, TimeUnit.HOURS)
+            .build(new CacheLoader<SegmentKey, SegmentBuffer>() {
+                @Override
+                public @Nullable SegmentBuffer load(@NonNull SegmentKey segmentKey) {
+                    SegmentBuffer buffer = new SegmentBuffer(segmentKey, configCache.get(segmentKey.getBizCode()));
+                    updateSegmentFromDb(segmentKey, buffer.getCurrent());
+                    return buffer;
+                }
+            });
 
     /**
      * 核心入口方法：获取序列号
@@ -76,16 +86,16 @@ public class SerialNoGenerator {
 
         //2.SegmentBuffer初始化
         SegmentBuffer buffer = cache.get(segmentKey);
-        if (Objects.isNull(buffer)) {
-            synchronized (this) {
-                buffer = cache.get(segmentKey);
-                if (Objects.isNull(buffer)) {
-                    buffer = new SegmentBuffer(segmentKey, configCache.get(bizCode));
-                    updateSegmentFromDb(segmentKey, buffer.getCurrent());
-                    cache.put(segmentKey, buffer);
-                }
-            }
-        }
+//        if (Objects.isNull(buffer)) {
+//            synchronized (this) {
+//                buffer = cache.get(segmentKey);
+//                if (Objects.isNull(buffer)) {
+//                    buffer = new SegmentBuffer(segmentKey, configCache.get(bizCode));
+//                    updateSegmentFromDb(segmentKey, buffer.getCurrent());
+//                    cache.put(segmentKey, buffer);
+//                }
+//            }
+//        }
 
         //3.生成流水号
         long segmentSeq = this.getSerialNoFromSegmentBuffer(buffer);
@@ -152,11 +162,14 @@ public class SerialNoGenerator {
                     sequenceSegmentService.updateById(sequenceSegmentEntity);
                 }
 
-                segmentBuffer.setUpdateTimestamp(System.currentTimeMillis());
+
+                long currentTimeMillis = System.currentTimeMillis();
+                segmentBuffer.setUpdateTimestamp(currentTimeMillis);
 
                 segment.getValue().set(value);
                 segment.setMax(sequenceSegmentEntity.getMaxId());
                 segment.setStep(loopSegmentStep);
+                segment.setCreateTimestamp(currentTimeMillis);
             }
 
         } catch (InterruptedException e) {
@@ -209,6 +222,7 @@ public class SerialNoGenerator {
 
                 long value = this.segmentGetAndIncrementAndCheck(segment);
                 if(value >= 0){
+                    this.checkSegmentDuration(buffer, segment);
                     return value;
                 }
             } finally {
@@ -223,6 +237,7 @@ public class SerialNoGenerator {
                 final Segment segment = buffer.getCurrent();
                 long value = this.segmentGetAndIncrementAndCheck(segment);
                 if(value >= 0){
+                    this.checkSegmentDuration(buffer, segment);
                     return value;
                 }
 
@@ -263,6 +278,25 @@ public class SerialNoGenerator {
     }
 
 
+    private void checkSegmentDuration(final SegmentBuffer buffer, final Segment segment){
+        Integer loopSegmentDurationSecond = buffer.getSequenceConfigBo().getSequenceConfigEntity().getLoopSegmentDurationSecond();
+        if(loopSegmentDurationSecond <= 0){
+            return;
+        }
+
+        //判断当前时间与segment的创建时间是否超过期限
+        long createTimestamp = segment.getCreateTimestamp();
+        long currentTimeMillis = System.currentTimeMillis();
+        if((currentTimeMillis - createTimestamp)/1000 > loopSegmentDurationSecond){
+            //需切换
+            if (buffer.isNextReady()) {
+                buffer.switchPos();
+                buffer.setNextReady(false);
+            }
+        }
+
+    }
+
     /**
      * 等待下一段加载完成
      */
@@ -292,7 +326,6 @@ public class SerialNoGenerator {
     private SegmentKey getSegmentKey(String bizCode){
         SequenceConfigBo sequenceConfigBo = configCache.get(bizCode);
         Assert.isTrue(Objects.nonNull(sequenceConfigBo),"bizCode=[{}] is not exist",bizCode);
-        assert sequenceConfigBo != null;
         String loopKey = this.getLoopKey(sequenceConfigBo.getSequenceConfigEntity());
         if(sequenceConfigBo.getCurrentSegmentKey() != null && StringUtils.equals(sequenceConfigBo.getCurrentSegmentKey().getLoopKey(),loopKey)){
             return sequenceConfigBo.getCurrentSegmentKey();

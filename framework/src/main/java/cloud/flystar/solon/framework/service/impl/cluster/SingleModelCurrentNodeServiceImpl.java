@@ -1,4 +1,4 @@
-package cloud.flystar.solon.framework.service.impl;
+package cloud.flystar.solon.framework.service.impl.cluster;
 
 
 import cloud.flystar.solon.framework.service.CurrentNodeService;

@@ -18,7 +18,7 @@ import java.util.Optional;
  * 流水号生成器核心入口服务
  */
 @Slf4j
-@SpringBootTest(classes= JunitApp.class,properties="classpath:/application.yml")
+@SpringBootTest(classes= JunitApp.class, properties="classpath:/application.yml")
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class SerialNoGeneratorTest {
 
@@ -65,7 +65,7 @@ public class SerialNoGeneratorTest {
     @RepeatedTest(100)
     @DisplayName("获取存在的bizCode=Test序列号")
     void getSerialNoTest() throws Exception {
-        for (int i = 0; i < 100; i++) {
+        for (int i = 0; i < 10000; i++) {
             String order = serialNoGenerator.getSerialNo("Test");
             log.debug(order);
         }

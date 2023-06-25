@@ -1,12 +1,18 @@
 package cloud.flystar.solon.framework.config.pool;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.context.ApplicationListener;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.event.ContextClosedEvent;
+import org.springframework.scheduling.concurrent.ExecutorConfigurationSupport;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ThreadPoolExecutor;
 
@@ -16,11 +22,14 @@ import java.util.concurrent.ThreadPoolExecutor;
 @EnableConfigurationProperties({ThreadPoolProperties.class})
 @Configuration
 @RequiredArgsConstructor
-public class ThreadPoolConfig {
+@Slf4j
+public class ThreadPoolConfig  implements ApplicationListener<ContextClosedEvent> {
     public static final String cpuExecutorName = "cpuExecutor";
     public static final String ioExecutorName = "ioExecutor";
     public static final String schedulerExecutor = "schedulerExecutor";
-    final ThreadPoolProperties threadPoolProperties;
+    private final ThreadPoolProperties threadPoolProperties;
+    private final Map<String, ExecutorConfigurationSupport>  executorConfigurationSupportMap = new HashMap<>();
+
     /**
      * CPU密集型线程池
      * 默认CPU密集型--所有参数均需要在压测下不断调整，根据实际的任务消耗时间来设置参数
@@ -53,7 +62,14 @@ public class ThreadPoolConfig {
         //线程环境传递
         executor.setTaskDecorator(new TtlRunnableDecorator());
 
+        // 告诉线程池，在销毁之前执行shutdown方法
+        executor.setWaitForTasksToCompleteOnShutdown(true);
+        // shutdown\shutdownNow 等待
+        executor.setAwaitTerminationSeconds(10);
+
         executor.initialize();
+
+        executorConfigurationSupportMap.put(ThreadPoolConfig.cpuExecutorName,executor);
         return executor;
     }
 
@@ -88,7 +104,17 @@ public class ThreadPoolConfig {
         executor.setRejectedExecutionHandler(new ThreadPoolExecutor.CallerRunsPolicy());
         //线程环境传递
         executor.setTaskDecorator(new TtlRunnableDecorator());
+
+
+
+        // 告诉线程池，在销毁之前执行shutdown方法
+        executor.setWaitForTasksToCompleteOnShutdown(true);
+        // shutdown\shutdownNow 等待
+        executor.setAwaitTerminationSeconds(10);
+
         executor.initialize();
+
+        executorConfigurationSupportMap.put(ThreadPoolConfig.ioExecutorName,executor);
         return executor;
     }
 
@@ -100,7 +126,7 @@ public class ThreadPoolConfig {
     public ThreadPoolTaskScheduler schedulerExecutor() {
         ThreadPoolTaskScheduler scheduler = new ThreadPoolTaskScheduler();
 
-        Integer poolSize = Optional.ofNullable(threadPoolProperties.getSchedulerCorePoolSize()).orElse(2);
+        Integer poolSize = Optional.ofNullable(threadPoolProperties.getSchedulerCorePoolSize()).orElse(Runtime.getRuntime().availableProcessors());
         scheduler.setPoolSize(poolSize);
 
         scheduler.setWaitForTasksToCompleteOnShutdown(true); //是否等待任务完成再销毁
@@ -112,7 +138,24 @@ public class ThreadPoolConfig {
         scheduler.setRejectedExecutionHandler(new ThreadPoolExecutor.AbortPolicy());
 
 
+        // 告诉线程池，在销毁之前执行shutdown方法
+        scheduler.setWaitForTasksToCompleteOnShutdown(true);
+        // shutdown\shutdownNow 等待
+        scheduler.setAwaitTerminationSeconds(10);
+
         scheduler.initialize();
+
+        executorConfigurationSupportMap.put(ThreadPoolConfig.schedulerExecutor,scheduler);
         return scheduler;
+    }
+
+
+    @Override
+    public void onApplicationEvent(ContextClosedEvent event) {
+        for (Map.Entry<String, ExecutorConfigurationSupport> supportEntry : executorConfigurationSupportMap.entrySet()) {
+            String key = supportEntry.getKey();
+            log.info("开始关闭线程池[{}]",key);
+            supportEntry.getValue().destroy();
+        }
     }
 }

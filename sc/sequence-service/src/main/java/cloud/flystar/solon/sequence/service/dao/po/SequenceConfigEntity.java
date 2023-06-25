@@ -79,6 +79,8 @@ public class SequenceConfigEntity {
      * 每个Segment的持续时间，单位秒，到达该时间后，自动切换Segment
      * 注意，Duration应根据节点数、loop内总的可能的Segment上限进行评估，防止耗尽
      * 目的也是为防止序号连续防猜，也为了保证整体趋势递增防止个别节点一直不切换
+     * 一般最少保持 10*60秒，如果不需要，也可以不配置
+     * <=0的配置无效
      */
     private Integer loopSegmentDurationSecond;
 

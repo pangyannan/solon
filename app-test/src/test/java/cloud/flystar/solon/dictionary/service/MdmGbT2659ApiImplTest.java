@@ -1,5 +1,6 @@
 package cloud.flystar.solon.dictionary.service;
 
+import cloud.flystar.solon.JunitApp;
 import cloud.flystar.solon.commons.format.json.JsonUtil;
 import cloud.flystar.solon.dictionary.api.MdmGbT2659Api;
 import cloud.flystar.solon.dictionary.api.dto.mdm.MdmGbT2659Dto;

@@ -1,13 +1,14 @@
 package cloud.flystar.solon.dictionary.service;
 
+import cloud.flystar.solon.JunitApp;
 import cloud.flystar.solon.commons.bean.dto.user.UserDataResourceScope;
 import cloud.flystar.solon.commons.bean.dto.user.UserSessionInfo;
 import cloud.flystar.solon.commons.format.json.JsonUtil;
-import cloud.flystar.solon.framework.constant.WebThreadContextKey;
 import cloud.flystar.solon.commons.pool.WebThreadContextUtil;
 import cloud.flystar.solon.dictionary.api.dto.mdm.MdmGbT2260Dto;
 import cloud.flystar.solon.dictionary.service.entity.MdmGbT2260;
 import cloud.flystar.solon.dictionary.service.inner.MdmGbT2260Service;
+import cloud.flystar.solon.framework.constant.WebThreadContextKey;
 import cn.hutool.core.collection.ListUtil;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.conditions.query.LambdaQueryChainWrapper;

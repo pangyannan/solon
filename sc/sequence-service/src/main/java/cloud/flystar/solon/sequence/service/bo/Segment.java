@@ -31,6 +31,10 @@ public class Segment {
      */
     public volatile long step;
 
+    /**
+     * 创建时间
+     */
+    private volatile long createTimestamp;
 
     /**
      * buffer

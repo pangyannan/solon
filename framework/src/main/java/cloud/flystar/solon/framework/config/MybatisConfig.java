@@ -2,7 +2,7 @@ package cloud.flystar.solon.framework.config;
 
 import cloud.flystar.solon.framework.service.CurrentNodeService;
 import cloud.flystar.solon.framework.service.FrameworkContextService;
-import cloud.flystar.solon.framework.service.impl.SingleModelCurrentNodeServiceImpl;
+import cloud.flystar.solon.framework.service.impl.cluster.SingleModelCurrentNodeServiceImpl;
 import com.baomidou.mybatisplus.core.handlers.MetaObjectHandler;
 import com.baomidou.mybatisplus.core.incrementer.DefaultIdentifierGenerator;
 import com.baomidou.mybatisplus.core.incrementer.IdentifierGenerator;
@@ -29,15 +29,11 @@ public class MybatisConfig {
     }
 
 
-    @Bean
-    public CurrentNodeService currentNodeService(){
-        return new SingleModelCurrentNodeServiceImpl();
-    }
+
 
     //雪花算法生成器
     @Bean
-    public IdentifierGenerator idGenerator() {
-        CurrentNodeService currentNodeService = currentNodeService();
+    public IdentifierGenerator idGenerator(CurrentNodeService currentNodeService) {
         if(currentNodeService instanceof SingleModelCurrentNodeServiceImpl){
             return new DefaultIdentifierGenerator();
         }else if(currentNodeService.workerId() >= 0 && currentNodeService.dataCenterId() >= 0){
