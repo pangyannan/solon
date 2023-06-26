@@ -4,17 +4,15 @@ package cloud.flystar.solon.framework.config.cluster;
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.convert.DurationStyle;
-import org.springframework.boot.convert.DurationUnit;
 import org.springframework.context.annotation.Configuration;
-
-import java.time.Duration;
-import java.time.temporal.ChronoUnit;
 
 
 @Configuration
 @ConfigurationProperties(prefix = "cluster.node")
 @Data
 public class ClusterProperties {
+
+    private Boolean single = Boolean.TRUE;
 
     /**
      * 数据中心ID

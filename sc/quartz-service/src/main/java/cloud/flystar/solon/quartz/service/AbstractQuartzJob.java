@@ -11,9 +11,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext;
-
 import java.time.LocalDateTime;
 
 /**
@@ -21,10 +18,9 @@ import java.time.LocalDateTime;
  */
 @Slf4j
 public abstract class AbstractQuartzJob implements Job {
-//    @Autowired
-//    private ServletWebServerApplicationContext servletWebServerApplicationContext;
 
-    private static String localIp  = null;
+    private String localIp  = null;
+    private JobLogService jobLogService;
     /**
      * 线程本地变量
      */
@@ -85,17 +81,24 @@ public abstract class AbstractQuartzJob implements Job {
         }
 
         //保存任务日志
-        JobLogService jobLogService = SpringUtil.getBean(JobLogService.class);
+        JobLogService jobLogService = this.getJobLogService();
         jobLogService.save(jobLog);
     }
 
 
     private String getLocalIp(){
         if (localIp == null){
-            ServletWebServerApplicationContext servletWebServerApplicationContext = SpringUtil.getBean(ServletWebServerApplicationContext.class);
-            localIp = IpUtil.getHostIp() + ":" + servletWebServerApplicationContext.getWebServer().getPort();
+            String port = StrUtil.trimToEmpty(SpringUtil.getProperty("server.port"));
+            localIp = IpUtil.getHostIp() + ":" + port;
 
         }
         return localIp;
+    }
+
+    private JobLogService getJobLogService(){
+        if(this.jobLogService == null){
+            this.jobLogService = SpringUtil.getBean(JobLogService.class);
+        }
+        return jobLogService;
     }
 }

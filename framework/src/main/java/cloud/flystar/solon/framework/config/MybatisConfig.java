@@ -2,10 +2,10 @@ package cloud.flystar.solon.framework.config;
 
 import cloud.flystar.solon.framework.service.CurrentNodeService;
 import cloud.flystar.solon.framework.service.FrameworkContextService;
-import cloud.flystar.solon.framework.service.impl.cluster.SingleModelCurrentNodeServiceImpl;
 import com.baomidou.mybatisplus.core.handlers.MetaObjectHandler;
 import com.baomidou.mybatisplus.core.incrementer.DefaultIdentifierGenerator;
 import com.baomidou.mybatisplus.core.incrementer.IdentifierGenerator;
+import com.baomidou.mybatisplus.core.toolkit.IdWorker;
 import com.baomidou.mybatisplus.extension.plugins.MybatisPlusInterceptor;
 import com.baomidou.mybatisplus.extension.plugins.inner.PaginationInnerInterceptor;
 import org.apache.ibatis.reflection.MetaObject;
@@ -29,18 +29,14 @@ public class MybatisConfig {
     }
 
 
-
-
     //雪花算法生成器
     @Bean
     public IdentifierGenerator idGenerator(CurrentNodeService currentNodeService) {
-        if(currentNodeService instanceof SingleModelCurrentNodeServiceImpl){
-            return new DefaultIdentifierGenerator();
-        }else if(currentNodeService.workerId() >= 0 && currentNodeService.dataCenterId() >= 0){
-            return new DefaultIdentifierGenerator(currentNodeService.workerId(),currentNodeService.dataCenterId());
-        }else{
-            return new DefaultIdentifierGenerator();
-        }
+        int workerId = currentNodeService.workerId();
+        int dataCenterId = currentNodeService.dataCenterId();
+        DefaultIdentifierGenerator defaultIdentifierGenerator = new DefaultIdentifierGenerator(workerId, dataCenterId);
+        IdWorker.setIdentifierGenerator(defaultIdentifierGenerator);
+        return defaultIdentifierGenerator;
     }
 
 

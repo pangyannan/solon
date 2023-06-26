@@ -3,8 +3,11 @@ package cloud.flystar.solon.framework.config;
 
 import cloud.flystar.solon.commons.log.aspect.LogAspect;
 import cloud.flystar.solon.commons.log.audit.AuditLogAspect;
+import cloud.flystar.solon.commons.log.audit.AuditLogStore;
 import cloud.flystar.solon.commons.log.audit.DefaultAuditLogStoreImpl;
 import cloud.flystar.solon.commons.log.level.LogLevelService;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
+import org.springframework.boot.logging.LoggingSystem;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
@@ -15,6 +18,14 @@ import org.springframework.context.annotation.EnableAspectJAutoProxy;
 @Configuration
 @EnableAspectJAutoProxy
 public class LogConfig  {
+    /**
+     * 定义审计日志存储服务
+     * @return
+     */
+    @Bean
+    public AuditLogStore auditLogStore(){
+        return new DefaultAuditLogStoreImpl();
+    }
 
     /**
      * 定义日志切面
@@ -30,8 +41,8 @@ public class LogConfig  {
      * @return
      */
     @Bean
-    public AuditLogAspect auditLogAspect(){
-        return new AuditLogAspect(new DefaultAuditLogStoreImpl());
+    public AuditLogAspect auditLogAspect(AuditLogStore auditLogStore){
+        return new AuditLogAspect(auditLogStore);
     }
 
     /**
@@ -39,7 +50,8 @@ public class LogConfig  {
      * @return
      */
     @Bean
-    public LogLevelService logLevelService(){
-        return new LogLevelService();
+    @ConditionalOnBean(LoggingSystem.class)
+    public LogLevelService logLevelService(LoggingSystem loggingSystem){
+        return new LogLevelService(loggingSystem);
     }
 }

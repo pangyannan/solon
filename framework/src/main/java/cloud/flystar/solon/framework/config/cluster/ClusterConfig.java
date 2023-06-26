@@ -10,9 +10,12 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class ClusterConfig {
     @Bean
-    public CurrentNodeService currentNodeService(){
-        return new ClusterRedisModelCurrentNodeServiceImpl();
+    public CurrentNodeService currentNodeService(ClusterProperties clusterProperties){
+        Boolean isSingle = clusterProperties.getSingle();
+        if(isSingle){
+            return new SingleModelCurrentNodeServiceImpl();
+        }else{
+            return new ClusterRedisModelCurrentNodeServiceImpl();
+        }
     }
-
-
 }

@@ -6,12 +6,12 @@ import cloud.flystar.solon.framework.service.CurrentNodeService;
 public class SingleModelCurrentNodeServiceImpl implements CurrentNodeService {
     @Override
     public int workerId() {
-        return -1;
+        return 0;
     }
 
     @Override
     public int dataCenterId() {
-        return -1;
+        return 0;
     }
 
     @Override

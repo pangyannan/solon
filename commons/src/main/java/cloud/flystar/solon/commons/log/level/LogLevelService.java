@@ -18,9 +18,10 @@ import java.util.stream.Collectors;
  */
 @Slf4j
 public class LogLevelService {
-
-    @Autowired
     private LoggingSystem loggingSystem;
+    public LogLevelService(LoggingSystem loggingSystem) {
+        this.loggingSystem = loggingSystem;
+    }
 
     /**
      * 动态更改ROOT的日志级别

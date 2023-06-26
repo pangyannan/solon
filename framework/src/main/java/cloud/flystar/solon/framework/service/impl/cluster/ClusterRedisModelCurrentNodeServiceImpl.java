@@ -11,7 +11,6 @@ import cn.hutool.extra.spring.SpringUtil;
 import lombok.Data;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.redisson.api.RLock;
 import org.redisson.api.RedissonClient;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,7 +21,6 @@ import javax.annotation.PostConstruct;
 import java.time.Duration;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.locks.ReentrantLock;
 
 @Slf4j
 public class ClusterRedisModelCurrentNodeServiceImpl implements CurrentNodeService {
@@ -53,6 +51,25 @@ public class ClusterRedisModelCurrentNodeServiceImpl implements CurrentNodeServi
         ThreadPoolHolder.schedulerExecutor().scheduleAtFixedRate(this::heartBeat, heartBeatDuration);
     }
 
+    @Override
+    public int workerId() {
+        return this.workerId;
+    }
+
+    @Override
+    public int dataCenterId() {
+        return this.clusterProperties.getDataCenterId();
+    }
+
+    @Override
+    public int nodeTotal() {
+        return 1;
+    }
+
+    @Override
+    public boolean currentIsMaster() {
+        return true;
+    }
 
     private NodeInfo nodeInfoBuild(){
         NodeInfo nodeInfo = new NodeInfo();
@@ -150,25 +167,7 @@ public class ClusterRedisModelCurrentNodeServiceImpl implements CurrentNodeServi
         context.close();
     }
 
-    @Override
-    public int workerId() {
-        return this.workerId;
-    }
 
-    @Override
-    public int dataCenterId() {
-        return this.clusterProperties.getDataCenterId();
-    }
-
-    @Override
-    public int nodeTotal() {
-        return 1;
-    }
-
-    @Override
-    public boolean currentIsMaster() {
-        return true;
-    }
 
 
     @Data
