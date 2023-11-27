@@ -24,9 +24,9 @@ import java.util.concurrent.ThreadPoolExecutor;
 @RequiredArgsConstructor
 @Slf4j
 public class ThreadPoolConfig  implements ApplicationListener<ContextClosedEvent> {
-    public static final String cpuExecutorName = "cpuExecutor";
-    public static final String ioExecutorName = "ioExecutor";
-    public static final String schedulerExecutor = "schedulerExecutor";
+    public static final String cpuExecutorName = "cpuThreadPoolExecutor";
+    public static final String ioExecutorName = "ioThreadPoolExecutor";
+    public static final String schedulerExecutor = "schedulerThreadPoolExecutor";
     private final ThreadPoolProperties threadPoolProperties;
     private final Map<String, ExecutorConfigurationSupport>  executorConfigurationSupportMap = new HashMap<>();
 
@@ -133,7 +133,7 @@ public class ThreadPoolConfig  implements ApplicationListener<ContextClosedEvent
         scheduler.setAwaitTerminationSeconds(60); //最多等待60秒
 
         //使用自定义前缀，方便问题排查
-        scheduler.setThreadNamePrefix("ioExecutor");
+        scheduler.setThreadNamePrefix("schedulerExecutor");
         //默认拒绝策略，处理程序遭到拒绝将抛出RejectedExecutionException
         scheduler.setRejectedExecutionHandler(new ThreadPoolExecutor.AbortPolicy());
 
