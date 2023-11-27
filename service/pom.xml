@@ -9,7 +9,7 @@
         <relativePath>../pom.xml</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
-    <artifactId>sc</artifactId>
+    <artifactId>service</artifactId>
     <packaging>pom</packaging>
 
     <modules>
@@ -22,6 +22,7 @@
         <module>dictionary-service</module>
 
         <module>remote-service</module>
+        <module>job-service</module>
 
     </modules>
 

@@ -64,7 +64,6 @@
                 <version>${evn.project.version}</version>
             </dependency>
 
-
             <dependency>
                 <groupId>cloud.flystar.solon</groupId>
                 <artifactId>user-service</artifactId>
@@ -96,6 +95,13 @@
                 <artifactId>sequence-service</artifactId>
                 <version>${evn.project.version}</version>
             </dependency>
+
+            <dependency>
+                <groupId>cloud.flystar.solon</groupId>
+                <artifactId>job-service</artifactId>
+                <version>${evn.project.version}</version>
+            </dependency>
+
 
             <dependency>
                 <groupId>com.baomidou</groupId>
