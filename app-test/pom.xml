@@ -22,40 +22,23 @@
         <dependency>
             <groupId>cloud.flystar.solon</groupId>
             <artifactId>dictionary-service</artifactId>
-            <version>${evn.project.version}</version>
         </dependency>
 
-        <dependency>
-            <groupId>cloud.flystar.solon</groupId>
-            <artifactId>quartz-service</artifactId>
-            <version>${evn.project.version}</version>
-        </dependency>
 
         <dependency>
             <groupId>cloud.flystar.solon</groupId>
             <artifactId>remote-service</artifactId>
-            <version>${evn.project.version}</version>
         </dependency>
 
         <dependency>
             <groupId>cloud.flystar.solon</groupId>
             <artifactId>sequence-service</artifactId>
-            <version>${evn.project.version}</version>
         </dependency>
 
         <dependency>
             <groupId>cloud.flystar.solon</groupId>
             <artifactId>user-service</artifactId>
-            <version>${evn.project.version}</version>
         </dependency>
-
-
-        <dependency>
-            <groupId>cloud.flystar.solon</groupId>
-            <artifactId>dictionary-service</artifactId>
-            <version>${evn.project.version}</version>
-        </dependency>
-
 
 
         <dependency>

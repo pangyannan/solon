@@ -5,7 +5,7 @@ import cloud.flystar.solon.commons.bean.dto.Result;
 import cloud.flystar.solon.commons.crypto.PasswordEncoder;
 import cloud.flystar.solon.commons.crypto.PasswordEncoderFactories;
 import cloud.flystar.solon.commons.log.audit.Audit;
-import cloud.flystar.solon.framework.config.SecureConfig;
+import cloud.flystar.solon.core.config.SecureConfig;
 import cloud.flystar.solon.user.api.UserAccountApi;
 import cloud.flystar.solon.user.api.dto.account.CaptchaImageResourceDto;
 import cloud.flystar.solon.user.api.dto.account.UserLoginDto;

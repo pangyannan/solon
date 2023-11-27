@@ -11,7 +11,6 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>common-bean</artifactId>
-    <version>${evn.project.version}</version>
 
 
     <!--    <dependencies>-->

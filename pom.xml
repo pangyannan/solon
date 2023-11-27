@@ -15,17 +15,16 @@
     <name>solon</name>
     <version>1.0-SNAPSHOT</version>
     <modules>
-        <module>commons</module>
-        <module>framework</module>
-        <module>app-web</module>
         <module>common-bean</module>
-        <module>sc</module>
+        <module>commons</module>
+        <module>core</module>
+        <module>service</module>
+        <module>app-web</module>
         <module>app-test</module>
     </modules>
 
     <properties>
         <evn.project.version>1.0-SNAPSHOT</evn.project.version>
-
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>8</maven.compiler.source>
         <maven.compiler.target>8</maven.compiler.target>
@@ -61,7 +60,7 @@
 
             <dependency>
                 <groupId>cloud.flystar.solon</groupId>
-                <artifactId>framework</artifactId>
+                <artifactId>core</artifactId>
                 <version>${evn.project.version}</version>
             </dependency>
 
@@ -79,12 +78,6 @@
 
             <dependency>
                 <groupId>cloud.flystar.solon</groupId>
-                <artifactId>quartz-service</artifactId>
-                <version>${evn.project.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>cloud.flystar.solon</groupId>
                 <artifactId>dictionary-service</artifactId>
                 <version>${evn.project.version}</version>
             </dependency>
@@ -93,7 +86,16 @@
                 <artifactId>dictionary-api</artifactId>
                 <version>${evn.project.version}</version>
             </dependency>
-
+            <dependency>
+                <groupId>cloud.flystar.solon</groupId>
+                <artifactId>remote-service</artifactId>
+                <version>${evn.project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>cloud.flystar.solon</groupId>
+                <artifactId>sequence-service</artifactId>
+                <version>${evn.project.version}</version>
+            </dependency>
 
             <dependency>
                 <groupId>com.baomidou</groupId>

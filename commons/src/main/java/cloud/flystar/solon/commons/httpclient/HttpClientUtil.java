@@ -1,7 +1,6 @@
 package cloud.flystar.solon.commons.httpclient;
 
 import cloud.flystar.solon.commons.format.json.ObjectMapperFactory;
-import cn.hutool.core.io.IoUtil;
 import cn.hutool.core.util.NumberUtil;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;

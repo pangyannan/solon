@@ -1,7 +1,7 @@
 package cloud.flystar.solon.dictionary.service;
 
 import cloud.flystar.solon.commons.format.json.JsonUtil;
-import cloud.flystar.solon.framework.util.SqlMapper;
+import cloud.flystar.solon.core.util.SqlMapper;
 import cn.hutool.core.io.IoUtil;
 import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;

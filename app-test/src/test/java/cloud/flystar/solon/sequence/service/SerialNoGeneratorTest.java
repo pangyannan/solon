@@ -4,7 +4,7 @@ import cloud.flystar.solon.JunitApp;
 import cloud.flystar.solon.commons.bean.dto.user.UserDataResourceScope;
 import cloud.flystar.solon.commons.bean.dto.user.UserSessionInfo;
 import cloud.flystar.solon.commons.pool.WebThreadContextUtil;
-import cloud.flystar.solon.framework.constant.WebThreadContextKey;
+import cloud.flystar.solon.core.constant.WebThreadContextKey;
 import cn.hutool.core.collection.ListUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.*;
