@@ -2,7 +2,7 @@ package cloud.flystar.solon.framework.config;
 
 import cloud.flystar.solon.commons.log.trace.HttpRequestTraceInterceptor;
 import cloud.flystar.solon.framework.interceptor.WebThreadLocalInterceptor;
-import cn.dev33.satoken.interceptor.SaAnnotationInterceptor;
+import cn.dev33.satoken.interceptor.SaInterceptor;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
@@ -31,10 +31,16 @@ public class CoreWebMvcConfigurer implements WebMvcConfigurer {
 
 
         //sa登陆注解拦截器，有sa注解的拦截
-        registry.addInterceptor(new SaAnnotationInterceptor())
+        registry.addInterceptor(new SaInterceptor())
                 .order(CoreWebMvcConfigurer.CORE_BASE_ORDER + 100)
                 .addPathPatterns("/**")
                 .excludePathPatterns("/static/**");
+
+        // 注册 Sa-Token 拦截器，校验规则为 StpUtil.checkLogin() 登录校验。
+//        registry.addInterceptor(new SaInterceptor(handle -> StpUtil.checkLogin()))
+//                .order(CoreWebMvcConfigurer.CORE_BASE_ORDER + 100)
+//                .addPathPatterns("/**")
+//                .excludePathPatterns("/user/doLogin");
     }
 
     @Override

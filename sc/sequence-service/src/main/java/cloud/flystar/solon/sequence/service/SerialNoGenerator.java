@@ -1,5 +1,6 @@
 package cloud.flystar.solon.sequence.service;
 
+import cloud.flystar.solon.framework.config.pool.ThreadPoolHolder;
 import cloud.flystar.solon.sequence.service.bo.*;
 import cloud.flystar.solon.sequence.service.dao.po.SequenceConfigEntity;
 import cloud.flystar.solon.sequence.service.dao.po.SequenceSegmentEntity;
@@ -16,15 +17,11 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.redisson.api.RLock;
 import org.redisson.api.RedissonClient;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Component;
 
 import java.text.DecimalFormat;
 import java.util.Date;
-import java.util.Map;
 import java.util.Objects;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -35,18 +32,17 @@ import java.util.concurrent.TimeUnit;
 @RequiredArgsConstructor
 public class SerialNoGenerator {
     //每个segment的剩余空闲ID比例阈值,当空闲ID小于该比例时,则异步加载下一段
-    private  final double IdleFreePercent = 0.8;
+    private  static final double idleFreePercent = 0.8D;
     private  final int cacheSize = 1024;
     //    private static final Map<SegmentKey, SegmentBuffer> cache = new ConcurrentHashMap<>();
 
     private final SequenceSegmentService sequenceSegmentService;
     private final SequenceConfigService sequenceConfigService;
-    @Qualifier("ioExecutor")
-    private final ThreadPoolTaskExecutor ioExecutor;
     private final RedissonClient redissonClient;
 
     //配置对象缓存，缓存时间为1个小时
     private final LoadingCache<String, SequenceConfigBo> configCache = Caffeine.newBuilder()
+            .executor(ThreadPoolHolder.ioExecutor())
             .maximumSize(cacheSize)
             .expireAfterWrite(1L, TimeUnit.HOURS)
             .build(new CacheLoader<String, SequenceConfigBo>() {
@@ -64,15 +60,13 @@ public class SerialNoGenerator {
 
     //配置对象缓存，缓存时间为1个小时
     private final LoadingCache<SegmentKey, SegmentBuffer> cache = Caffeine.newBuilder()
+            .executor(ThreadPoolHolder.ioExecutor())
             .maximumSize(cacheSize * 2)
             .expireAfterAccess(24L, TimeUnit.HOURS)
-            .build(new CacheLoader<SegmentKey, SegmentBuffer>() {
-                @Override
-                public @Nullable SegmentBuffer load(@NonNull SegmentKey segmentKey) {
-                    SegmentBuffer buffer = new SegmentBuffer(segmentKey, configCache.get(segmentKey.getBizCode()));
-                    updateSegmentFromDb(segmentKey, buffer.getCurrent());
-                    return buffer;
-                }
+            .build(segmentKey -> {
+                SegmentBuffer buffer = new SegmentBuffer(segmentKey, configCache.get(segmentKey.getBizCode()));
+                updateSegmentFromDb(segmentKey, buffer.getCurrent());
+                return buffer;
             });
 
     /**
@@ -86,16 +80,6 @@ public class SerialNoGenerator {
 
         //2.SegmentBuffer初始化
         SegmentBuffer buffer = cache.get(segmentKey);
-//        if (Objects.isNull(buffer)) {
-//            synchronized (this) {
-//                buffer = cache.get(segmentKey);
-//                if (Objects.isNull(buffer)) {
-//                    buffer = new SegmentBuffer(segmentKey, configCache.get(bizCode));
-//                    updateSegmentFromDb(segmentKey, buffer.getCurrent());
-//                    cache.put(segmentKey, buffer);
-//                }
-//            }
-//        }
 
         //3.生成流水号
         long segmentSeq = this.getSerialNoFromSegmentBuffer(buffer);
@@ -130,47 +114,45 @@ public class SerialNoGenerator {
         long loopSegmentStep = Long.valueOf(sequenceConfigEntity.getLoopSegmentStep());
         long loopNumberMax = sequenceConfigEntity.getLoopNumberMax() < 0 ? Long.MAX_VALUE : sequenceConfigEntity.getLoopNumberMax();
         RLock lock = redissonClient.getLock(this.getClass().getName() + ":updateSegmentFromDb" + ":" + key.getBizCode() + ":" + key.getLoopKey());
-        boolean tryLock = false;
         try {
-            tryLock = lock.tryLock(1000, 5000, TimeUnit.MILLISECONDS);
+            boolean tryLock = lock.tryLock(1000, 5000, TimeUnit.MILLISECONDS);
             if(!tryLock){
                 throw  new RuntimeException("序列号生成异常");
             }
 
             long value;
-            if(tryLock){
-                SequenceSegmentEntity sequenceSegmentEntity = sequenceSegmentService.selectByBizAndLoop(key.getBizCode(), key.getLoopKey());
-                if(sequenceSegmentEntity == null){
-                    value = sequenceConfigEntity.getLoopNumberMin();
+            SequenceSegmentEntity sequenceSegmentEntity = sequenceSegmentService.selectByBizAndLoop(key.getBizCode(), key.getLoopKey());
+            if(sequenceSegmentEntity == null){
+                value = sequenceConfigEntity.getLoopNumberMin();
 
-                    sequenceSegmentEntity = new SequenceSegmentEntity();
-                    sequenceSegmentEntity.setBizCode(key.getBizCode());
-                    sequenceSegmentEntity.setLoopCode(key.getLoopKey());
-                    sequenceSegmentEntity.setMaxId(loopSegmentStep);
-                    sequenceSegmentEntity.setVersion(0L);
+                sequenceSegmentEntity = new SequenceSegmentEntity();
+                sequenceSegmentEntity.setBizCode(key.getBizCode());
+                sequenceSegmentEntity.setLoopCode(key.getLoopKey());
+                sequenceSegmentEntity.setMaxId(loopSegmentStep);
+                sequenceSegmentEntity.setVersion(0L);
 
-                    Assert.isTrue( sequenceSegmentEntity.getMaxId() < loopNumberMax, "segment maxId {} is gl loopNumberMax {}", sequenceSegmentEntity.getMaxId(), loopNumberMax);
-                    sequenceSegmentService.save(sequenceSegmentEntity);
+                Assert.isTrue( sequenceSegmentEntity.getMaxId() < loopNumberMax, "segment maxId {} is gl loopNumberMax {}", sequenceSegmentEntity.getMaxId(), loopNumberMax);
+                sequenceSegmentService.save(sequenceSegmentEntity);
 
-                }else{
-                    value = sequenceSegmentEntity.getMaxId() + 1L;
+            }else{
+                value = sequenceSegmentEntity.getMaxId() + 1L;
 
-                    sequenceSegmentEntity.setMaxId(sequenceSegmentEntity.getMaxId() + loopSegmentStep);
-                    sequenceSegmentEntity.setVersion(sequenceSegmentEntity.getVersion() + 1L);
+                sequenceSegmentEntity.setMaxId(sequenceSegmentEntity.getMaxId() + loopSegmentStep);
+                sequenceSegmentEntity.setVersion(sequenceSegmentEntity.getVersion() + 1L);
 
-                    Assert.isTrue( sequenceSegmentEntity.getMaxId() < loopNumberMax, "segment maxId {} is gl loopNumberMax {}", sequenceSegmentEntity.getMaxId(), loopNumberMax);
-                    sequenceSegmentService.updateById(sequenceSegmentEntity);
-                }
-
-
-                long currentTimeMillis = System.currentTimeMillis();
-                segmentBuffer.setUpdateTimestamp(currentTimeMillis);
-
-                segment.getValue().set(value);
-                segment.setMax(sequenceSegmentEntity.getMaxId());
-                segment.setStep(loopSegmentStep);
-                segment.setCreateTimestamp(currentTimeMillis);
+                Assert.isTrue( sequenceSegmentEntity.getMaxId() < loopNumberMax, "segment maxId {} is gl loopNumberMax {}", sequenceSegmentEntity.getMaxId(), loopNumberMax);
+                sequenceSegmentService.updateById(sequenceSegmentEntity);
             }
+
+
+            long currentTimeMillis = System.currentTimeMillis();
+            segmentBuffer.setUpdateTimestamp(currentTimeMillis);
+
+            segment.getValue().set(value);
+            segment.setMax(sequenceSegmentEntity.getMaxId());
+            segment.setStep(loopSegmentStep);
+            segment.setCreateTimestamp(currentTimeMillis);
+
 
         } catch (InterruptedException e) {
             log.error("锁异常",e);
@@ -192,11 +174,11 @@ public class SerialNoGenerator {
                 final Segment segment = buffer.getCurrent();
                 // 如果是不可切换状态 && 空闲数量 < 最小空闲比例数量 && 如果线程状态是没有运行，则将状态设置为运行状态
                 if (!buffer.isNextReady()
-                        && (segment.getIdle() < IdleFreePercent * segment.getStep())
+                        && (segment.getIdle() < idleFreePercent * segment.getStep())
                         && buffer.getThreadRunning().compareAndSet(false, true)) {
 
                     //启动线程加载nextSegment
-                    ioExecutor.execute(() -> {
+                    ThreadPoolHolder.ioExecutor().execute(() -> {
                         Segment nextSegment = buffer.getSegments()[buffer.nextPos()];
                         // 数据是否加载完毕，默认false
                         boolean updateOk = false;
@@ -327,13 +309,13 @@ public class SerialNoGenerator {
         SequenceConfigBo sequenceConfigBo = configCache.get(bizCode);
         Assert.isTrue(Objects.nonNull(sequenceConfigBo),"bizCode=[{}] is not exist",bizCode);
         String loopKey = this.getLoopKey(sequenceConfigBo.getSequenceConfigEntity());
-        if(sequenceConfigBo.getCurrentSegmentKey() != null && StringUtils.equals(sequenceConfigBo.getCurrentSegmentKey().getLoopKey(),loopKey)){
-            return sequenceConfigBo.getCurrentSegmentKey();
+        SegmentKey currentSegmentKey = sequenceConfigBo.getCurrentSegmentKey();
+        if(currentSegmentKey != null && StringUtils.equals(currentSegmentKey.getLoopKey(),loopKey)){
+            return currentSegmentKey;
         }
-        //没有必要进行并发控制创建
-        SegmentKey segmentKey = new SegmentKey(sequenceConfigBo.getSequenceConfigEntity().getBizCode(), loopKey);
-        sequenceConfigBo.setCurrentSegmentKey(segmentKey);
-        return segmentKey;
+        SegmentKey segmentKeyNew = new SegmentKey(sequenceConfigBo.getSequenceConfigEntity().getBizCode(), loopKey);
+        sequenceConfigBo.setCurrentSegmentKey(segmentKeyNew);
+        return segmentKeyNew;
     }
 
     /**
@@ -341,7 +323,7 @@ public class SerialNoGenerator {
      */
     private String getLoopKey(SequenceConfigEntity sequenceConfigEntity){
         SequenceConfigLoopTypeEnum sequenceConfigLoopTypeEnum = SequenceConfigLoopTypeEnum.getByCode(sequenceConfigEntity.getLoopType());
-        String lookKey = StringUtils.EMPTY;
+        String lookKey;
         switch (sequenceConfigLoopTypeEnum){
             case NONE:{
                 lookKey = StringUtils.EMPTY;

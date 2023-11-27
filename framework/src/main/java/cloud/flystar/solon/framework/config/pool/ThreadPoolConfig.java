@@ -44,7 +44,7 @@ public class ThreadPoolConfig  implements ApplicationListener<ContextClosedEvent
         Integer corePoolSize = Optional.ofNullable(threadPoolProperties.getCpuExecutorCorePoolSize()).orElse(Runtime.getRuntime().availableProcessors() + 1);
         executor.setCorePoolSize(corePoolSize);
 
-        //设置和核心线程数一致，用队列控制任务总数
+        //非核心线程数 设置和核心线程数一致，用队列控制任务总数
         Integer maxPoolSize = Optional.ofNullable(threadPoolProperties.getCpuExecutorMaxPoolSize()).orElse(Runtime.getRuntime().availableProcessors() + 1);
         executor.setMaxPoolSize(maxPoolSize);
 
@@ -87,17 +87,17 @@ public class ThreadPoolConfig  implements ApplicationListener<ContextClosedEvent
         Integer corePoolSize = Optional.ofNullable(threadPoolProperties.getIoExecutorCorePoolSize()).orElse(Runtime.getRuntime().availableProcessors() * 2);
         executor.setCorePoolSize(corePoolSize);
 
-        //设置和核心线程数一致，用队列控制任务总数
-        Integer maxPoolSize = Optional.ofNullable(threadPoolProperties.getIoExecutorMaxPoolSize()).orElse(Runtime.getRuntime().availableProcessors() * 4);
+        //非核心线程数
+        Integer maxPoolSize = Optional.ofNullable(threadPoolProperties.getIoExecutorMaxPoolSize()).orElse(Runtime.getRuntime().availableProcessors() * 8);
         executor.setMaxPoolSize(maxPoolSize);
 
 
         //Spring默认使用LinkedBlockingQueue
-        Integer queueCapacity = Optional.ofNullable(threadPoolProperties.getIoExecutorQueueCapacity()).orElse(Runtime.getRuntime().availableProcessors()  * 256);
+        Integer queueCapacity = Optional.ofNullable(threadPoolProperties.getIoExecutorQueueCapacity()).orElse(Runtime.getRuntime().availableProcessors()  * 64);
         executor.setQueueCapacity(queueCapacity);
 
-        //默认60秒，维持不变
-        executor.setKeepAliveSeconds(120);
+        //线程存活时间 默认60秒
+        executor.setKeepAliveSeconds(300);
         //使用自定义前缀，方便问题排查
         executor.setThreadNamePrefix("ioExecutor");
         //默认拒绝策略，由主线程来直接执行
@@ -110,7 +110,7 @@ public class ThreadPoolConfig  implements ApplicationListener<ContextClosedEvent
         // 告诉线程池，在销毁之前执行shutdown方法
         executor.setWaitForTasksToCompleteOnShutdown(true);
         // shutdown\shutdownNow 等待
-        executor.setAwaitTerminationSeconds(10);
+        executor.setAwaitTerminationSeconds(30);
 
         executor.initialize();
 

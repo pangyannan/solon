@@ -2,6 +2,7 @@ package cloud.flystar.solon.quartz.service;
 
 import cloud.flystar.solon.commons.log.trace.TraceContext;
 import cloud.flystar.solon.commons.util.IpUtil;
+import cloud.flystar.solon.framework.config.pool.ThreadPoolHolder;
 import cloud.flystar.solon.quartz.service.config.JobConstants;
 import cloud.flystar.solon.quartz.service.entity.JobConfig;
 import cloud.flystar.solon.quartz.service.entity.JobLog;
@@ -9,8 +10,11 @@ import cn.hutool.core.util.StrUtil;
 import cn.hutool.extra.spring.SpringUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.quartz.Job;
+import org.quartz.JobDataMap;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
+
 import java.time.LocalDateTime;
 
 /**
@@ -80,9 +84,11 @@ public abstract class AbstractQuartzJob implements Job {
             jobLog.setMessage(StrUtil.subPre(ex.getMessage(),256));
         }
 
-        //保存任务日志
+        //异步保存任务日志
         JobLogService jobLogService = this.getJobLogService();
-        jobLogService.save(jobLog);
+        Runnable saveRun = () -> jobLogService.save(jobLog);
+        ThreadPoolTaskExecutor ioExecutor = ThreadPoolHolder.ioExecutor();
+        ioExecutor.execute(saveRun);
     }
 
 

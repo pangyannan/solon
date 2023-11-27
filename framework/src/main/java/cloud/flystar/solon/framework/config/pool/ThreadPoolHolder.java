@@ -8,7 +8,6 @@ import org.springframework.stereotype.Component;
 /**
  * 通用线程线程池配置
  */
-@Component
 public class ThreadPoolHolder {
    private static  ThreadPoolTaskExecutor cpuExecutor;
    private static  ThreadPoolTaskExecutor ioExecutor;

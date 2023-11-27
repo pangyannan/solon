@@ -1,5 +1,6 @@
 package cloud.flystar.solon.framework.config.pool;
 
+import cloud.flystar.solon.commons.pool.WebThreadContextUtil;
 import com.alibaba.ttl.TtlRunnable;
 import org.slf4j.MDC;
 import org.springframework.core.task.TaskDecorator;
@@ -18,6 +19,7 @@ public class TtlRunnableDecorator implements TaskDecorator {
     public Runnable decorate(Runnable runnable) {
         //不是TransmittableThreadLocal包装的线程变量
 
+        Map<String, Object> threadContextMap = WebThreadContextUtil.getUnmodifiableMap();
         //MDC
         Map<String, String> mdcMap = MDC.getCopyOfContextMap();
         // 获取主线程中的请求信息（我们的用户信息也放在里面）
@@ -26,16 +28,18 @@ public class TtlRunnableDecorator implements TaskDecorator {
         //使用TtlRunnable包装原始Runnable
         return TtlRunnable.get(() -> {
             try {
-                if(mdcMap !=null ){
+                if(threadContextMap != null && threadContextMap.size() > 0){
+                    WebThreadContextUtil.initContext(threadContextMap);
+                }
+                if(mdcMap !=null && mdcMap.size() > 0){
                     MDC.setContextMap(mdcMap);
                 }
-                if(requestAttributes != null){
+                if(requestAttributes != null ){
                     RequestContextHolder.setRequestAttributes(requestAttributes);
-
                 }
-                //设置子线程的环境变量
                 runnable.run();
             } finally {
+                WebThreadContextUtil.clearContext();
                 RequestContextHolder.resetRequestAttributes();
                 MDC.clear();
             }
