@@ -3,21 +3,25 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
-        <artifactId>solon</artifactId>
+        <artifactId>mdm</artifactId>
         <groupId>cloud.flystar.solon</groupId>
         <version>1.0-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
+
     </parent>
     <modelVersion>4.0.0</modelVersion>
-    <artifactId>service</artifactId>
-    <packaging>pom</packaging>
+    <artifactId>mdm-api</artifactId>
 
-    <modules>
-        <module>user</module>
-        <module>mdm</module>
 
-        <module>sequence-service</module>
-        <module>remote</module>
-    </modules>
+    <dependencies>
+        <dependency>
+            <groupId>cloud.flystar.solon</groupId>
+            <artifactId>common-bean</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>jakarta.validation</groupId>
+            <artifactId>jakarta.validation-api</artifactId>
+        </dependency>
+    </dependencies>
 
 </project>

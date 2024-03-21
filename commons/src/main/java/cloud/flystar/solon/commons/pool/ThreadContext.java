@@ -10,15 +10,18 @@ import java.util.Map;
 /**
  * 本地线程环境
  */
-public class WebThreadContextUtil {
+public class ThreadContext {
     private static final ThreadLocal<Map<String,Object>> threadLocal = new TransmittableThreadLocal<>();
 
     /**
      * 初始化线程环境
      */
     public static void initContext(){
-        Map<String, Object> map = new HashMap<>();
-        threadLocal.set(map);
+        Map<String, Object> map = threadLocal.get();
+        if(map == null){
+            map = new HashMap<>();
+            threadLocal.set(map);
+        }
     }
 
 
@@ -67,6 +70,18 @@ public class WebThreadContextUtil {
         map.put(key,object);
     }
 
+    public static void remove(String... keys){
+        if(keys == null){
+            return;
+        }
+        Map<String, Object> map = threadLocal.get();
+        if(map == null){
+          return;
+        }
+        for (String key : keys) {
+            map.remove(key);
+        }
+    }
 
 
     public static Map<String,Object> getUnmodifiableMap(){

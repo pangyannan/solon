@@ -30,7 +30,7 @@
 
         <dependency>
             <groupId>cloud.flystar.solon</groupId>
-            <artifactId>dictionary-service</artifactId>
+            <artifactId>mdm-service</artifactId>
         </dependency>
 
         <dependency>
@@ -40,7 +40,7 @@
 
         <dependency>
             <groupId>cloud.flystar.solon</groupId>
-            <artifactId>remote-service</artifactId>
+            <artifactId>rpc-service</artifactId>
         </dependency>
 
         <dependency>

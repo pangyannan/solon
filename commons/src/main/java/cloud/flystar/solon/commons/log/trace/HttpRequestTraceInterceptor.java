@@ -1,5 +1,7 @@
 package cloud.flystar.solon.commons.log.trace;
 
+import cloud.flystar.solon.commons.pool.ThreadContext;
+import cloud.flystar.solon.commons.pool.ThreadContextConstants;
 import cn.hutool.core.util.IdUtil;
 import cn.hutool.core.util.StrUtil;
 import lombok.SneakyThrows;
@@ -7,6 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.catalina.connector.Request;
 import org.apache.catalina.connector.RequestFacade;
 import org.apache.tomcat.util.http.MimeHeaders;
+import org.slf4j.MDC;
 import org.springframework.util.ReflectionUtils;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
@@ -25,13 +28,13 @@ public class HttpRequestTraceInterceptor implements HandlerInterceptor {
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         //从request中获取traceId，如果没有就自己生成一个，放到Context中，以及返回response
-        String traceId = request.getHeader(TraceContext.TRACE_ID_NAME);
+        String traceId = request.getHeader(ThreadContextConstants.TRACE_ID.getCode());
         Integer spanId;
         if(StrUtil.isBlank(traceId)){
             traceId = IdUtil.simpleUUID();
             spanId = 0;
         }else{
-            String spanIdStr = request.getHeader(TraceContext.SPAN_ID_NAME);
+            String spanIdStr = request.getHeader(ThreadContextConstants.TRACE_SPAN_ID.getCode());
             if(StrUtil.isBlank(spanIdStr)){
                 spanId = 0;
             }else{
@@ -42,8 +45,8 @@ public class HttpRequestTraceInterceptor implements HandlerInterceptor {
         //加入到Request中
         addHeader(request,response,traceId,spanId);
 
-        TraceContext.putTraceId(traceId);
-        TraceContext.putSpanId(spanId);
+        TraceContext.initTrace(traceId,spanId);
+
         return true;
     }
 
@@ -54,8 +57,7 @@ public class HttpRequestTraceInterceptor implements HandlerInterceptor {
 
     @Override
     public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) throws Exception {
-        //访问结束后，清除Context
-        TraceContext.removeAll();
+        TraceContext.clearContext();
     }
 
 
@@ -78,11 +80,11 @@ public class HttpRequestTraceInterceptor implements HandlerInterceptor {
             Field mimeHeadersField =  this.mimeHeadersField();
             MimeHeaders mimeHeaders =  (MimeHeaders) mimeHeadersField.get(coyoteRequest);
 
-            mimeHeaders.removeHeader(TraceContext.TRACE_ID_NAME);
-            mimeHeaders.addValue(TraceContext.TRACE_ID_NAME).setString(traceId);
+            mimeHeaders.removeHeader(TraceContext.getTraceIdKey());
+            mimeHeaders.addValue(TraceContext.getTraceIdKey()).setString(traceId);
 
-            mimeHeaders.removeHeader(TraceContext.SPAN_ID_NAME);
-            mimeHeaders.addValue(TraceContext.SPAN_ID_NAME).setString(spanId.toString());
+            mimeHeaders.removeHeader(TraceContext.getSpanIdKey());
+            mimeHeaders.addValue(TraceContext.getSpanIdKey()).setString(spanId.toString());
         }
 
         response.setHeader("Trace-Id",traceId);

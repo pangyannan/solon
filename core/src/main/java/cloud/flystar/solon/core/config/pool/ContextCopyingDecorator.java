@@ -1,6 +1,6 @@
 package cloud.flystar.solon.core.config.pool;
 
-import cloud.flystar.solon.commons.pool.WebThreadContextUtil;
+import cloud.flystar.solon.commons.pool.ThreadContext;
 import org.springframework.core.task.TaskDecorator;
 
 import java.util.HashMap;
@@ -13,17 +13,17 @@ public class ContextCopyingDecorator implements TaskDecorator {
     @Override
     public Runnable decorate(Runnable runnable) {
         //获取主线程中设置的线程数据
-        Map<String, Object> map = WebThreadContextUtil.getUnmodifiableMap();
+        Map<String, Object> map = ThreadContext.getUnmodifiableMap();
 
         //防止主线程结束后map被清空，重新设置一个Map
         Map<String, Object> newMap = new HashMap<>(map);
         return () -> {
             try {
                 //设置子线程的环境变量
-                WebThreadContextUtil.initContext(newMap);
+                ThreadContext.initContext(newMap);
                 runnable.run();
             } finally {
-                WebThreadContextUtil.clearContext();
+                ThreadContext.clearContext();
             }
         };
     }

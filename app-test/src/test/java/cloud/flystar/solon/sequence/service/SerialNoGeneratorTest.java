@@ -3,7 +3,7 @@ package cloud.flystar.solon.sequence.service;
 import cloud.flystar.solon.JunitApp;
 import cloud.flystar.solon.commons.bean.dto.user.UserDataResourceScope;
 import cloud.flystar.solon.commons.bean.dto.user.UserSessionInfo;
-import cloud.flystar.solon.commons.pool.WebThreadContextUtil;
+import cloud.flystar.solon.commons.pool.ThreadContext;
 import cloud.flystar.solon.core.constant.WebThreadContextKey;
 import cn.hutool.core.collection.ListUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -28,8 +28,8 @@ public class SerialNoGeneratorTest {
 
     @BeforeEach
     public void beforeEach(){
-        WebThreadContextUtil.initContext();
-        WebThreadContextUtil.put(WebThreadContextKey.FRAMEWORK_CONTEXT_USER_LOGINID,1L);
+        ThreadContext.initContext();
+        ThreadContext.put(WebThreadContextKey.FRAMEWORK_CONTEXT_USER_LOGINID,1L);
 
         UserSessionInfo userSessionInfo = new UserSessionInfo();
         userSessionInfo.setUserId(1L);
@@ -42,12 +42,12 @@ public class SerialNoGeneratorTest {
         userDataResourceScope.setDataScopeCodes(ListUtil.toList("deptChild","deptCurrent","creator"));
         userSessionInfo.setUserDataResourceScopes(ListUtil.toList(userDataResourceScope));
         Optional<UserSessionInfo> optional  = Optional.of(userSessionInfo);
-        WebThreadContextUtil.put(WebThreadContextKey.FRAMEWORK_CONTEXT_USER_SESSION,optional);
+        ThreadContext.put(WebThreadContextKey.FRAMEWORK_CONTEXT_USER_SESSION,optional);
     }
 
     @AfterEach
     public void AfterEach(){
-        WebThreadContextUtil.clearContext();
+        ThreadContext.clearContext();
     }
 
 

@@ -1,6 +1,6 @@
 package cloud.flystar.solon.core.interceptor;
 
-import cloud.flystar.solon.commons.pool.WebThreadContextUtil;
+import cloud.flystar.solon.commons.pool.ThreadContext;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
@@ -15,7 +15,7 @@ import javax.servlet.http.HttpServletResponse;
 public class WebThreadLocalInterceptor implements HandlerInterceptor {
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
-        WebThreadContextUtil.initContext();
+        ThreadContext.initContext();
         return true;
     }
 
@@ -27,6 +27,6 @@ public class WebThreadLocalInterceptor implements HandlerInterceptor {
     @Override
     public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) throws Exception {
         //访问结束后，清除Context
-        WebThreadContextUtil.clearContext();
+        ThreadContext.clearContext();
     }
 }

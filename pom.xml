@@ -77,17 +77,17 @@
 
             <dependency>
                 <groupId>cloud.flystar.solon</groupId>
-                <artifactId>dictionary-service</artifactId>
+                <artifactId>mdm-service</artifactId>
                 <version>${evn.project.version}</version>
             </dependency>
             <dependency>
                 <groupId>cloud.flystar.solon</groupId>
-                <artifactId>dictionary-api</artifactId>
+                <artifactId>mdm-api</artifactId>
                 <version>${evn.project.version}</version>
             </dependency>
             <dependency>
                 <groupId>cloud.flystar.solon</groupId>
-                <artifactId>remote-service</artifactId>
+                <artifactId>rpc-service</artifactId>
                 <version>${evn.project.version}</version>
             </dependency>
             <dependency>
@@ -215,7 +215,6 @@
                 <artifactId>hutool-all</artifactId>
                 <version>${hutool.version}</version>
             </dependency>
-
 
             <dependency>
                 <groupId>org.lionsoul</groupId>

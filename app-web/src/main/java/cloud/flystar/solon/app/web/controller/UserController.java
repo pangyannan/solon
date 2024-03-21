@@ -5,6 +5,7 @@ import cloud.flystar.solon.commons.bean.dto.Result;
 import cloud.flystar.solon.commons.format.json.JsonUtil;
 import cloud.flystar.solon.commons.log.audit.Audit;
 import cloud.flystar.solon.commons.log.trace.TraceContext;
+import cloud.flystar.solon.commons.pool.ThreadContextConstants;
 import cloud.flystar.solon.user.api.UserApi;
 import cloud.flystar.solon.user.api.dto.UserDto;
 import cn.dev33.satoken.annotation.SaCheckPermission;
@@ -42,7 +43,7 @@ public class UserController {
     public Result<UserDto> user(@RequestParam(name = "id") Long id, HttpServletRequest request){
         UserDto userDto = userApi.getById(id);
 
-        String header = request.getHeader(TraceContext.TRACE_ID_NAME);
+        String header = request.getHeader(ThreadContextConstants.TRACE_ID.getCode());
         log.info("header:[{}]",header);
         return Result.successBuild(userDto);
     }
